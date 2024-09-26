@@ -1,0 +1,12 @@
+Database-External: MySQL
+» create database db_tvde_users_external
+Table name: users
+
+Columns of table:
+Id = autoincrement;
+user_name = string;
+user_surname = string;
+user_email = string;
+user_password = string;
+user_profile_photo = image;
+

@@ -1,0 +1,76 @@
+Programa que salve os resultados diários de trabalho no UBER e Bolt
+Mostre o resultado semanal e o resultado mensal numa tela
+com metricas distintas sobre o trabalho
+
+O que é importante saber?
+     --TELA--
+
+Cadastro Corridas:
+-Operabadora:Uber ou Bolt
+-Valor Corrida APP: €
+-Tempo Gasto: Horas
+-Distancia: KM
+-Gorjeta: €
+-VIAVERDE - Gastos: Portagem / Aeroporto / Estacionamento: €
+
+BANCO DE DADOS SQLite3 == trabalhoTVDE
+
+Criar Tabela Corrida
+=====Entrar dados da corrida
+ - id
+ - Operadora
+ - Valor
+ - Distancia
+ - Tempo
+ - Gorjeta
+ - ViaVerde
+
+=====Salvar dados Corrida em Tabela Corridas
+
+Criar Tabela Resultados
+=====Calcular Resultados
+-
+
+
+Calcular valores Gerais
+
+BANCO DADOS:
+ -Dias trabalhados
+ -Valor Bruto total
+ -valor total a receber - LIQUIDO
+ -Valor total Gorjetas
+ -Horas trabalhadas
+
+ENTRADAS
+Data
+Hora Início
+Hora Final
+Valor Final do Dia
+Valor Gorjetas Dia
+Outros valores
+Reembolso (Aeroporto + Portagem)
+NumCorridas
+Gastos Portagem + Aeroporto
+
+
+CALCULOS
+HoraTrabalhadaDia = HoraFinal - HoraInicial
+Valores:
+ - ValorUber - 10% =  ValorUberFINAL
+ - ValorBolt - 35% = ValorBoltFINAL
+ - ValorUberFINAL + ValorBoltFINAL + Gorjetas = Valor a receber
+
+»Valor bruto entrada
+ -Valor cada corrida
+ -tempo gasto corrida
+ -gorjetas
+
+»Valor liquido a receber
+ -ValorBrutoEntrada - 10%
+
+»Gastos diários
+
+
+Valor bruto corrida
+Tempo Corrida
+Valor Gasolina
