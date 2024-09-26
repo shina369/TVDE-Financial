@@ -62,7 +62,7 @@ def main(page: ft.Page):
                 ]
             )
         )
-        page.update()
+    page.update()
 
     def page_register():
         page.views.clear()
@@ -87,7 +87,7 @@ def main(page: ft.Page):
                 ]
             )
         )
-        page.update()
+    page.update()
 
     def page_forget_password():
         page.views.clear()
@@ -102,7 +102,7 @@ def main(page: ft.Page):
                 ]
             )
         )
-        page.update()
+    page.update()
 
     def route_change(route):
         if page.route == "/":
