@@ -5,7 +5,7 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 15
     page.margin = 0
-    page.title = "TVDE - FINANCIAL"
+    page.title = "TVDE - FINANCIAL-seesesesese"
     page.theme = ft.Theme(
         color_scheme=ft.ColorScheme(
             primary="black",
