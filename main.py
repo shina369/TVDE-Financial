@@ -30,7 +30,7 @@ def main(page: ft.Page):
                                     height=270,
                                     margin=20,
                                     padding=20,
-                                    bgcolor="black"
+                                    bgcolor="green"
                                 ),
                                 ft.Container(
                                     height=300,
