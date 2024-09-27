@@ -72,7 +72,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Container(
                         ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
-                        height=270,
+                        height=120,
                         margin=20,
                         padding=20,
                     ),
