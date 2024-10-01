@@ -73,6 +73,15 @@ def main(page: ft.Page):
         email_input = ft.TextField(label="Email", border_radius=21)
         password_input = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm_input = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21)
+
+        name = name_input
+
+        def imprimir_inputs(name):
+            if name == None:
+                print("Ainda Zerado")
+            else:
+                print(f"O nome cadastrado foi:{name.value}")
+                
         page.views.append(
             ft.View(
                 "/register",
@@ -85,7 +94,7 @@ def main(page: ft.Page):
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
                     name_input, surname_input, phone_input, email_input, password_input, password_confirm_input,
-                    ft.ElevatedButton(text="REGISTER", bgcolor="black", color="white"),
+                    ft.ElevatedButton(text="REGISTER", bgcolor="black", color="white", on_click=lambda e:imprimir_inputs(name)),
                 ]
             )
         )
