@@ -77,7 +77,7 @@ def main(page: ft.Page):
         name = name_input
 
         def imprimir_inputs(name):
-            if name == None:
+            if not name.value:
                 print("Ainda Zerado")
             else:
                 print(f"O nome cadastrado foi:{name.value}")
