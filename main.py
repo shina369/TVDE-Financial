@@ -66,13 +66,13 @@ def main(page: ft.Page):
 
     def page_register():
         page.views.clear()
-        global name, surname, phone, email, password, password_confirm
-        name = ft.TextField(label="Name", border_radius=21)
-        surname = ft.TextField(label="Surname", border_radius=21)
-        phone = ft.TextField(label="Phone", border_radius=21)
-        email = ft.TextField(label="Email", border_radius=21)
-        password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
-        password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21)
+        global name_input, surname_input, phone_input, email_input, password_input, password_confirm_input
+        name_input = ft.TextField(label="Name", border_radius=21)
+        surname_input = ft.TextField(label="Surname", border_radius=21)
+        phone_input = ft.TextField(label="Phone", border_radius=21)
+        email_input = ft.TextField(label="Email", border_radius=21)
+        password_input = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
+        password_confirm_input = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21)
         page.views.append(
             ft.View(
                 "/register",
