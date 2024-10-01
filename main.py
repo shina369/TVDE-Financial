@@ -75,13 +75,28 @@ def main(page: ft.Page):
         password_confirm_input = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21)
 
         name = name_input
+        surname = surname_input
+        phone = phone_input
+        email = email_input
+        password = password_input
+        password_confirm = password_confirm_input
 
-        def imprimir_inputs(name):
-            if not name.value:
-                print("Ainda Zerado")
+        def add_in_db(password, password_confirm):
+            if password.value != password_confirm.value:
+                page.snack_bar = ft.SnackBar(
+                    bgcolor="red",
+                    content=ft.Text("As senhas não coincidem!"),
+                    action="OK",
+                )
+                page.snack_bar.open = True
             else:
-                print(f"O nome cadastrado foi:{name.value}")
-                
+                page.snack_bar = ft.SnackBar(
+                    content=ft.Text("As senhas coincidem!"),
+                    action="OK",
+                )
+                page.snack_bar.open = True
+            page.update()
+                            
         page.views.append(
             ft.View(
                 "/register",
@@ -94,7 +109,7 @@ def main(page: ft.Page):
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
                     name_input, surname_input, phone_input, email_input, password_input, password_confirm_input,
-                    ft.ElevatedButton(text="REGISTER", bgcolor="black", color="white", on_click=lambda e:imprimir_inputs(name)),
+                    ft.ElevatedButton(text="REGISTER", bgcolor="black", color="white", on_click=lambda e:add_in_db(password, password_confirm)),
                 ]
             )
         )
