@@ -66,20 +66,13 @@ def main(page: ft.Page):
 
     def page_register():
         page.views.clear()
-        global name_input, surname_input, phone_input, email_input, password_input, password_confirm_input
-        name_input = ft.TextField(label="Name", border_radius=21)
-        surname_input = ft.TextField(label="Surname", border_radius=21)
-        phone_input = ft.TextField(label="Phone", border_radius=21)
-        email_input = ft.TextField(label="Email", border_radius=21)
-        password_input = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
-        password_confirm_input = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21)
-
-        name = name_input
-        surname = surname_input
-        phone = phone_input
-        email = email_input
-        password = password_input
-        password_confirm = password_confirm_input
+        global name, surname, phone, email, password, password_confirm
+        name = ft.TextField(label="Name", border_radius=21)
+        surname = ft.TextField(label="Surname", border_radius=21)
+        phone = ft.TextField(label="Phone", border_radius=21)
+        email = ft.TextField(label="Email", border_radius=21)
+        password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
+        password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21)
 
         def add_in_db(password, password_confirm):
             if password.value != password_confirm.value:
@@ -91,6 +84,7 @@ def main(page: ft.Page):
                 page.snack_bar.open = True
             else:
                 page.snack_bar = ft.SnackBar(
+                    bgcolor="green",
                     content=ft.Text("As senhas coincidem!"),
                     action="OK",
                 )
@@ -108,7 +102,7 @@ def main(page: ft.Page):
                         padding=20,
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
-                    name_input, surname_input, phone_input, email_input, password_input, password_confirm_input,
+                    name, surname, phone, email, password, password_confirm,
                     ft.ElevatedButton(text="REGISTER", bgcolor="black", color="white", on_click=lambda e:add_in_db(password, password_confirm)),
                 ]
             )
