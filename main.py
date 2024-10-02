@@ -1,4 +1,5 @@
 import flet as ft
+import re
 
 def main(page: ft.Page):
     #colocar cores em variaveis para facilitar inclusao no projeto.
@@ -66,15 +67,61 @@ def main(page: ft.Page):
 
     def page_register():
         page.views.clear()
-        global name, surname, phone, email, password, password_confirm
-        name = ft.TextField(label="Name", border_radius=21)
-        surname = ft.TextField(label="Surname", border_radius=21)
-        phone = ft.TextField(label="Phone", border_radius=21)
+
+        global name, surname, phone, phone_prefix, phone_suffix, email, password, password_confirm
+
+        def validate_name(e):
+            # Verifica se o nome tem mais de 3 caracteres
+            if len(name.value) > 4:
+                name.error_text = None  # Remove mensagem de erro
+            else:
+                name.error_text = "O nome deve ter mais de 4 caracteres."
+            name.update()  # Atualiza o campo com o novo estado
+        
+        def validate_surname(e):
+            # Verifica se o nome tem mais de 3 caracteres
+            if len(surname.value) > 4:
+                surname.error_text = None  # Remove mensagem de erro
+            else:
+                surname.error_text = "O nome deve ter mais de 4 caracteres."
+            surname.update()  # Atualiza o campo com o novo estado
+        def validate_phone_prefix(e):
+            # Verifica se o prefixo tem exatamente 4 dígitos
+            if re.match(r"^\d{4}$", phone_prefix.value):
+                phone_prefix.error_text = None
+            else:
+                phone_prefix.error_text = "O prefixo deve ter 4 dígitos."
+            phone_prefix.update()
+         
+
+        def validate_phone_suffix(e):
+            # Verifica se o sufixo tem exatamente 9 dígitos
+            if re.match(r"^\d{9}$", phone_suffix.value):
+                phone_suffix.error_text = None
+            else:
+                phone_suffix.error_text = "O sufixo deve ter 9 dígitos."
+            phone_suffix.update()
+          
+
+        name = ft.TextField(label="Name", border_radius=21, on_change=validate_name)
+        surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
+        phone_prefix = ft.TextField(label="Prefixo (4 dígitos)", on_change=validate_phone_prefix, border_radius=ft.border_radius.all(10))
+        phone_suffix = ft.TextField(label="Sufixo (9 dígitos)", on_change=validate_phone_suffix, border_radius=ft.border_radius.all(10))
         email = ft.TextField(label="Email", border_radius=21)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21)
 
-        def add_in_db(password, password_confirm):
+        
+
+        def add_in_db(name, password, password_confirm):
+            #Funções de Validação
+            # Valida name: Minimo tamanho 4 letras
+        
+
+            # Valida surname: Minimo tamanho 4 letras
+
+
+            #Condicoao password equal
             if password.value != password_confirm.value:
                 page.snack_bar = ft.SnackBar(
                     bgcolor="red",
@@ -102,8 +149,8 @@ def main(page: ft.Page):
                         padding=20,
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
-                    name, surname, phone, email, password, password_confirm,
-                    ft.ElevatedButton(text="REGISTER", bgcolor="black", color="white", on_click=lambda e:add_in_db(password, password_confirm)),
+                    name, surname, phone_prefix, phone_suffix ,email, password, password_confirm,
+                    ft.ElevatedButton(text="REGISTER", bgcolor="black", color="white", on_click=lambda e:add_in_db(name, surname, phone_prefix, phone_suffix, email, password, password_confirm)),
                 ]
             )
         )
