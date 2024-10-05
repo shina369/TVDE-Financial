@@ -85,6 +85,7 @@ def main(page: ft.Page):
             else:
                 surname.error_text = "O nome deve ter mais de 4 caracteres."
             surname.update()  # Atualiza o campo com o novo estado
+            
         def validate_phone_prefix(e):
             # Verifica se o prefixo tem exatamente 4 dígitos
             if re.match(r"^\d{4}$", phone_prefix.value):
@@ -92,8 +93,7 @@ def main(page: ft.Page):
             else:
                 phone_prefix.error_text = "O prefixo deve ter 4 dígitos."
             phone_prefix.update()
-         
-
+        
         def validate_phone_suffix(e):
             # Verifica se o sufixo tem exatamente 9 dígitos
             if re.match(r"^\d{9}$", phone_suffix.value):
@@ -101,7 +101,14 @@ def main(page: ft.Page):
             else:
                 phone_suffix.error_text = "O sufixo deve ter 9 dígitos."
             phone_suffix.update()
-          
+        
+        def validate_email(e):
+            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
+                email.error_text = None
+            else:
+                email.error_text = "O email digitado não é valido."
+            email.update()
+
         def validate_password(e):
             # Verifica se o sufixo tem exatamente 9 dígitos
             if password.value == password_confirm.value:
@@ -115,7 +122,7 @@ def main(page: ft.Page):
         surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
         phone_prefix = ft.TextField(label="Prefixo (4 dígitos)", on_change=validate_phone_prefix, border_radius=ft.border_radius.all(10))
         phone_suffix = ft.TextField(label="Sufixo (9 dígitos)", on_change=validate_phone_suffix, border_radius=ft.border_radius.all(10))
-        email = ft.TextField(label="Email", border_radius=21)
+        email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
 
