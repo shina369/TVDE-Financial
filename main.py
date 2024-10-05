@@ -165,7 +165,7 @@ def main(page: ft.Page):
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
                     name, surname, phone_prefix, phone_suffix ,email, password, password_confirm,
-                    ft.ElevatedButton(text="REGISTER", bgcolor="black", color="white", on_click=lambda e:add_in_db(name, surname, phone_prefix, phone_suffix, email, password, password_confirm)),
+                    ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True , on_click=lambda e:add_in_db(name, surname, phone_prefix, phone_suffix, email, password, password_confirm)),
                 ]
             )
         )
