@@ -102,6 +102,14 @@ def main(page: ft.Page):
                 phone_suffix.error_text = "O sufixo deve ter 9 dígitos."
             phone_suffix.update()
           
+        def validate_password(e):
+            # Verifica se o sufixo tem exatamente 9 dígitos
+            if password.value == password_confirm.value:
+                password_confirm.error_text = None
+            else:
+                password.error_text = "As senhas nao coencidem."
+                password_confirm.error_text = "As senhas nao coencidem."
+            password_confirm.update()
 
         name = ft.TextField(label="Name", border_radius=21, on_change=validate_name)
         surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
@@ -109,7 +117,7 @@ def main(page: ft.Page):
         phone_suffix = ft.TextField(label="Sufixo (9 dígitos)", on_change=validate_phone_suffix, border_radius=ft.border_radius.all(10))
         email = ft.TextField(label="Email", border_radius=21)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
-        password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21)
+        password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
 
         
 
