@@ -125,7 +125,7 @@ def main(page: ft.Page):
         email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
-
+        button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True )
         
 
         def add_in_db(name, password, password_confirm):
@@ -164,8 +164,7 @@ def main(page: ft.Page):
                         padding=20,
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
-                    name, surname, phone_prefix, phone_suffix ,email, password, password_confirm,
-                    ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True , on_click=lambda e:add_in_db(name, surname, phone_prefix, phone_suffix, email, password, password_confirm)),
+                    name, surname, phone_prefix, phone_suffix ,email, password, password_confirm, button_to_db
                 ]
             )
         )
