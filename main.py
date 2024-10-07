@@ -68,7 +68,7 @@ def main(page: ft.Page):
     def page_register():
         page.views.clear()
 
-        global name, surname, phone, phone_prefix, phone_suffix, email, password, password_confirm
+        global name, surname, phone_prefix, phone_suffix, email, password, password_confirm
 
         def validate_name(e):
             # Verifica se o nome tem mais de 3 caracteres
@@ -76,7 +76,8 @@ def main(page: ft.Page):
                 name.error_text = None  # Remove mensagem de erro
             else:
                 name.error_text = "O nome deve ter mais de 4 caracteres."
-            name.update()  # Atualiza o campo com o novo estado
+            name.update()
+            validate_form()
         
         def validate_surname(e):
             # Verifica se o nome tem mais de 3 caracteres
@@ -84,7 +85,8 @@ def main(page: ft.Page):
                 surname.error_text = None  # Remove mensagem de erro
             else:
                 surname.error_text = "O nome deve ter mais de 4 caracteres."
-            surname.update()  # Atualiza o campo com o novo estado
+            surname.update()
+            validate_form()
             
         def validate_phone_prefix(e):
             # Verifica se o prefixo tem exatamente 4 dígitos
@@ -93,6 +95,7 @@ def main(page: ft.Page):
             else:
                 phone_prefix.error_text = "O prefixo deve ter 4 dígitos."
             phone_prefix.update()
+            validate_form()
         
         def validate_phone_suffix(e):
             # Verifica se o sufixo tem exatamente 9 dígitos
@@ -101,23 +104,39 @@ def main(page: ft.Page):
             else:
                 phone_suffix.error_text = "O sufixo deve ter 9 dígitos."
             phone_suffix.update()
+            validate_form()            
         
         def validate_email(e):
-            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
+            if (re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value)):
                 email.error_text = None
             else:
                 email.error_text = "O email digitado não é valido."
             email.update()
-
+            validate_form()
+            
         def validate_password(e):
             # Verifica se o sufixo tem exatamente 9 dígitos
             if password.value == password_confirm.value:
                 password_confirm.error_text = None
             else:
-                password.error_text = "As senhas nao coencidem."
                 password_confirm.error_text = "As senhas nao coencidem."
             password_confirm.update()
+            validate_form()
 
+        def validate_form():
+            if (len(name.value) > 4 and
+                len(surname.value) > 4 and
+                re.match(r"^\d{4}$", phone_prefix.value) and 
+                re.match(r"^\d{9}$", phone_suffix.value) and
+                re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value) and
+                re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value) and
+                password.value == password_confirm.value):
+                button_to_db.disabled = False  # Habilita o botão de registro
+            else:
+                button_to_db.disabled = True  # Desabilita o botão de registro
+            button_to_db.update()
+            
+        
         name = ft.TextField(label="Name", border_radius=21, on_change=validate_name)
         surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
         phone_prefix = ft.TextField(label="Prefixo (4 dígitos)", on_change=validate_phone_prefix, border_radius=ft.border_radius.all(10))
@@ -125,7 +144,7 @@ def main(page: ft.Page):
         email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
-        button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True )
+        button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True)
         
 
         def add_in_db(name, password, password_confirm):
@@ -164,7 +183,42 @@ def main(page: ft.Page):
                         padding=20,
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
-                    name, surname, phone_prefix, phone_suffix ,email, password, password_confirm, button_to_db
+                    ft.Row(
+                        controls = [
+                            name
+                        ]
+                    ),
+                    ft.Row(
+                        controls = [
+                            surname
+                        ]
+                    ), 
+                    ft.Row(
+                        controls = [
+                            phone_prefix, 
+                            phone_suffix 
+                        ]
+                    ),
+                    ft.Row(
+                        controls = [
+                            email
+                        ]
+                    ),
+                    ft.Row(
+                        controls = [
+                            password
+                        ]
+                    ),
+                    ft.Row(
+                        controls = [
+                            password_confirm
+                        ]
+                    ),
+                    ft.Row(
+                        controls = [
+                            button_to_db
+                        ]
+                    ),
                 ]
             )
         )
