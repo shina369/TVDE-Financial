@@ -129,8 +129,7 @@ def main(page: ft.Page):
                 re.match(r"^\d{4}$", phone_prefix.value) and 
                 re.match(r"^\d{9}$", phone_suffix.value) and
                 re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value) and
-                re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value) and
-                password.value == password_confirm.value):
+                password.value == password_confirm.value and password.value != "" and password_confirm.value != ""):
                 button_to_db.disabled = False  # Habilita o botão de registro
             else:
                 button_to_db.disabled = True  # Desabilita o botão de registro
