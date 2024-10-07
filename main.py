@@ -68,7 +68,7 @@ def main(page: ft.Page):
     def page_register():
         page.views.clear()
 
-        global name, surname, phone_prefix, phone_suffix, email, password, password_confirm
+        global name, surname, phone, phone_prefix, phone_suffix, email, password, password_confirm
 
         def validate_name(e):
             # Verifica se o nome tem mais de 3 caracteres
@@ -140,6 +140,7 @@ def main(page: ft.Page):
         surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
         phone_prefix = ft.TextField(label="Prefixo (4 dígitos)", on_change=validate_phone_prefix, border_radius=ft.border_radius.all(10))
         phone_suffix = ft.TextField(label="Sufixo (9 dígitos)", on_change=validate_phone_suffix, border_radius=ft.border_radius.all(10))
+        phone = phone_prefix.value + phone_suffix.value
         email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
