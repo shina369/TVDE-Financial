@@ -1,5 +1,8 @@
 import flet as ft
 import re
+import MYSQL_db_tvde_users_external
+
+MYSQL_db_tvde_users_external
 
 def main(page: ft.Page):
     #colocar cores em variaveis para facilitar inclusao no projeto.
