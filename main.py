@@ -1,11 +1,9 @@
 import flet as ft
 import re
-import MYSQL_db_tvde_users_external
-
-MYSQL_db_tvde_users_external
+import mysql.connector
 
 def main(page: ft.Page):
-    #colocar cores em variaveis para facilitar inclusao no projeto.
+    # Definindo cores em variáveis para facilitar inclusão no projeto.
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 15
     page.margin = 0
@@ -45,7 +43,6 @@ def main(page: ft.Page):
                                                          border_radius=21),
                                             ft.ElevatedButton(text="ENTER", bgcolor="black", color="white"),
                                         ],
-
                                     ),
                                 ),
                                 ft.Container(
@@ -71,28 +68,23 @@ def main(page: ft.Page):
     def page_register():
         page.views.clear()
 
-        global name, surname, phone, phone_prefix, phone_suffix, email, password, password_confirm
-
         def validate_name(e):
-            # Verifica se o nome tem mais de 3 caracteres
             if len(name.value) > 4:
-                name.error_text = None  # Remove mensagem de erro
+                name.error_text = None
             else:
                 name.error_text = "O nome deve ter mais de 4 caracteres."
             name.update()
             validate_form()
         
         def validate_surname(e):
-            # Verifica se o nome tem mais de 3 caracteres
             if len(surname.value) > 4:
-                surname.error_text = None  # Remove mensagem de erro
+                surname.error_text = None
             else:
                 surname.error_text = "O nome deve ter mais de 4 caracteres."
             surname.update()
             validate_form()
             
         def validate_phone_prefix(e):
-            # Verifica se o prefixo tem exatamente 4 dígitos
             if re.match(r"^\d{4}$", phone_prefix.value):
                 phone_prefix.error_text = None
             else:
@@ -101,7 +93,6 @@ def main(page: ft.Page):
             validate_form()
         
         def validate_phone_suffix(e):
-            # Verifica se o sufixo tem exatamente 9 dígitos
             if re.match(r"^\d{9}$", phone_suffix.value):
                 phone_suffix.error_text = None
             else:
@@ -110,19 +101,18 @@ def main(page: ft.Page):
             validate_form()            
         
         def validate_email(e):
-            if (re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value)):
+            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
                 email.error_text = None
             else:
-                email.error_text = "O email digitado não é valido."
+                email.error_text = "O email digitado não é válido."
             email.update()
             validate_form()
             
         def validate_password(e):
-            # Verifica se o sufixo tem exatamente 9 dígitos
             if password.value == password_confirm.value:
                 password_confirm.error_text = None
             else:
-                password_confirm.error_text = "As senhas nao coencidem."
+                password_confirm.error_text = "As senhas não coincidem."
             password_confirm.update()
             validate_form()
 
@@ -133,48 +123,50 @@ def main(page: ft.Page):
                 re.match(r"^\d{9}$", phone_suffix.value) and
                 re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value) and
                 password.value == password_confirm.value and password.value != "" and password_confirm.value != ""):
-                button_to_db.disabled = False  # Habilita o botão de registro
+                button_to_db.disabled = False
             else:
-                button_to_db.disabled = True  # Desabilita o botão de registro
+                button_to_db.disabled = True
             button_to_db.update()
+
+        def add_in_db(name, surname, phone_prefix, phone_suffix, email, password):
+            # Concatenar prefixo e sufixo do telefone
+            phone = f"{phone_prefix}{phone_suffix}"
             
+            # Conectar ao banco de dados
+            conn = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="",
+                database="db_tvde_users_external"
+            )
+            cursor = conn.cursor()
+
+            if name and surname and phone and email and password:
+                cursor.execute(
+                    """INSERT INTO users (name, surname, phone, email, password) VALUES (%s, %s, %s, %s, %s)""",
+                    (name, surname, phone, email, password)
+                )
+
+                if cursor.rowcount > 0:
+                    conn.commit()
+                    print("Usuário cadastrado com sucesso!")
+                else:
+                    print("Erro ao cadastrar usuário.")
+            
+            cursor.close()
+            conn.close()
         
         name = ft.TextField(label="Name", border_radius=21, on_change=validate_name)
         surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
         phone_prefix = ft.TextField(label="Prefixo (4 dígitos)", on_change=validate_phone_prefix, border_radius=ft.border_radius.all(10))
         phone_suffix = ft.TextField(label="Sufixo (9 dígitos)", on_change=validate_phone_suffix, border_radius=ft.border_radius.all(10))
-        phone = phone_prefix.value + phone_suffix.value
         email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
-        button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True)
         
+        button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
+                                          on_click=lambda e: add_in_db(name.value, surname.value, phone_prefix.value, phone_suffix.value, email.value, password.value))
 
-        def add_in_db(name, password, password_confirm):
-            #Funções de Validação
-            # Valida name: Minimo tamanho 4 letras
-        
-
-            # Valida surname: Minimo tamanho 4 letras
-
-
-            #Condicoao password equal
-            if password.value != password_confirm.value:
-                page.snack_bar = ft.SnackBar(
-                    bgcolor="red",
-                    content=ft.Text("As senhas não coincidem!"),
-                    action="OK",
-                )
-                page.snack_bar.open = True
-            else:
-                page.snack_bar = ft.SnackBar(
-                    bgcolor="green",
-                    content=ft.Text("As senhas coincidem!"),
-                    action="OK",
-                )
-                page.snack_bar.open = True
-            page.update()
-                            
         page.views.append(
             ft.View(
                 "/register",
@@ -186,42 +178,13 @@ def main(page: ft.Page):
                         padding=20,
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
-                    ft.Row(
-                        controls = [
-                            name
-                        ]
-                    ),
-                    ft.Row(
-                        controls = [
-                            surname
-                        ]
-                    ), 
-                    ft.Row(
-                        controls = [
-                            phone_prefix, 
-                            phone_suffix 
-                        ]
-                    ),
-                    ft.Row(
-                        controls = [
-                            email
-                        ]
-                    ),
-                    ft.Row(
-                        controls = [
-                            password
-                        ]
-                    ),
-                    ft.Row(
-                        controls = [
-                            password_confirm
-                        ]
-                    ),
-                    ft.Row(
-                        controls = [
-                            button_to_db
-                        ]
-                    ),
+                    ft.Row(controls=[name]),
+                    ft.Row(controls=[surname]), 
+                    ft.Row(controls=[phone_prefix, phone_suffix]),
+                    ft.Row(controls=[email]),
+                    ft.Row(controls=[password]),
+                    ft.Row(controls=[password_confirm]),
+                    ft.Row(controls=[button_to_db]),
                 ]
             )
         )
@@ -233,10 +196,10 @@ def main(page: ft.Page):
             ft.View(
                 "/forget_password",
                 controls=[
-                    ft.Text("Cadastro de Novo Usuário"),
+                    ft.Text("Recuperação de Senha"),
                     ft.TextField(label="Nome"),
                     ft.TextField(label="Email"),
-                    ft.ElevatedButton(text="Cadastrar", on_click=lambda e: page.go("/"))
+                    ft.ElevatedButton(text="Enviar", on_click=lambda e: page.go("/"))
                 ]
             )
         )
@@ -255,6 +218,5 @@ def main(page: ft.Page):
 
     # Definindo a rota inicial
     page.go("/")
-
 
 ft.app(target=main)
