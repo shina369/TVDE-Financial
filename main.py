@@ -1,6 +1,7 @@
 import flet as ft
 import re
 import mysql.connector
+import time
 
 def main(page: ft.Page):
     # Definindo cores em variáveis para facilitar inclusão no projeto.
@@ -15,6 +16,23 @@ def main(page: ft.Page):
             background="red",
         )
     )
+
+    def page_message_screen(msg):
+        page.views.clear()
+        page.views.append(
+            ft.View(
+                "/message_screen",
+                controls=[
+                    ft.Container(
+                        padding=210,
+                        content=ft.Text(msg, color=ft.colors.GREEN, size=50)
+                    )
+                ]  
+            )
+        )
+        page.update()
+        time.sleep(3)
+        page.go("/")
 
     def home_page():
         page.views.clear()
@@ -149,9 +167,9 @@ def main(page: ft.Page):
 
                 if cursor.rowcount > 0:
                     conn.commit()
-                    print("Usuário cadastrado com sucesso!")
+                    page_message_screen("Usuário cadastrado com sucesso!")
                 else:
-                    print("Erro ao cadastrar usuário.")
+                    page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
             
             cursor.close()
             conn.close()
@@ -166,7 +184,6 @@ def main(page: ft.Page):
         
         button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
                                           on_click=lambda e: add_in_db(name.value, surname.value, phone_prefix.value, phone_suffix.value, email.value, password.value))
-
         page.views.append(
             ft.View(
                 "/register",
@@ -204,7 +221,7 @@ def main(page: ft.Page):
             )
         )
         page.update()
-
+        
     def route_change(route):
         if page.route == "/":
             home_page()
@@ -212,6 +229,8 @@ def main(page: ft.Page):
             page_register()
         elif page.route == "/forget_password":
             page_forget_password()
+        elif page.route == "/message_screen":
+            page_message_screen()
 
     # Definindo o handler para mudanças de rota
     page.on_route_change = route_change
