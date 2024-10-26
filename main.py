@@ -49,7 +49,6 @@ def main(page: ft.Page):
                                     height=270,
                                     margin=20,
                                     padding=20,
-                                    bgcolor="green"
                                 ),
                                 ft.Container(
                                     height=300,
@@ -189,7 +188,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Container(
                         ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
-                        height=120,
+                        height=270,
                         margin=20,
                         padding=20,
                     ),
@@ -217,10 +216,9 @@ def main(page: ft.Page):
                         height=270,
                         margin=20,
                         padding=20,
-                        bgcolor="green"
                     ),
                     ft.Text("Recuperação de Senha"),
-                    ft.TextField(label="Email"),
+                    ft.TextField(label="Email", border_radius=21),
                     ft.ElevatedButton(text="Enviar", on_click=lambda e: page.go("/"))
                 ]
             )
