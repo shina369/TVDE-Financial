@@ -4,7 +4,7 @@ import mysql.connector
 import time
 
 def main(page: ft.Page):
-    # Definindo cores em variáveis para facilitar inclusão no projeto.
+    # Definindo corsacilitar inclusão no projeto.
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 15
     page.margin = 0
