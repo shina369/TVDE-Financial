@@ -4,7 +4,6 @@ import mysql.connector
 import time
 
 def main(page: ft.Page):
-    # Definindo corsacilitar inclusão no projeto.
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 15
     page.margin = 0
