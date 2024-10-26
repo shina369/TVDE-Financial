@@ -2,6 +2,8 @@ import flet as ft
 import re
 import mysql.connector
 import time
+from hashlib import sha256
+
 
 def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
@@ -157,12 +159,11 @@ def main(page: ft.Page):
             )
             cursor = conn.cursor()
 
-            if name and surname and phone and email and password:
+            if name and surname and phone and email and hash_password:
                 cursor.execute(
                     """INSERT INTO users (name, surname, phone, email, password) VALUES (%s, %s, %s, %s, %s)""",
-                    (name, surname, phone, email, password)
+                    (name, surname, phone, email, hash_password.hexdigest())
                 )
-
                 if cursor.rowcount > 0:
                     conn.commit()
                     page_message_screen("Usuário cadastrado com sucesso!")
@@ -179,9 +180,10 @@ def main(page: ft.Page):
         email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
+        hash_password = sha256(password.value.encode())
         
         button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
-                                          on_click=lambda e: add_in_db(name.value, surname.value, phone_prefix.value, phone_suffix.value, email.value, password.value))
+                                          on_click=lambda e: add_in_db(name.value, surname.value, phone_prefix.value, phone_suffix.value, email.value, hash_password))
         page.views.append(
             ft.View(
                 "/register",
