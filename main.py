@@ -2,7 +2,6 @@ import flet as ft
 import re
 import mysql.connector
 import time
-import bcrypt
 
 def main(page: ft.Page):
     # Definindo cores em variáveis para facilitar inclusão no projeto.
@@ -17,7 +16,7 @@ def main(page: ft.Page):
             background="red",
         )
     )
-    
+
     def page_message_screen(msg):
         page.views.clear()
         page.views.append(
@@ -147,17 +146,7 @@ def main(page: ft.Page):
                 button_to_db.disabled = True
             button_to_db.update()
 
-        def hash_password(password):
-            salt = bcrypt.gensalt()
-            hashed_password = bcrypt.hashpw(password.encode("utf-8"), salt)
-            return hashed_password
-
-        def check_password(plain_password, hashed_password):
-            return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password)
-
-
         def add_in_db(name, surname, phone_prefix, phone_suffix, email, password):
-            hashed_password = hash_password(password)
             # Concatenar prefixo e sufixo do telefone
             phone = f"{phone_prefix}{phone_suffix}"
             
@@ -173,7 +162,7 @@ def main(page: ft.Page):
             if name and surname and phone and email and password:
                 cursor.execute(
                     """INSERT INTO users (name, surname, phone, email, password) VALUES (%s, %s, %s, %s, %s)""",
-                    (name, surname, phone, email, hashed_password)
+                    (name, surname, phone, email, password)
                 )
 
                 if cursor.rowcount > 0:
@@ -224,14 +213,8 @@ def main(page: ft.Page):
             ft.View(
                 "/forget_password",
                 controls=[
-                     ft.Container(
-                        ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
-                        height=270,
-                        margin=20,
-                        padding=20,
-                        bgcolor="green"
-                    ),
                     ft.Text("Recuperação de Senha"),
+                    ft.TextField(label="Nome"),
                     ft.TextField(label="Email"),
                     ft.ElevatedButton(text="Enviar", on_click=lambda e: page.go("/"))
                 ]
