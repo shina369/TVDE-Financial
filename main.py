@@ -76,7 +76,6 @@ def main(page: ft.Page):
                     password_login.update()
             cursor.close()  
             conn.close() 
-            
 
         email_login = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password_login = ft.TextField(label="Password", password=True, can_reveal_password=True , border_radius=21)
@@ -221,8 +220,8 @@ def main(page: ft.Page):
         
         name = ft.TextField(label="Name", border_radius=21, on_change=validate_name)
         surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
-        phone_prefix = ft.TextField(label="Prefixo (4 dígitos)", on_change=validate_phone_prefix, border_radius=ft.border_radius.all(10))
-        phone_suffix = ft.TextField(label="Sufixo (9 dígitos)", on_change=validate_phone_suffix, border_radius=ft.border_radius.all(10))
+        phone_prefix = ft.TextField(label="Prefixo (4 dígitos)", on_change=validate_phone_prefix, border_radius=21, width=150)
+        phone_suffix = ft.TextField(label="Sufixo (9 dígitos)", on_change=validate_phone_suffix, border_radius=21)
         email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
