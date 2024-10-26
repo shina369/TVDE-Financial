@@ -37,6 +37,10 @@ def main(page: ft.Page):
 
     def home_page():
         page.views.clear()
+
+        email_login = ft.TextField(label="Email", border_radius=21)
+        password_login = ft.TextField(label="Password", password=True, can_reveal_password=True , border_radius=21)
+
         page.views.append(
             ft.View(
                 "/",
@@ -56,9 +60,8 @@ def main(page: ft.Page):
                                     height=300,
                                     content=ft.Column(
                                         controls=[
-                                            ft.TextField(label="Email", border_radius=21),
-                                            ft.TextField(label="Password", password=True, can_reveal_password=True,
-                                                         border_radius=21),
+                                            email_login,
+                                            password_login,
                                             ft.ElevatedButton(text="ENTER", bgcolor="black", color="white"),
                                         ],
                                     ),
