@@ -212,8 +212,14 @@ def main(page: ft.Page):
             ft.View(
                 "/forget_password",
                 controls=[
+                    ft.Container(
+                        ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
+                        height=270,
+                        margin=20,
+                        padding=20,
+                        bgcolor="green"
+                    ),
                     ft.Text("Recuperação de Senha"),
-                    ft.TextField(label="Nome"),
                     ft.TextField(label="Email"),
                     ft.ElevatedButton(text="Enviar", on_click=lambda e: page.go("/"))
                 ]
