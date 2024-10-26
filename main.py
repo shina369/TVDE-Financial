@@ -38,9 +38,51 @@ def main(page: ft.Page):
     def home_page():
         page.views.clear()
 
-        email_login = ft.TextField(label="Email", border_radius=21)
-        password_login = ft.TextField(label="Password", password=True, can_reveal_password=True , border_radius=21)
+        def validate_email(e):
+            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value):
+                email_login.error_text = None
+            else:
+                email_login.error_text = "O email digitado não é válido."
+            email_login.update()
 
+        def valid_email_password(email_login, password_login):
+
+            hash_password_login = sha256(password_login.encode()).hexdigest()
+            
+            # Conectar ao banco de dados    
+            conn = mysql.connector.connect(
+                host="localhost",                    
+                user="root",                    
+                password="",                    
+                database="db_tvde_users_external"       
+            )
+                
+            cursor = conn.cursor()
+
+            # Verificar se o email existe no banco de dados
+            cursor.execute("""SELECT password FROM users WHERE email = %s""", (email_login,))
+
+            result = cursor.fetchone()
+            
+            if result is None:
+                email_login.error_text = "Email não encontrado"
+                email_login.update() 
+            else:
+                stored_password = result[0]   
+                if hash_password_login == stored_password:
+                    print("Login bem-sucedido!")
+                else:
+                    password_login.error_text = "Senha incorreta"
+                    password_login.update()
+            cursor.close()  
+            conn.close() 
+            
+
+        email_login = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
+        password_login = ft.TextField(label="Password", password=True, can_reveal_password=True , border_radius=21)
+        button_login = ft.ElevatedButton(text="LOGIN", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white",
+                                          on_click=lambda e: valid_email_password(email_login.value, password_login.value))
+        
         page.views.append(
             ft.View(
                 "/",
@@ -62,7 +104,7 @@ def main(page: ft.Page):
                                         controls=[
                                             email_login,
                                             password_login,
-                                            ft.ElevatedButton(text="ENTER", bgcolor="black", color="white"),
+                                            button_login,
                                         ],
                                     ),
                                 ),
@@ -151,6 +193,7 @@ def main(page: ft.Page):
 
         def add_in_db(name, surname, phone_prefix, phone_suffix, email, password):
             # Concatenar prefixo e sufixo do telefone
+            hash_password = sha256(password.encode()).hexdigest()
             phone = f"{phone_prefix}{phone_suffix}"
             
             # Conectar ao banco de dados
@@ -162,10 +205,10 @@ def main(page: ft.Page):
             )
             cursor = conn.cursor()
 
-            if name and surname and phone and email and hash_password:
+            if name and surname and phone and email and password:
                 cursor.execute(
                     """INSERT INTO users (name, surname, phone, email, password) VALUES (%s, %s, %s, %s, %s)""",
-                    (name, surname, phone, email, hash_password.hexdigest())
+                    (name, surname, phone, email, hash_password)
                 )
                 if cursor.rowcount > 0:
                     conn.commit()
@@ -183,10 +226,9 @@ def main(page: ft.Page):
         email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
-        hash_password = sha256(password.value.encode())
         
         button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
-                                          on_click=lambda e: add_in_db(name.value, surname.value, phone_prefix.value, phone_suffix.value, email.value, hash_password))
+                                          on_click=lambda e: add_in_db(name.value, surname.value, phone_prefix.value, phone_suffix.value, email.value, password.value))
         page.views.append(
             ft.View(
                 "/register",
