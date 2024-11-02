@@ -1,4 +1,6 @@
-Implementar a pagina de Recuperação de senha.
+Implementar a pagina de Recuperação de senha. ok
+Create page_new_password and implementation CODE sended for email
+
 
 create the new function
 Connect the db database="db_tvde_users_external"
@@ -7,3 +9,11 @@ if exist send the code for rewrite the new password on db
 else ask email again
 
 Estudar um pouco de icones ft.Icon / icons
+
+NEXT Implementation - TVDE_Financial 1.0
+business-appropriate email
+
+TVDE_Financial 2.0
+salt implementation of password
+
+
