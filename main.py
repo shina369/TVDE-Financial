@@ -253,7 +253,19 @@ def main(page: ft.Page):
 
     def page_forget_password():
         page.views.clear()
+        
+        def validate_email(e):
+            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', field_email.value):
+                field_email.error_text = None
+            else:
+                field_email.error_text = "O email digitado não é válido."
+            field_email.update()
+        
+        title = ft.Text("Recuperacao de senha")
+        field_email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
+        button_send = ft.ElevatedButton(text="Enviar", on_click=lambda e:page.go("/"))
         page.views.append(
+              
             ft.View(
                 "/forget_password",
                 controls=[
@@ -263,9 +275,9 @@ def main(page: ft.Page):
                         margin=20,
                         padding=20,
                     ),
-                    ft.Text("Recuperação de Senha"),
-                    ft.TextField(label="Email", border_radius=21),
-                    ft.ElevatedButton(text="Enviar", on_click=lambda e: page.go("/"))
+                    title,
+                    field_email,
+                    button_send
                 ]
             )
         )
