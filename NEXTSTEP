@@ -1,3 +1,9 @@
 Implementar a pagina de Recuperação de senha.
 
+create the new function
+Connect the db database="db_tvde_users_external"
+verify the email exist on db
+if exist send the code for rewrite the new password on db
+else ask email again
+
 Estudar um pouco de icones ft.Icon / icons

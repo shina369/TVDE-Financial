@@ -3,6 +3,9 @@ import re
 import mysql.connector
 import time
 from hashlib import sha256
+import smtplib
+import random
+import string
 
 
 def main(page: ft.Page):
@@ -260,10 +263,58 @@ def main(page: ft.Page):
             else:
                 field_email.error_text = "O email digitado não é válido."
             field_email.update()
-        
+
+        def verify_email_exist(field_email):
+
+            #Connect the db database="db_tvde_users_external"
+            conn = mysql.connector.connect(
+                host = "localhost",
+                user = "root",
+                password = "",
+                database = "db_tvde_users_external"
+            )
+            
+            cursor = conn.cursor()
+
+            cursor.execute(
+                " SELECT * FROM users WHERE email = %s ", (field_email,)
+            )
+
+            result = cursor.fetchone()
+
+            # Verificar se o e-mail existe
+            if result:
+                # Gerar um código temporário
+                codigo_temporario = ''.join(random.choices(string.ascii_letters + string.digits, k=9))
+                print("E-mail encontrado. Código gerado:", codigo_temporario)
+    
+                # Aqui, você pode enviar o código por e-mail
+                # Configuração do servidor SMTP
+                remetente = "flavioalmeidamata@gmail.com"
+                senha = "bqpdemqisaloczbg"
+
+                try:
+                    # Conectar ao servidor SMTP e enviar o e-mail
+                    with smtplib.SMTP("smtp.gmail.com", 587) as servidor:
+                        servidor.starttls()  # Ativar criptografia
+                        servidor.login(remetente, senha)
+                        mensagem = f"Subject: Redefinição de Senha\n\nCódigo temporário é: {codigo_temporario}"
+                        servidor.sendmail(remetente, field_email, mensagem.encode("utf-8"))
+                    print("E-mail enviado com sucesso!")
+                except Exception as e:
+                    print("Erro ao enviar o e-mail:", e)
+
+            else:
+                print("E-mail não encontrado.")
+
+            #Fechar a conexão
+            cursor.close()
+            conn.close()
+
         title = ft.Text("Recuperacao de senha")
         field_email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
-        button_send = ft.ElevatedButton(text="Enviar", on_click=lambda e:page.go("/"))
+        button_send = ft.ElevatedButton(text="Enviar", on_click=lambda e:verify_email_exist(field_email.value))
+
         page.views.append(
               
             ft.View(
