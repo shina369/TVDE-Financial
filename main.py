@@ -35,8 +35,7 @@ def main(page: ft.Page):
             )
         )
         page.update()
-        time.sleep(3)
-        page.go("/")
+        time.sleep(1)
 
     def home_page():
         page.views.clear()
@@ -215,8 +214,10 @@ def main(page: ft.Page):
                 if cursor.rowcount > 0:
                     conn.commit()
                     page_message_screen("Usuário cadastrado com sucesso!")
+                    page.go("/")
                 else:
                     page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
+                    page.go("/")
             
             cursor.close()
             conn.close()
@@ -282,8 +283,8 @@ def main(page: ft.Page):
 
             result = cursor.fetchone()
 
-            # Verificar se o e-mail existe
             if result:
+                global codigo_temporario
                 # Gerar um código temporário
                 codigo_temporario = ''.join(random.choices(string.ascii_letters + string.digits, k=9))
                 print("E-mail encontrado. Código gerado:", codigo_temporario)
@@ -300,16 +301,20 @@ def main(page: ft.Page):
                         servidor.login(remetente, senha)
                         mensagem = f"Subject: Redefinição de Senha\n\nCódigo temporário é: {codigo_temporario}"
                         servidor.sendmail(remetente, field_email, mensagem.encode("utf-8"))
-                    print("E-mail enviado com sucesso!")
+                        page_message_screen("Enviamos um código para renovar o password")
+                        page.go("/page_new_password")
+            
                 except Exception as e:
                     print("Erro ao enviar o e-mail:", e)
-
+                
             else:
                 print("E-mail não encontrado.")
 
             #Fechar a conexão
             cursor.close()
             conn.close()
+    
+        global field_email
 
         title = ft.Text("Recuperacao de senha")
         field_email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
@@ -333,7 +338,87 @@ def main(page: ft.Page):
             )
         )
         page.update()
-        
+
+    def page_new_password():
+        page.views.clear()
+
+        def verify_code_email(field_code, new_password, field_email, codigo_temporario):
+            hash_new_password = sha256(new_password.encode()).hexdigest()
+            if field_code == codigo_temporario:
+                try:
+                # Conectar ao banco de dados
+                    conn = mysql.connector.connect(
+                        host="localhost",
+                        user="root",
+                        password="",
+                        database="db_tvde_users_external"
+                    )
+                    cursor = conn.cursor()
+
+                    # Executa a atualização
+                    cursor.execute(
+                        "UPDATE users SET password = %s WHERE email = %s", (hash_new_password, field_email)
+                    )
+                    conn.commit()  # Confirma a transação
+
+                    # Verifica se alguma linha foi atualizada
+                    if cursor.rowcount > 0:
+                        page_message_screen("Seu password foi alterado com sucesso!")
+                        page.go("/")
+                    else:
+                        page_message_screen("Não foi possível alterar o password. Usuário não encontrado.")
+                        page.go("/page_new_password")
+            
+                except mysql.connector.Error as err:
+                    print(f"Erro ao conectar ou executar a consulta: {err}")
+                    page_message_screen("Ocorreu um erro ao alterar a senha. Tente novamente mais tarde.")
+                    page.go("/page_new_password")
+
+                finally:
+                    # Certifique-se de fechar o cursor e a conexão
+                    cursor.close()
+                    conn.close()
+            else:
+                page_message_screen("Código incorreto. Tente novamente!")
+                page.go("/page_new_password")
+            
+
+        def validate_password(e):
+            if new_password.value == confirm_new_password.value:
+                confirm_new_password.error_text = None
+            else:
+                confirm_new_password.error_text = "As senhas não coincidem."
+            confirm_new_password.update()
+                
+        codigo_temporario
+        field_email
+        title = ft.Text("Criar novo password")
+        field_code = ft.TextField(label="Code", border_radius=21)
+        new_password = ft.TextField(label="Novo password", border_radius=21, password=True, can_reveal_password=True)
+        confirm_new_password = ft.TextField(label="Confirme o novo password", border_radius=21, password=True, can_reveal_password=True, on_change=validate_password)
+        button_updated_password = ft.ElevatedButton(text="Alterar Passoword", on_click=lambda e:verify_code_email(field_code.value, new_password.value, field_email.value, codigo_temporario))
+        page.views.append(
+              
+            ft.View(
+                "/page_new_password",
+                controls=[
+                    ft.Container(
+                        ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
+                        height=270,
+                        margin=20,
+                        padding=20,
+                    ),
+                    title,
+                    field_code,
+                    new_password,
+                    confirm_new_password,
+                    button_updated_password
+                  
+                ]
+            )
+        )
+        page.update()
+
     def route_change(route):
         if page.route == "/":
             home_page()
@@ -343,6 +428,8 @@ def main(page: ft.Page):
             page_forget_password()
         elif page.route == "/message_screen":
             page_message_screen()
+        elif page.route == "/page_new_password":
+            page_new_password()
 
     # Definindo o handler para mudanças de rota
     page.on_route_change = route_change
