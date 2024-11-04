@@ -36,7 +36,7 @@ def main(page: ft.Page):
         )
         page.update()
         time.sleep(1)
-    #MYSQL
+
     def home_page():
         page.views.clear()
 
@@ -214,7 +214,7 @@ def main(page: ft.Page):
                 if cursor.rowcount > 0:
                     conn.commit()
                     page_message_screen("Usuário cadastrado com sucesso!")
-                    page.go("/page_new_goal")
+                    page.go("/")
                 else:
                     page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
                     page.go("/")
@@ -425,34 +425,7 @@ def main(page: ft.Page):
             )
         )
         page.update()
-    
-    #SQLITE
-    def page_new_goal():
-        page.views.clear()
-        logo = ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg", height=270, margin=20, padding=20)
-        button_menu = ft.IconButton(icon=ft.icons.MENU, icon_color=ft.colors.WHITE)
-        #title_new_goal
-        #new_goal_value
-        #date_start_goal
-        #date_end_goal
-        #days_off
-        #discount
-        #button_start_new_goal
 
-        page.views.append(
-                ft.View(
-                    "/page_new_goal",
-                    controls=[
-                        ft.Container(
-                            ft.Row(
-                                ft.Column(logo, button_menu)
-                            )
-                        )
-                    ]  
-                )
-            )
-    page.update()
-        
     def route_change(route):
         if page.route == "/":
             home_page()
@@ -464,8 +437,6 @@ def main(page: ft.Page):
             page_message_screen()
         elif page.route == "/page_new_password":
             page_new_password()
-        elif page.route == "/page_new_goal":
-            page_new_goal()
 
     # Definindo o handler para mudanças de rota
     page.on_route_change = route_change
