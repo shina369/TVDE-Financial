@@ -1,5 +1,6 @@
 Implementar a pagina de Recuperação de senha. ok
 Create page_new_password and implementation CODE sended for email. ok
+implementation if the email exist in the database,dont let have a possibility of register the user. ok
 rewrite code of the new password, because same even the passwords when are different is registred just like that
 Login confirmation and open the app
 
