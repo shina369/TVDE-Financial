@@ -165,35 +165,10 @@ def main(page: ft.Page):
             validate_form()            
         
         def validate_email(e):
-            global email_exist
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
-                try:
-                # Conectar ao banco de dados
-                    conn = mysql.connector.connect(
-                        host="localhost",
-                        user="root",
-                        password="",
-                        database="db_tvde_users_external"  # Certifique-se de que este nome está correto
-                    )
-                    cursor = conn.cursor()
-
-                    # Executar a consulta para verificar se o e-mail existe
-                    cursor.execute("SELECT * FROM users WHERE email = %s", (email.value,))
-                    result = cursor.fetchone()
-
-                    # Verificar se o e-mail foi encontrado
-                    if result:
-                        email.error_text = "Email já cadastrado!"  # Mensagem se o e-mail existir
-                        email_exist = True
-                    else:
-                        email.error_text = None
-                        email_exist = False
-                except mysql.connector.Error as error:
-                    email.error_text = "Erro ao verificar o e-mail no banco de dados."
-                    email_exist = False
+                email.error_text = None
             else:
                 email.error_text = "O email digitado não é válido."
-                email_exist = False
             email.update()
             validate_form()
             
@@ -211,7 +186,7 @@ def main(page: ft.Page):
                 re.match(r"^\d{4}$", phone_prefix.value) and 
                 re.match(r"^\d{9}$", phone_suffix.value) and
                 re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value) and
-                password.value == password_confirm.value and password.value != "" and password_confirm.value != "" and not email_exist):
+                password.value == password_confirm.value and password.value != "" and password_confirm.value != ""):
                 button_to_db.disabled = False
             else:
                 button_to_db.disabled = True
