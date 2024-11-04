@@ -30,13 +30,13 @@ def main(page: ft.Page):
                 controls=[
                     ft.Container(
                         padding=210,
-                        content=ft.Text(msg, color=ft.colors.GREEN, size=50)
+                        content=ft.Text(msg, color=ft.colors.GREEN, size=42)
                     )
                 ]  
             )
         )
         page.update()
-        time.sleep(1)
+        time.sleep(3)
 
     def home_page():
         page.views.clear()
@@ -327,7 +327,7 @@ def main(page: ft.Page):
                         servidor.login(remetente, senha)
                         mensagem = f"Subject: Redefinição de Senha\n\nCódigo temporário é: {codigo_temporario}"
                         servidor.sendmail(remetente, field_email, mensagem.encode("utf-8"))
-                        page_message_screen("Enviamos um código para renovar o password")
+                        page_message_screen(f"Verifique seu email {field_email}, receberá um código para alterar o password.")
                         page.go("/page_new_password")
             
                 except Exception as e:
