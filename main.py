@@ -338,8 +338,7 @@ def main(page: ft.Page):
                 print("E-mail não encontrado.")
 
             #Fechar a conexão
-            cursor.close()
-            conn.close()
+            
     
         global field_email
 
