@@ -413,6 +413,7 @@ def main(page: ft.Page):
             else:
                 confirm_new_password.error_text = "As senhas não coincidem."
             confirm_new_password.update()
+            validate_form()
 
         def validate_field_code(e):
             codigo_temporario
@@ -421,6 +422,14 @@ def main(page: ft.Page):
             else:
                 field_code.error_text = "Código Errado!"
             field_code.update()
+            validate_form()
+
+        def validate_form():
+            if (new_password.value == confirm_new_password.value and field_code.value == codigo_temporario and new_password.value != "" and  confirm_new_password != ""):
+                button_updated_password.disabled = False
+            else:
+                button_updated_password.disabled = True
+            button_updated_password.update()
 
         codigo_temporario
         field_email
@@ -428,7 +437,7 @@ def main(page: ft.Page):
         field_code = ft.TextField(label="Code", border_radius=21, on_change=validate_field_code)
         new_password = ft.TextField(label="Novo password", border_radius=21, password=True, can_reveal_password=True)
         confirm_new_password = ft.TextField(label="Confirme o novo password", border_radius=21, password=True, can_reveal_password=True, on_change=validate_password)
-        button_updated_password = ft.ElevatedButton(text="Alterar Passoword", on_click=lambda e:verify_code_email(field_code.value, new_password.value, field_email.value, codigo_temporario))
+        button_updated_password = ft.ElevatedButton(text="Alterar Passoword", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True , on_click=lambda e:verify_code_email(field_code.value, new_password.value, field_email.value, codigo_temporario))
         page.views.append(
               
             ft.View(
