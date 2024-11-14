@@ -82,6 +82,7 @@ def main(page: ft.Page):
             cursor.close()  
             conn.close()
 
+        global email_login
         email_login = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password_login = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         button_login = ft.ElevatedButton(
@@ -131,13 +132,37 @@ def main(page: ft.Page):
         page.update()
 
     def page_parcial():
-        # Definição do conteúdo da página "page_parcial"
+
+        def search_user_name(email_login):
+            conn = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="",
+                database="db_tvde_users_external"
+            )
+            cursor = conn.cursor()
+
+            cursor.execute("SELECT name FROM users WHERE email = %s", (email_login,))
+            resultado = cursor.fetchone()
+
+            cursor.fetchall() 
+
+            cursor.close()
+            conn.close()
+
+            if resultado:
+                return resultado[0]  # Resultado[0] contém o nome do usuário
+            else:
+                return None 
+
+        user_name = search_user_name(email_login.value)
+
         page.views.clear()
         page.views.append(
             ft.View(
                 "/page_parcial",
                 controls=[
-                    ft.Text("Bem-vindo à página de parciais!"),
+                    ft.Text(f"Bem-vindo {user_name}, à página de parciais!"),
                     # Adicione aqui os controles e layouts específicos da página "page_parcial"
                 ]
             )
