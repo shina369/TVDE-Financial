@@ -49,8 +49,7 @@ def main(page: ft.Page):
             email_login.update()
 
         def valid_email_password(email_login, password_login):
-
-            hash_password_login = sha256(password_login.encode()).hexdigest()
+            hash_password_login = sha256(password_login.value.encode()).hexdigest()
             
             # Conectar ao banco de dados    
             conn = mysql.connector.connect(
@@ -61,9 +60,10 @@ def main(page: ft.Page):
             )
                 
             cursor = conn.cursor()
+            cursor = conn.cursor(buffered=True)
 
             # Verificar se o email existe no banco de dados
-            cursor.execute("""SELECT password FROM users WHERE email = %s""", (email_login,))
+            cursor.execute("""SELECT password FROM users WHERE email = %s""", (email_login.value,))
 
             result = cursor.fetchone()
             
@@ -74,16 +74,20 @@ def main(page: ft.Page):
                 stored_password = result[0]   
                 if hash_password_login == stored_password:
                     print("Login bem-sucedido!")
+                    page.go("/page_parcial")  # Navegar para "page_parcial" se o login for bem-sucedido
                 else:
                     password_login.error_text = "Senha incorreta"
                     password_login.update()
+
             cursor.close()  
-            conn.close() 
+            conn.close()
 
         email_login = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
-        password_login = ft.TextField(label="Password", password=True, can_reveal_password=True , border_radius=21)
-        button_login = ft.ElevatedButton(text="LOGIN", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white",
-                                          on_click=lambda e: valid_email_password(email_login.value, password_login.value))
+        password_login = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
+        button_login = ft.ElevatedButton(
+            text="LOGIN", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white",
+            on_click=lambda e: valid_email_password(email_login, password_login)
+        )
         
         page.views.append(
             ft.View(
@@ -103,11 +107,7 @@ def main(page: ft.Page):
                                 ft.Container(
                                     height=300,
                                     content=ft.Column(
-                                        controls=[
-                                            email_login,
-                                            password_login,
-                                            button_login,
-                                        ],
+                                        controls=[email_login, password_login, button_login],
                                     ),
                                 ),
                                 ft.Container(
@@ -125,6 +125,20 @@ def main(page: ft.Page):
                             ]
                         )
                     )
+                ]
+            )
+        )
+        page.update()
+
+    def page_parcial():
+        # Definição do conteúdo da página "page_parcial"
+        page.views.clear()
+        page.views.append(
+            ft.View(
+                "/page_parcial",
+                controls=[
+                    ft.Text("Bem-vindo à página de parciais!"),
+                    # Adicione aqui os controles e layouts específicos da página "page_parcial"
                 ]
             )
         )
@@ -471,6 +485,8 @@ def main(page: ft.Page):
             page_message_screen()
         elif page.route == "/page_new_password":
             page_new_password()
+        elif page.route == "/page_parcial":
+            page_parcial()
 
     # Definindo o handler para mudanças de rota
     page.on_route_change = route_change
