@@ -158,6 +158,12 @@ def main(page: ft.Page):
 
         user_name = search_user_name(email_login.value)
 
+        message_welcome = ft.Container(
+            width=399,
+            height=33,
+            content=ft.Text(f"Hi {user_name}, good luck today! :)", size=18, weight=ft.FontWeight.BOLD),
+        )
+
         header = ft.Row(
             controls=[
                 ft.Container(
@@ -244,12 +250,13 @@ def main(page: ft.Page):
                 )
             ]
         )
+        
         page.views.clear()
         page.views.append(
             ft.View(
                 "/page_parcial",
                 controls=[
-                    ft.Text(f"Hello {user_name}, good luck ;)"),
+                    message_welcome,
                     header,
                     goal,
                     details_goal,
