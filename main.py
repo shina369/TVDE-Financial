@@ -13,6 +13,11 @@ import SQLite_db_tvde_content_internal
 def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 15
+    page.window.width = 430  # Largura típica de um smartphone
+    page.window.height = 720  # Altura típica de um smartphone
+    page.scroll="auto"
+    page.padding = 10
+    page.spacing = 10
     page.title = "TVDE - FINANCIAL"
     page.theme = ft.Theme(
         color_scheme=ft.ColorScheme(
@@ -29,8 +34,7 @@ def main(page: ft.Page):
                 "/message_screen",
                 controls=[
                     ft.Container(
-                        padding=210,
-                        content=ft.Text(msg, color=ft.colors.GREEN, size=42)
+                        content=ft.Text(msg, color=ft.colors.GREEN, size=21)
                     )
                 ]  
             )
@@ -101,12 +105,9 @@ def main(page: ft.Page):
                             controls=[
                                 ft.Container(
                                     ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
-                                    height=270,
-                                    margin=20,
-                                    padding=20,
+                                    padding=90,
                                 ),
                                 ft.Container(
-                                    height=300,
                                     content=ft.Column(
                                         controls=[email_login, password_login, button_login],
                                     ),
@@ -157,12 +158,90 @@ def main(page: ft.Page):
 
         user_name = search_user_name(email_login.value)
 
+        header = ft.Row(
+            controls=[
+                ft.Container(
+                    width=430,
+                    height=99,
+                    bgcolor=ft.colors.GREEN
+                )
+            ]
+        )
+
+        goal = ft.Row(
+            controls=[
+                ft.Container(
+                    width=430,
+                    height=99,
+                    bgcolor=ft.colors.GREEN
+                )
+            ]
+        )
+
+        details_goal = ft.Row(
+            controls=[
+                ft.Container(
+                    width=430,
+                    height=99,
+                    bgcolor=ft.colors.GREEN
+                )
+            ]
+        )
+
+        hourglass = ft.Row(
+            controls=[
+                ft.Container(
+                    width=430,
+                    height=99,
+                    bgcolor=ft.colors.GREEN
+                )
+            ]
+        )
+
+        details_parcial = ft.Row(
+            controls=[
+                ft.Container(
+                    width=430,
+                    height=99,
+                    bgcolor=ft.colors.GREEN
+                )
+            ]
+        )
+
+        button_bolt_uber = ft.Row(
+            controls=[
+                ft.Container(
+                    width=430,
+                    height=99,
+                    bgcolor=ft.colors.GREEN
+                )
+            ]
+        )
+
+        footer_menu = ft.Row(
+            controls=[
+                ft.Container(
+                    width=430,
+                    height=81,
+                    bgcolor=ft.colors.GREEN
+                )
+            ]
+        )
         page.views.clear()
         page.views.append(
             ft.View(
                 "/page_parcial",
                 controls=[
                     ft.Text(f"Bem-vindo {user_name}, à página de parciais!"),
+                    header,
+                    goal,
+                    details_goal,
+                    hourglass,
+                    details_parcial,
+                    button_bolt_uber,
+                    footer_menu
+
+
                     # Adicione aqui os controles e layouts específicos da página "page_parcial"
                 ]
             )
@@ -303,9 +382,6 @@ def main(page: ft.Page):
                 controls=[
                     ft.Container(
                         ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
-                        height=270,
-                        margin=20,
-                        padding=20,
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
                     ft.Row(controls=[name]),
@@ -391,9 +467,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Container(
                         ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
-                        height=270,
-                        margin=20,
-                        padding=20,
+                        padding=90,
                     ),
                     title,
                     field_email,
@@ -484,9 +558,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Container(
                         ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
-                        height=270,
-                        margin=20,
-                        padding=20,
+                        padding=90,
                     ),
                     title,
                     field_code,
