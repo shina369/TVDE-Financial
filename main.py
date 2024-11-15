@@ -14,7 +14,7 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 15
     page.window.width = 430  # Largura típica de um smartphone
-    page.window.height = 720  # Altura típica de um smartphone
+    page.window.height = 810  # Altura típica de um smartphone
     page.scroll="auto"
     page.padding = 10
     page.spacing = 10
@@ -161,9 +161,18 @@ def main(page: ft.Page):
         header = ft.Row(
             controls=[
                 ft.Container(
-                    width=430,
+                    width=399,
                     height=99,
-                    bgcolor=ft.colors.GREEN
+                    content=ft.Row(
+                        controls=[
+                            ft.Container(
+                                content=ft.Text("PARCIAIS", size=24, weight=ft.FontWeight.BOLD),
+                                padding=15,
+                            ),
+                            ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg", width=154, height=51),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
                 )
             ]
         )
@@ -171,9 +180,17 @@ def main(page: ft.Page):
         goal = ft.Row(
             controls=[
                 ft.Container(
-                    width=430,
+                    width=399,
                     height=99,
-                    bgcolor=ft.colors.GREEN
+                    content=ft.Column(
+                        controls=[
+            ft.Text("OBJETIVO", size=24, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
+            ft.Text("€ 1.720", size=33, color=ft.colors.BLACK),
+            ft.Text("valores brutos", size=12, color=ft.colors.BLACK),
+        ],
+        alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
+    ),
                 )
             ]
         )
@@ -181,7 +198,7 @@ def main(page: ft.Page):
         details_goal = ft.Row(
             controls=[
                 ft.Container(
-                    width=430,
+                    width=399,
                     height=99,
                     bgcolor=ft.colors.GREEN
                 )
@@ -191,7 +208,7 @@ def main(page: ft.Page):
         hourglass = ft.Row(
             controls=[
                 ft.Container(
-                    width=430,
+                    width=399,
                     height=99,
                     bgcolor=ft.colors.GREEN
                 )
@@ -201,7 +218,7 @@ def main(page: ft.Page):
         details_parcial = ft.Row(
             controls=[
                 ft.Container(
-                    width=430,
+                    width=399,
                     height=99,
                     bgcolor=ft.colors.GREEN
                 )
@@ -211,7 +228,7 @@ def main(page: ft.Page):
         button_bolt_uber = ft.Row(
             controls=[
                 ft.Container(
-                    width=430,
+                    width=399,
                     height=99,
                     bgcolor=ft.colors.GREEN
                 )
@@ -221,7 +238,7 @@ def main(page: ft.Page):
         footer_menu = ft.Row(
             controls=[
                 ft.Container(
-                    width=430,
+                    width=399,
                     height=81,
                     bgcolor=ft.colors.GREEN
                 )
@@ -232,7 +249,7 @@ def main(page: ft.Page):
             ft.View(
                 "/page_parcial",
                 controls=[
-                    ft.Text(f"Bem-vindo {user_name}, à página de parciais!"),
+                    ft.Text(f"Hello {user_name}, good luck ;)"),
                     header,
                     goal,
                     details_goal,
