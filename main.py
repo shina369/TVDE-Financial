@@ -190,8 +190,8 @@ def main(page: ft.Page):
                     height=99,
                     content=ft.Column(
                         controls=[
-            ft.Text("OBJETIVO", size=24, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
-            ft.Text("€ 1.720", size=33, color=ft.colors.BLACK),
+            ft.Text("OBJETIVO", size=21, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
+            ft.Text("€ 1.720", size=24, color=ft.colors.BLACK),
             ft.Text("valores brutos", size=12, color=ft.colors.BLACK),
         ],
         alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
@@ -203,21 +203,35 @@ def main(page: ft.Page):
 
         details_goal = ft.Row(
             controls=[
-                ft.Container(
-                    width=399,
-                    height=99,
-                    bgcolor=ft.colors.GREEN
+                ft.Container(  
+                    ft.Column(
+                        width=193,
+                        height=99,
+                    ),
+                    bgcolor=ft.colors.AMBER_100
+                ),
+                ft.Container(  
+                    ft.Column(
+                        width=193,
+                        height=99,
+                    ),
+                    bgcolor=ft.colors.PURPLE
                 )
+                
             ]
         )
 
         hourglass = ft.Row(
             controls=[
                 ft.Container(
-                    width=399,
-                    height=99,
-                    bgcolor=ft.colors.GREEN
-                )
+                    content=ft.Column(
+                        controls=[
+                        ft.Text("Logo"),
+                        ft.Text("Titulo"),
+                        ft.Text("Dinamica")
+                    ]
+                    ),
+                ),
             ]
         )
 
