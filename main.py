@@ -12,13 +12,11 @@ import SQLite_db_tvde_content_internal
 
 def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
-    page.padding = 15
-    page.window.width = 430  # Largura típica de um smartphone
+    page.padding = 0
+    page.window.width = 435  # Largura típica de um smartphone
     page.window.height = 810  # Altura típica de um smartphone
-    page.scroll="auto"
-    page.padding = 10
-    page.spacing = 10
     page.title = "TVDE - FINANCIAL"
+    page.scroll = ft.ScrollMode.AUTO
     page.theme = ft.Theme(
         color_scheme=ft.ColorScheme(
             primary="black",
@@ -160,15 +158,16 @@ def main(page: ft.Page):
 
         message_welcome = ft.Container(
             width=399,
-            height=33,
-            content=ft.Text(f"Hi {user_name}, good luck today! :)", size=18, weight=ft.FontWeight.BOLD),
+            height=51,
+            alignment=ft.Alignment(0, 0),
+            content=ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
         )
 
         header = ft.Row(
             controls=[
                 ft.Container(
                     width=399,
-                    height=99,
+                    height=66,
                     content=ft.Row(
                         controls=[
                             ft.Container(
@@ -190,13 +189,13 @@ def main(page: ft.Page):
                     height=99,
                     content=ft.Column(
                         controls=[
-            ft.Text("OBJETIVO", size=21, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
-            ft.Text("€ 1.720", size=24, color=ft.colors.BLACK),
-            ft.Text("valores brutos", size=12, color=ft.colors.BLACK),
-        ],
-        alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
-    ),
+                            ft.Text("OBJETIVO", size=21, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
+                            ft.Text("€ 1.720", size=24, color=ft.colors.BLACK),
+                            ft.Text("valores brutos", size=12, color=ft.colors.BLACK),
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
+                        ),
                 )
             ]
         )
@@ -207,15 +206,26 @@ def main(page: ft.Page):
                     ft.Column(
                         width=193,
                         height=99,
+                        controls=[
+                            ft.Text("Início do Objetivo", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Text("12/09/2024",size=15),
+                            ft.Text("Fim do Objetivo", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Text("12/10/2024", size=15)
+                        ]
                     ),
-                    bgcolor=ft.colors.AMBER_100
                 ),
-                ft.Container(  
+                ft.Container(
                     ft.Column(
                         width=193,
                         height=99,
+                        horizontal_alignment=ft.CrossAxisAlignment.END,
+                        controls=[
+                            ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Text("24",size=15),
+                            ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Text("6", size=15)
+                        ]
                     ),
-                    bgcolor=ft.colors.PURPLE
                 )
                 
             ]
@@ -235,32 +245,73 @@ def main(page: ft.Page):
             ]
         )
 
+        goal_today = ft.Row(
+            controls=[
+                ft.Container(
+                    width=399,
+                    height=99,
+                    bgcolor=ft.colors.GREEN
+                )
+            ]
+        )
+
         details_parcial = ft.Row(
             controls=[
                 ft.Container(
                     width=399,
-                    height=99,
-                    bgcolor=ft.colors.GREEN
+                    height=51,
+                    content=ft.Row(
+                        controls=[
+                            ft.Container(
+                                content=ft.Text(
+                                    "Despesas"
+                                ),
+                            ),
+                            ft.Container(
+                                content=ft.Text(
+                                    "Ganhos Líquidos"
+                                ),
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
                 )
             ]
         )
-
         button_bolt_uber = ft.Row(
             controls=[
                 ft.Container(
                     width=399,
-                    height=99,
-                    bgcolor=ft.colors.GREEN
+                    height=51,
+                    content=ft.Row(
+                        controls=[
+                            ft.Container(
+                                content=ft.Image(
+                                    src="https://i.ibb.co/9q4BY9c/logo.jpg",
+                                    width=154,
+                                    height=51,
+                                ),
+                            ),
+                            ft.Container(
+                                content=ft.Image(
+                                    src="https://i.ibb.co/9q4BY9c/logo.jpg",
+                                    width=154,
+                                    height=51,
+                                ),
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
                 )
             ]
         )
-
+        
         footer_menu = ft.Row(
             controls=[
                 ft.Container(
                     width=399,
-                    height=81,
-                    bgcolor=ft.colors.GREEN
+                    height=66,
+                    bgcolor=ft.colors.BLACK
                 )
             ]
         )
@@ -275,12 +326,10 @@ def main(page: ft.Page):
                     goal,
                     details_goal,
                     hourglass,
+                    goal_today,
                     details_parcial,
                     button_bolt_uber,
                     footer_menu
-
-
-                    # Adicione aqui os controles e layouts específicos da página "page_parcial"
                 ]
             )
         )
