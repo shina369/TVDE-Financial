@@ -171,8 +171,8 @@ def main(page: ft.Page):
                     content=ft.Row(
                         controls=[
                             ft.Container(
-                                content=ft.Text("PARCIAIS", size=24, weight=ft.FontWeight.BOLD),
-                                padding=15,
+                                content=ft.Text("PARCIAIS", size=24),
+                                padding=12,
                             ),
                             ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg", width=154, height=51),
                         ],
@@ -193,9 +193,10 @@ def main(page: ft.Page):
                             ft.Text("€ 1.720", size=24, color=ft.colors.BLACK),
                             ft.Text("valores brutos", size=12, color=ft.colors.BLACK),
                             ],
+                            spacing=0, 
                             alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
-                        ),
+                    ),
                 )
             ]
         )
@@ -211,7 +212,8 @@ def main(page: ft.Page):
                             ft.Text("12/09/2024",size=15),
                             ft.Text("Fim do Objetivo", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text("12/10/2024", size=15)
-                        ]
+                        ],
+                        spacing=0, 
                     ),
                 ),
                 ft.Container(
@@ -224,10 +226,10 @@ def main(page: ft.Page):
                             ft.Text("24",size=15),
                             ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text("6", size=15)
-                        ]
+                        ],
+                        spacing=0, 
                     ),
-                ),
-                
+                ), 
             ]
         )
 
@@ -235,19 +237,21 @@ def main(page: ft.Page):
             controls=[
                 ft.Container(
                     width=399,
-                    height=141,
+                    height=99,
                     padding=0,
                     margin=0,
                     content=ft.Column(
                         controls=[
                             ft.Image(src="https://i.ibb.co/93ps7s5/hourglass.png", height=27, width=27),
-                            ft.Text("FALTAM 15 DIAS PARA FIM DO OBJETIVO"),
+                            ft.Container(
+                                ft.Text("FALTAM 15 DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
+                                padding=ft.padding.only(bottom=21),
+                            ),
                             ft.Container(
                                 width=399,
                                 height=30,
-                                bgcolor="pink",
-                                padding=0,
                                 margin=0,
+                                border=ft.border.only(bottom=ft.border.BorderSide(2, ft.colors.BLACK)),
                                 content=ft.Row(
                                     controls=[
                                         ft.Container(
@@ -262,6 +266,7 @@ def main(page: ft.Page):
                                             ),
                                         ),
                                         ft.Container(
+                                            padding=3,
                                             content=ft.Image(
                                                 src="https://i.ibb.co/M5nXHpq/finish-line-5-stars.png",
                                             ),
@@ -270,21 +275,41 @@ def main(page: ft.Page):
                                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                                 ),  
                             ),
+                            ft.Container(
+                                width=2,
+                                height=15,
+                                bgcolor="black",
+                            )
                         ],
+                        spacing=0, #remove espaçamento entre os elementos do Controls
                         horizontal_alignment="center", # Centraliza horizontalmente
                     ),
                 ),
-            ]
+                
+            ],
         )
-
         goal_today = ft.Row(
             controls=[
                 ft.Container(
                     width=399,
-                    height=99,
-                    bgcolor=ft.colors.GREEN
+                    height=123,
+                    padding=0,
+                    margin=0,
+                    bgcolor="#EEEEEE",
+                    border_radius=25,
+                    content=ft.Column(
+                        controls=[
+                            ft.Text("OBJETIVO DE HOJE", size=15, color=ft.colors.BLACK),
+                            ft.Text("€ 125.83", size=36, color="#15CD74", weight=ft.FontWeight.BOLD),
+                            ft.Text("valores brutos", size=12, color="#B0B0B0"),
+                            ],
+                            spacing=0, 
+                            alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,  #
+                    ),
                 )
-            ]
+            ],
+            spacing=0,
         )
 
         details_parcial = ft.Row(
@@ -355,10 +380,10 @@ def main(page: ft.Page):
                 controls=[
                     message_welcome,
                     header,
+                    goal_today,
+                    hourglass,
                     goal,
                     details_goal,
-                    hourglass,
-                    goal_today,
                     details_parcial,
                     button_bolt_uber,
                     footer_menu
