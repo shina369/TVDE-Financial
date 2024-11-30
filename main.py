@@ -226,7 +226,7 @@ def main(page: ft.Page):
                             ft.Text("6", size=15)
                         ]
                     ),
-                )
+                ),
                 
             ]
         )
@@ -234,12 +234,44 @@ def main(page: ft.Page):
         hourglass = ft.Row(
             controls=[
                 ft.Container(
+                    width=399,
+                    height=141,
+                    padding=0,
+                    margin=0,
                     content=ft.Column(
                         controls=[
-                        ft.Text("Logo"),
-                        ft.Text("Titulo"),
-                        ft.Text("Dinamica")
-                    ]
+                            ft.Image(src="https://i.ibb.co/93ps7s5/hourglass.png", height=27, width=27),
+                            ft.Text("FALTAM 15 DIAS PARA FIM DO OBJETIVO"),
+                            ft.Container(
+                                width=399,
+                                height=30,
+                                bgcolor="pink",
+                                padding=0,
+                                margin=0,
+                                content=ft.Row(
+                                    controls=[
+                                        ft.Container(
+                                            content=ft.Image(
+                                                src="https://i.ibb.co/80MV450/flag.png",
+                                            ),
+                                        ),
+                                        ft.Container(
+                                            content=ft.Image(
+                                                src="https://i.ibb.co/RQcfZVd/car.png",
+                                                width=154,
+                                            ),
+                                        ),
+                                        ft.Container(
+                                            content=ft.Image(
+                                                src="https://i.ibb.co/M5nXHpq/finish-line-5-stars.png",
+                                            ),
+                                        ),
+                                    ],
+                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                ),  
+                            ),
+                        ],
+                        horizontal_alignment="center", # Centraliza horizontalmente
                     ),
                 ),
             ]
