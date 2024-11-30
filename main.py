@@ -158,7 +158,7 @@ def main(page: ft.Page):
 
         message_welcome = ft.Container(
             width=399,
-            height=51,
+            height=42,
             alignment=ft.Alignment(0, 0),
             content=ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
         )
@@ -201,7 +201,31 @@ def main(page: ft.Page):
             ]
         )
 
+        def details_goal(e):
+            if details_goal.height == 0:  # Se o container estiver fechado
+                details_goal.height = 99  # Expande o container
+            else:
+                details_goal.height = 0  # Fecha o container
+            page.update()
+
+        button = ft.ElevatedButton(
+                text="detalhes »",
+                on_click=details_goal,
+                width=111,  # Largura do botão
+                height=27, # Define a ação de clique
+                style=ft.ButtonStyle(
+            text_style=ft.TextStyle(
+                size=12,  # Tamanho da fonte do botão
+            ),
+        )
+        )
+        button_container = ft.Container(
+            content=button,
+            alignment=ft.alignment.center,  # Centraliza o botão
+        )
+
         details_goal = ft.Row(
+            height=0,
             controls=[
                 ft.Container(  
                     ft.Column(
@@ -378,11 +402,12 @@ def main(page: ft.Page):
             ft.View(
                 "/page_parcial",
                 controls=[
-                    message_welcome,
                     header,
+                    message_welcome,
                     goal_today,
                     hourglass,
                     goal,
+                    button_container,
                     details_goal,
                     details_parcial,
                     button_bolt_uber,
