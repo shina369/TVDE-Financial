@@ -186,12 +186,12 @@ def main(page: ft.Page):
             controls=[
                 ft.Container(
                     width=399,
-                    height=99,
+                    height=87,
                     content=ft.Column(
                         controls=[
-                            ft.Text("OBJETIVO", size=21, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
-                            ft.Text("€ 1.720", size=24, color=ft.colors.BLACK),
-                            ft.Text("valores brutos", size=12, color=ft.colors.BLACK),
+                            ft.Text("OBJETIVO GERAL", size=15, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
+                            ft.Text("€ 1.720", size=27, color=ft.colors.BLACK),
+                            ft.Text("valores líquidos", size=12, color="#858585"),
                             ],
                             spacing=0, 
                             alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
@@ -209,7 +209,7 @@ def main(page: ft.Page):
             page.update()
 
         button = ft.ElevatedButton(
-                text="detalhes »",
+                text="«detalhes»",
                 on_click=details_goal,
                 width=111,  # Largura do botão
                 height=27, # Define a ação de clique
