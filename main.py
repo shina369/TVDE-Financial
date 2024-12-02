@@ -209,11 +209,11 @@ def main(page: ft.Page):
             page.update()
 
         button = ft.ElevatedButton(
-                text="«detalhes»",
+                text="« detalhes »",
                 on_click=details_goal,
-                width=111,  # Largura do botão
+                width=120,  # Largura do botão
                 height=27, # Define a ação de clique
-                style=ft.ButtonStyle(
+        style=ft.ButtonStyle(
             text_style=ft.TextStyle(
                 size=12,  # Tamanho da fonte do botão
             ),
@@ -234,8 +234,10 @@ def main(page: ft.Page):
                         controls=[
                             ft.Text("Início do Objetivo", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text("12/09/2024",size=15),
-                            ft.Text("Fim do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("12/10/2024", size=15)
+                            ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Text("24",size=15),
+                            ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Text("€ 350,00", size=15)
                         ],
                         spacing=0, 
                     ),
@@ -246,14 +248,16 @@ def main(page: ft.Page):
                         height=99,
                         horizontal_alignment=ft.CrossAxisAlignment.END,
                         controls=[
-                            ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("24",size=15),
+                            ft.Text("Fim do Objetivo", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Text("12/10/2024", size=15),
                             ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("6", size=15)
+                            ft.Text("6", size=15),
+                            ft.Text("Ganhos até o momento", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Text("€ 1.365,00", size=15)
                         ],
                         spacing=0, 
                     ),
-                ), 
+                ),
             ]
         )
 
@@ -279,6 +283,7 @@ def main(page: ft.Page):
                                 content=ft.Row(
                                     controls=[
                                         ft.Container(
+                                            padding=3,
                                             content=ft.Image(
                                                 src="https://i.ibb.co/80MV450/flag.png",
                                             ),
@@ -336,29 +341,6 @@ def main(page: ft.Page):
             spacing=0,
         )
 
-        details_parcial = ft.Row(
-            controls=[
-                ft.Container(
-                    width=399,
-                    height=51,
-                    content=ft.Row(
-                        controls=[
-                            ft.Container(
-                                content=ft.Text(
-                                    "Despesas"
-                                ),
-                            ),
-                            ft.Container(
-                                content=ft.Text(
-                                    "Ganhos Líquidos"
-                                ),
-                            ),
-                        ],
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    ),
-                )
-            ]
-        )
         button_bolt_uber = ft.Row(
             controls=[
                 ft.Container(
@@ -368,14 +350,14 @@ def main(page: ft.Page):
                         controls=[
                             ft.Container(
                                 content=ft.Image(
-                                    src="https://i.ibb.co/9q4BY9c/logo.jpg",
+                                    src="https://i.ibb.co/kmjFKQ1/button-bolt.png",
                                     width=154,
                                     height=51,
                                 ),
                             ),
                             ft.Container(
                                 content=ft.Image(
-                                    src="https://i.ibb.co/9q4BY9c/logo.jpg",
+                                    src="https://i.ibb.co/RQFGzX5/button-uber.png",
                                     width=154,
                                     height=51,
                                 ),
@@ -387,31 +369,36 @@ def main(page: ft.Page):
             ]
         )
         
-        footer_menu = ft.Row(
-            controls=[
-                ft.Container(
-                    width=399,
-                    height=66,
-                    bgcolor=ft.colors.BLACK
-                )
-            ]
+        bottom_menu = ft.Container(
+            content=ft.Row(
+                [
+                    ft.IconButton(ft.icons.HOME, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Home clicado!")))),
+                    ft.IconButton(ft.icons.SEARCH, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
+                    ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_AROUND,
+            ),
+            bgcolor="#EEEEEE",
+            padding=10,
+            height=60,
+            border_radius=24
         )
-        
+            
         page.views.clear()
         page.views.append(
             ft.View(
                 "/page_parcial",
                 controls=[
+                    bottom_menu,
                     header,
                     message_welcome,
                     goal_today,
                     hourglass,
                     goal,
-                    button_container,
-                    details_goal,
-                    details_parcial,
                     button_bolt_uber,
-                    footer_menu
+                    details_goal,
+                    button_container,
+                    
                 ]
             )
         )
