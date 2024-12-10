@@ -354,6 +354,7 @@ def main(page: ft.Page):
                                     width=154,
                                     height=51,
                                 ),
+                                on_click=lambda e: page.go("/page_add_daily")
                             ),
                             ft.Container(
                                 content=ft.Image(
@@ -361,6 +362,7 @@ def main(page: ft.Page):
                                     width=154,
                                     height=51,
                                 ),
+                                on_click=lambda e: page.go("/page_add_daily")
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -368,11 +370,11 @@ def main(page: ft.Page):
                 )
             ]
         )
-
+        global bottom_menu
         bottom_menu = ft.Container(
             content=ft.Row(
                 [
-                    ft.IconButton(ft.icons.NEWSPAPER, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Home clicado!")))),
+                    ft.IconButton(ft.icons.NEWSPAPER, on_click=lambda _: page.go("/page_parcial")),
                     ft.IconButton(ft.icons.SHOPPING_CART_CHECKOUT_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
                     ft.IconButton(ft.icons.LIST_ALT_ROUNDED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
                     ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
@@ -551,6 +553,31 @@ def main(page: ft.Page):
                 ]
             )
         )
+        page.update()
+
+    def page_add_daily():
+        page.views.clear()
+        
+        title_page_daily_uber = ft.Text("CADASTRAR DIÁRIA UBER")
+        value_daily_uber = ft.TextField(label="Valor diária UBER", border_radius=21)
+        date_daily_uber = ft.TextField(label="Data", border_radius=21)
+        expenses_page_daily_uber = ft.Text("GASTOS DO DIA")
+        value_expenses_daily = ft.TextField(label="Valor Gasto do dia", border_radius=21)
+
+        page.views.append(
+            ft.View(
+                "/page_add_daily",
+                controls=[
+                    bottom_menu,
+                    title_page_daily_uber,
+                    value_daily_uber,
+                    date_daily_uber,
+                    expenses_page_daily_uber,
+                    value_expenses_daily
+                ]
+            )
+        )
+
         page.update()
 
     def page_forget_password():
@@ -741,6 +768,8 @@ def main(page: ft.Page):
             page_new_password()
         elif page.route == "/page_parcial":
             page_parcial()
+        elif page.route == "/page_add_daily":
+            page_add_daily()
 
     # Definindo o handler para mudanças de rota
     page.on_route_change = route_change
