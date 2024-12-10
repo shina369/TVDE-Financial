@@ -2,26 +2,30 @@ Implementar a pagina de Recuperação de senha. ok
 Create page_new_password and implementation CODE sended for email. ok
 implementation if the email exist in the database,dont let have a possibility of register the user. ok
 rewrite code of the new password, because same even the passwords when are different is registred just like that. ok
-
-Organization menu part and add: Page expenseve, config, maybe search
-create pages: diária bolt and uber
-
-implementation of verify global email exist
-implementation of email code timeset. 
-    SOLUTION PROPOSE: create one column "temporaly code validation" 
-    Salve the code in the column and wait for entry of user
-Login confirmation and open the app
-
+OK
 create the new function
 Connect the db database="db_tvde_users_external"
 verify the email exist on db
 if exist send the code for rewrite the new password on db
 else ask email again
+OK
+
+»Organization menu part and add: Page expenseve, config, maybe search
+»Create car dynamics
+»create pages form: daily bolt and uber
+
+
+*I think this is already resolved:
+    implementation of email code timeset. 
+        SOLUTION PROPOSE: create one column "temporaly code validation" 
+        Salve the code in the column and wait for entry of user
+    Login confirmation and open the app
 
 Estudar um pouco de icones ft.Icon / icons
 
 NEXT Implementation - TVDE_Financial 1.0
-business-appropriate email
+»business-appropriate email
+»implementation of verify global email exist
 
 TVDE_Financial 2.0
 salt implementation of password

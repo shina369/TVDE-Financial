@@ -368,12 +368,13 @@ def main(page: ft.Page):
                 )
             ]
         )
-        
+
         bottom_menu = ft.Container(
             content=ft.Row(
                 [
-                    ft.IconButton(ft.icons.HOME, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Home clicado!")))),
-                    ft.IconButton(ft.icons.SEARCH, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
+                    ft.IconButton(ft.icons.NEWSPAPER, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Home clicado!")))),
+                    ft.IconButton(ft.icons.SHOPPING_CART_CHECKOUT_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
+                    ft.IconButton(ft.icons.LIST_ALT_ROUNDED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
                     ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_AROUND,
