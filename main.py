@@ -558,7 +558,7 @@ def main(page: ft.Page):
     def page_add_daily(param):
         page.views.clear()
         
-        title_page_daily_uber = ft.Text(f"CADASTRAR DIÁRIA {param}")
+        title_page_daily_uber = ft.Text(f"CADASTRAR DIÁRIA {param.upper()}")
         value_daily_uber = ft.TextField(label=f"Valor diária {param}", border_radius=21)
         date_daily_uber = ft.TextField(label="Data", border_radius=21)
         expenses_page_daily_uber = ft.Text("GASTOS DO DIA")

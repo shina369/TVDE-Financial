@@ -9,10 +9,10 @@ verify the email exist on db
 if exist send the code for rewrite the new password on db
 else ask email again
 OK
+Organization menu part and add: Page expenseve, config, maybe search ok
+create pages form: daily bolt and uber ok
 
-»Organization menu part and add: Page expenseve, config, maybe search
 »Create car dynamics
-»create pages form: daily bolt and uber
 »Implement the ddds and their respective flags
 
 *I think this is already resolved:
