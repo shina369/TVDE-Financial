@@ -340,7 +340,7 @@ def main(page: ft.Page):
             ],
             spacing=0,
         )
-
+        global param
         button_bolt_uber = ft.Row(
             controls=[
                 ft.Container(
@@ -354,7 +354,7 @@ def main(page: ft.Page):
                                     width=154,
                                     height=51,
                                 ),
-                                on_click=lambda e: page.go("/page_add_daily")
+                                on_click=lambda e: page.go("/page_add_daily?param=Bolt")
                             ),
                             ft.Container(
                                 content=ft.Image(
@@ -362,7 +362,7 @@ def main(page: ft.Page):
                                     width=154,
                                     height=51,
                                 ),
-                                on_click=lambda e: page.go("/page_add_daily")
+                                on_click=lambda e: page.go("/page_add_daily?param=Uber")
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -555,11 +555,11 @@ def main(page: ft.Page):
         )
         page.update()
 
-    def page_add_daily():
+    def page_add_daily(param):
         page.views.clear()
         
-        title_page_daily_uber = ft.Text("CADASTRAR DIÁRIA UBER")
-        value_daily_uber = ft.TextField(label="Valor diária UBER", border_radius=21)
+        title_page_daily_uber = ft.Text(f"CADASTRAR DIÁRIA {param}")
+        value_daily_uber = ft.TextField(label=f"Valor diária {param}", border_radius=21)
         date_daily_uber = ft.TextField(label="Data", border_radius=21)
         expenses_page_daily_uber = ft.Text("GASTOS DO DIA")
         value_expenses_daily = ft.TextField(label="Valor Gasto do dia", border_radius=21)
@@ -770,6 +770,10 @@ def main(page: ft.Page):
             page_parcial()
         elif page.route == "/page_add_daily":
             page_add_daily()
+        elif page.route.startswith("/page_add_daily"):
+            # Captura o valor do parâmetro da URL
+            param = page.route.split("?param=")[-1] if "?param=" in page.route else "Desconhecido"
+            page_add_daily(param)
 
     # Definindo o handler para mudanças de rota
     page.on_route_change = route_change
