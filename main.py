@@ -558,26 +558,27 @@ def main(page: ft.Page):
     def page_add_daily(param):
         page.views.clear()
         
-        title_page_daily_uber = ft.Text(f"CADASTRAR DIÁRIA {param.upper()}")
-        value_daily_uber = ft.TextField(label=f"Valor diária {param}", border_radius=21)
-        date_daily_uber = ft.TextField(label="Data", border_radius=21)
-        expenses_page_daily_uber = ft.Text("GASTOS DO DIA")
+        title_page_daily = ft.Text(f"CADASTRAR DIÁRIA {param.upper()}")
+        value_daily = ft.TextField(label=f"Valor diária {param}", border_radius=21)
+        date_daily = ft.TextField(label="Data", border_radius=21)
+        expenses_page_daily= ft.Text("GASTOS DO DIA")
         value_expenses_daily = ft.TextField(label="Valor Gasto do dia", border_radius=21)
+        button_add_daily = ft.ElevatedButton(text="Cadastrar")
 
         page.views.append(
             ft.View(
                 "/page_add_daily",
                 controls=[
                     bottom_menu,
-                    title_page_daily_uber,
-                    value_daily_uber,
-                    date_daily_uber,
-                    expenses_page_daily_uber,
-                    value_expenses_daily
+                    title_page_daily,
+                    value_daily,
+                    date_daily,
+                    expenses_page_daily,
+                    value_expenses_daily,
+                    button_add_daily
                 ]
             )
         )
-
         page.update()
 
     def page_forget_password():
