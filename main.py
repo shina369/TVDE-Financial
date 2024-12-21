@@ -417,31 +417,7 @@ def main(page: ft.Page):
                 name.error_text = "O nome deve ter mais de 4 caracteres."
             name.update()
             validate_form()
-        
-        def validate_surname(e):
-            if len(surname.value) > 4:
-                surname.error_text = None
-            else:
-                surname.error_text = "O nome deve ter mais de 4 caracteres."
-            surname.update()
-            validate_form()
-            
-        def validate_phone_prefix(e):
-            if re.match(r"^\d{4}$", phone_prefix.value):
-                phone_prefix.error_text = None
-            else:
-                phone_prefix.error_text = "O prefixo deve ter 4 dígitos."
-            phone_prefix.update()
-            validate_form()
-        
-        def validate_phone_suffix(e):
-            if re.match(r"^\d{9}$", phone_suffix.value):
-                phone_suffix.error_text = None
-            else:
-                phone_suffix.error_text = "O sufixo deve ter 9 dígitos."
-            phone_suffix.update()
-            validate_form()            
-        
+           
         def validate_email(e):
             global email_exist
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
@@ -485,9 +461,6 @@ def main(page: ft.Page):
 
         def validate_form():
             if (len(name.value) > 4 and
-                len(surname.value) > 4 and
-                re.match(r"^\d{4}$", phone_prefix.value) and 
-                re.match(r"^\d{9}$", phone_suffix.value) and
                 re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value) and
                 password.value == password_confirm.value and password.value != "" and password_confirm.value != "" and not email_exist):
                 button_to_db.disabled = False
@@ -495,10 +468,9 @@ def main(page: ft.Page):
                 button_to_db.disabled = True
             button_to_db.update()
 
-        def add_in_db(name, surname, phone_prefix, phone_suffix, email, password):
+        def add_in_db(name, email, password):
             # Concatenar prefixo e sufixo do telefone
             hash_password = sha256(password.encode()).hexdigest()
-            phone = f"{phone_prefix}{phone_suffix}"
             
             # Conectar ao banco de dados
             conn = mysql.connector.connect(
@@ -509,10 +481,10 @@ def main(page: ft.Page):
             )
             cursor = conn.cursor()
 
-            if name and surname and phone and email and password:
+            if name and email and password:
                 cursor.execute(
-                    """INSERT INTO users (name, surname, phone, email, password) VALUES (%s, %s, %s, %s, %s)""",
-                    (name, surname, phone, email, hash_password)
+                    """INSERT INTO users (name, email, password) VALUES (%s, %s, %s)""",
+                    (name, email, hash_password)
                 )
                 if cursor.rowcount > 0:
                     conn.commit()
@@ -526,15 +498,12 @@ def main(page: ft.Page):
             conn.close()
         
         name = ft.TextField(label="Name", border_radius=21, on_change=validate_name)
-        surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
-        phone_prefix = ft.TextField(label="Prefixo (4 dígitos)", on_change=validate_phone_prefix, border_radius=21, width=150)
-        phone_suffix = ft.TextField(label="Sufixo (9 dígitos)", on_change=validate_phone_suffix, border_radius=21)
         email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
         
         button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
-                                          on_click=lambda e: add_in_db(name.value, surname.value, phone_prefix.value, phone_suffix.value, email.value, password.value))
+                                          on_click=lambda e: add_in_db(name.value, email.value, password.value))
         page.views.append(
             ft.View(
                 "/register",
@@ -544,8 +513,6 @@ def main(page: ft.Page):
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
                     ft.Row(controls=[name]),
-                    ft.Row(controls=[surname]), 
-                    ft.Row(controls=[phone_prefix, phone_suffix]),
                     ft.Row(controls=[email]),
                     ft.Row(controls=[password]),
                     ft.Row(controls=[password_confirm]),
