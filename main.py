@@ -25,6 +25,41 @@ def main(page: ft.Page):
         )
     )
 
+    header = ft.Row(
+            controls=[
+                ft.Container(
+                    width=399,
+                    height=66,
+                    content=ft.Row(
+                        controls=[
+                            ft.Container(
+                                content=ft.Text("PARCIAIS", size=24),
+                                padding=12,
+                            ),
+                            ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg", width=154, height=51),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                )
+            ]
+        )
+
+    bottom_menu = ft.BottomAppBar(
+            content=ft.Row(
+                [
+                    ft.IconButton(ft.icons.NEWSPAPER, on_click=lambda _: page.go("/page_parcial")),
+                    ft.IconButton(ft.icons.SHOPPING_CART_CHECKOUT_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
+                    ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial", size=150)),
+                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
+                    ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
+                ],
+                alignment=ft.MainAxisAlignment.SPACE_AROUND,
+            ),
+            bgcolor="#EEEEEE",
+            padding=10,
+            height=60
+        )
+
     def page_message_screen(msg):
         page.views.clear()
         page.views.append(
@@ -76,7 +111,7 @@ def main(page: ft.Page):
                 stored_password = result[0]   
                 if hash_password_login == stored_password:
                     print("Login bem-sucedido!")
-                    page.go("/page_parcial")  # Navegar para "page_parcial" se o login for bem-sucedido
+                    page.go("/page_new_goal")  # Navegar para "page_new_goal" se o login for bem-sucedido
                 else:
                     password_login.error_text = "Senha incorreta"
                     password_login.update()
@@ -136,14 +171,14 @@ def main(page: ft.Page):
             ft.View(
                 "/page_new_goal",
                 controls=[
-                    
+                    header,
+                    bottom_menu
                 ]
             )
         )
         page.update()
 
     def page_parcial():
-
         def search_user_name(email_login):
             conn = mysql.connector.connect(
                 host="localhost",
@@ -175,24 +210,6 @@ def main(page: ft.Page):
             content=ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
         )
 
-        header = ft.Row(
-            controls=[
-                ft.Container(
-                    width=399,
-                    height=66,
-                    content=ft.Row(
-                        controls=[
-                            ft.Container(
-                                content=ft.Text("PARCIAIS", size=24),
-                                padding=12,
-                            ),
-                            ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg", width=154, height=51),
-                        ],
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    ),
-                )
-            ]
-        )
 
         goal = ft.Row(
             controls=[
@@ -381,22 +398,6 @@ def main(page: ft.Page):
                     ),
                 )
             ]
-        )
-        global bottom_menu
-        bottom_menu = ft.BottomAppBar(
-            content=ft.Row(
-                [
-                    ft.IconButton(ft.icons.NEWSPAPER, on_click=lambda _: page.go("/page_parcial")),
-                    ft.IconButton(ft.icons.SHOPPING_CART_CHECKOUT_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
-                    ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial", size=150)),
-                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
-                    ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_AROUND,
-            ),
-            bgcolor="#EEEEEE",
-            padding=10,
-            height=60
         )
             
         page.views.clear()
