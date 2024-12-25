@@ -80,7 +80,7 @@ def main(page: ft.Page):
                 controls=[icon, title],  # Passando o ícone diretamente
                 alignment=ft.MainAxisAlignment.CENTER  # Alinha no centro
             ),
-            padding=ft.padding.only(bottom=21),
+            padding=ft.padding.only(bottom=15),
             border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREEN_900)),
         )
     
@@ -176,6 +176,85 @@ def main(page: ft.Page):
 
     def page_new_goal():
         page.views.clear()
+        goal_value_liquid = ft.TextField(label="Valor total da meta", prefix_text="€",
+            border_radius=21, 
+            text_size=18, 
+            helper_text="* Valor líquido pretendido ao fim da meta.",
+            content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
+        )
+        
+        date_picker = ft.DatePicker(on_change=None)  # on_change definido depois dinamicamente
+
+        def pick_date(e, field):
+            date_picker.on_change = lambda e: on_date_selected(e, field)
+            date_picker.pick_date()
+
+        def on_date_selected(e, field):
+            if date_picker.value:
+                field.value = date_picker.value.strftime("%d/%m/%Y")
+                page.update()
+
+        goal_start = ft.TextField(
+            label="Início da meta",
+            border_radius=21,
+            text_size=18,
+            keyboard_type=ft.KeyboardType.DATETIME,
+            helper_text="* Data do Início da meta",
+            content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+            suffix=ft.IconButton(
+                icon=ft.icons.CALENDAR_MONTH,
+                on_click=lambda e: pick_date(e, goal_start)
+            )
+        )
+
+        goal_end = ft.TextField(
+            label="Fim da meta",
+            border_radius=21,
+            text_size=18,
+            keyboard_type=ft.KeyboardType.DATETIME,
+            helper_text="* Data do Fim da Meta",
+            content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+            suffix=ft.IconButton(
+                icon=ft.icons.CALENDAR_MONTH,
+                on_click=lambda e: pick_date(e, goal_end)
+            )
+        )
+
+        day_off = ft.TextField(
+            label="Dias de Folga",
+            border_radius=21,
+            text_size=18,
+            keyboard_type=ft.KeyboardType.DATETIME,
+            helper_text="* Quantos dias terá de folga.",
+            content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
+        )
+        
+        fleet_discount = ft.TextField(
+            label="Desconto da Frota",
+            prefix_text ="%",
+            border_radius=21,
+            text_size=18,
+            keyboard_type=ft.KeyboardType.DATETIME,
+            helper_text="Desconto da frota.",
+            content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
+        )
+        tax_discount = ft.TextField(
+            label="Imposto",
+            prefix_text ="%",
+            border_radius=21,
+            text_size=18,
+            keyboard_type=ft.KeyboardType.DATETIME,
+            helper_text="Imposto.",
+            content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
+        )
+
+        button_salve = ft.ElevatedButton(
+            text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
+        )
+
+        space_space_space = ft.Container(height=0.2)
+    
+        page.overlay.append(date_picker)
         page.views.append(
             ft.View(
                 "/page_new_goal",
@@ -185,6 +264,16 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.MORE_TIME),
                            title = ft.Text("NOVO OBJETIVO", size=18, weight=ft.FontWeight.BOLD),
                     ),
+                    goal_value_liquid,
+                    space_space_space,
+                    goal_start,
+                    goal_end,
+                    space_space_space,
+                    day_off,
+                    space_space_space,
+                    fleet_discount,
+                    tax_discount,    
+                    button_salve,
                     bottom_menu
                 ]
             )
