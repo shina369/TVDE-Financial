@@ -476,7 +476,7 @@ def main(page: ft.Page):
                 button_to_db.disabled = True
             button_to_db.update()
 
-        def add_in_db(name, email, password):
+        def add_in_db(name, surname, email, password):
             # Concatenar prefixo e sufixo do telefone
             hash_password = sha256(password.encode()).hexdigest()
             
@@ -492,7 +492,7 @@ def main(page: ft.Page):
             if name and email and password:
                 cursor.execute(
                     """INSERT INTO users (name, surname, email, password) VALUES (%s, %s, %s, %s)""",
-                    (name, email, hash_password)
+                    (name, surname, email, hash_password)
                 )
                 if cursor.rowcount > 0:
                     conn.commit()
