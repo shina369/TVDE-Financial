@@ -79,7 +79,10 @@ def main(page: ft.Page):
             content=ft.Row(  # Para alinhar o ícone e o título
                 controls=[icon, title],  # Passando o ícone diretamente
                 alignment=ft.MainAxisAlignment.CENTER  # Alinha no centro
-            )
+            ),
+            padding=ft.padding.only(bottom=21),
+            border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREEN_900)),
+                
     )
     
     def page_login():
@@ -181,7 +184,7 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.MORE_TIME),
-                           title = ft.Text("Novo Objetivo")
+                           title = ft.Text("Novo Objetivo", size=18)
                     ),
                     bottom_menu
                 ]
