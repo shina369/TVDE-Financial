@@ -32,14 +32,17 @@ def main(page: ft.Page):
                     height=66,
                     content=ft.Row(
                         controls=[
-                            ft.IconButton(ft.icons.MENU, on_click=lambda _: page.go("/page_parcial")),
+                            ft.IconButton(ft.icons.MENU, on_click=lambda _:  page.drawer.toggle()),
                             ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png", width=154, height=51),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        
                     ),
+    
                 )
             ]
         )
+    
 
     bottom_menu = ft.BottomAppBar(
             content=ft.Row(
@@ -169,6 +172,7 @@ def main(page: ft.Page):
                 "/page_new_goal",
                 controls=[
                     header,
+                    
                     bottom_menu
                 ]
             )
