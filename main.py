@@ -81,9 +81,8 @@ def main(page: ft.Page):
                 alignment=ft.MainAxisAlignment.CENTER  # Alinha no centro
             ),
             padding=ft.padding.only(bottom=21),
-            border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREEN_900)),
-                
-    )
+            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREEN_900)),
+        )
     
     def page_login():
         page.views.clear()
@@ -184,7 +183,7 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.MORE_TIME),
-                           title = ft.Text("Novo Objetivo", size=18)
+                           title = ft.Text("NOVO OBJETIVO", size=18, weight=ft.FontWeight.BOLD),
                     ),
                     bottom_menu
                 ]
