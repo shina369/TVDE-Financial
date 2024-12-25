@@ -40,7 +40,7 @@ def main(page: ft.Page):
         page.update()
         time.sleep(3)
 
-    def login_page():
+    def page_login():
         page.views.clear()
 
         def validate_email(e):
@@ -735,7 +735,7 @@ def main(page: ft.Page):
 
     def route_change(route):
         if page.route == "/":
-            login_page()
+            page_login()
         elif page.route == "/register":
             page_register()
         elif page.route == "/forget_password":
