@@ -135,11 +135,12 @@ def main(page: ft.Page):
         page.views.append(
             ft.View(
                 "/page_new_goal",
-                controls=[]
+                controls=[
+                    
+                ]
             )
         )
         page.update()
-
 
     def page_parcial():
 
@@ -382,20 +383,20 @@ def main(page: ft.Page):
             ]
         )
         global bottom_menu
-        bottom_menu = ft.Container(
+        bottom_menu = ft.BottomAppBar(
             content=ft.Row(
                 [
                     ft.IconButton(ft.icons.NEWSPAPER, on_click=lambda _: page.go("/page_parcial")),
                     ft.IconButton(ft.icons.SHOPPING_CART_CHECKOUT_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
-                    ft.IconButton(ft.icons.LIST_ALT_ROUNDED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
+                    ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial", size=150)),
+                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
                     ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_AROUND,
             ),
             bgcolor="#EEEEEE",
             padding=10,
-            height=60,
-            border_radius=24
+            height=60
         )
             
         page.views.clear()
