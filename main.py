@@ -491,7 +491,7 @@ def main(page: ft.Page):
 
             if name and email and password:
                 cursor.execute(
-                    """INSERT INTO users (name, email, password) VALUES (%s, %s, %s)""",
+                    """INSERT INTO users (name, surname, email, password) VALUES (%s, %s, %s, %s)""",
                     (name, email, hash_password)
                 )
                 if cursor.rowcount > 0:
