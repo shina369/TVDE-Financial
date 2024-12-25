@@ -130,6 +130,17 @@ def main(page: ft.Page):
         )
         page.update()
 
+    def page_new_goal():
+        page.views.clear()
+        page.views.append(
+            ft.View(
+                "/page_new_goal",
+                controls=[]
+            )
+        )
+        page.update()
+
+
     def page_parcial():
 
         def search_user_name(email_login):
@@ -738,6 +749,8 @@ def main(page: ft.Page):
             page_login()
         elif page.route == "/register":
             page_register()
+        elif page.route == "/page_new_goal":
+            page_new_goal()
         elif page.route == "/forget_password":
             page_forget_password()
         elif page.route == "/message_screen":
