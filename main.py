@@ -32,8 +32,8 @@ def main(page: ft.Page):
                     height=66,
                     content=ft.Row(
                         controls=[
-                            ft.IconButton(ft.icons.MENU, on_click=lambda _:  page.drawer.toggle()),
                             ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png", width=154, height=51),
+                            ft.IconButton(ft.icons.MENU, on_click=lambda _:  page.drawer.toggle(), icon_size=33),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         
@@ -178,7 +178,11 @@ def main(page: ft.Page):
         page.views.clear()
         goal_value_liquid = ft.TextField(label="Valor total da meta", prefix_text="€",
             border_radius=21, 
-            text_size=18, 
+            text_size=18,
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,               # Tamanho opcional
+            ),
             helper_text="* Valor líquido pretendido ao fim da meta.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
@@ -196,6 +200,10 @@ def main(page: ft.Page):
 
         goal_start = ft.TextField(
             label="Início da meta",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,               # Tamanho opcional
+            ),
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -209,6 +217,10 @@ def main(page: ft.Page):
 
         goal_end = ft.TextField(
             label="Fim da meta",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,               # Tamanho opcional
+            ),
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -222,6 +234,10 @@ def main(page: ft.Page):
 
         day_off = ft.TextField(
             label="Dias de Folga",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,               # Tamanho opcional
+            ),
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -231,6 +247,10 @@ def main(page: ft.Page):
         
         fleet_discount = ft.TextField(
             label="Desconto da Frota",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,               # Tamanho opcional
+            ),
             prefix_text ="%",
             border_radius=21,
             text_size=18,
@@ -240,6 +260,10 @@ def main(page: ft.Page):
         )
         tax_discount = ft.TextField(
             label="Imposto",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,               # Tamanho opcional
+            ),
             prefix_text ="%",
             border_radius=21,
             text_size=18,
