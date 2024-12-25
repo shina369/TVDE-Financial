@@ -32,11 +32,8 @@ def main(page: ft.Page):
                     height=66,
                     content=ft.Row(
                         controls=[
-                            ft.Container(
-                                content=ft.Text("PARCIAIS", size=24),
-                                padding=12,
-                            ),
-                            ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg", width=154, height=51),
+                            ft.IconButton(ft.icons.MENU, on_click=lambda _: page.go("/page_parcial")),
+                            ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png", width=154, height=51),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     ),
@@ -47,8 +44,8 @@ def main(page: ft.Page):
     bottom_menu = ft.BottomAppBar(
             content=ft.Row(
                 [
-                    ft.IconButton(ft.icons.NEWSPAPER, on_click=lambda _: page.go("/page_parcial")),
-                    ft.IconButton(ft.icons.SHOPPING_CART_CHECKOUT_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
+                    ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_parcial")),
+                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
                     ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial", size=150)),
                     ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
                     ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
@@ -137,7 +134,7 @@ def main(page: ft.Page):
                             horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                             controls=[
                                 ft.Container(
-                                    ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
+                                    ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
                                     padding=90,
                                 ),
                                 ft.Container(
@@ -531,7 +528,7 @@ def main(page: ft.Page):
                 "/register",
                 controls=[
                     ft.Container(
-                        ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
+                        ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
                     ft.Row(controls=[name]),
@@ -641,7 +638,7 @@ def main(page: ft.Page):
                 "/forget_password",
                 controls=[
                     ft.Container(
-                        ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
+                        ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
                         padding=90,
                     ),
                     title,
@@ -732,7 +729,7 @@ def main(page: ft.Page):
                 "/page_new_password",
                 controls=[
                     ft.Container(
-                        ft.Image(src="https://i.ibb.co/9q4BY9c/logo.jpg"),
+                        ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
                         padding=90,
                     ),
                     title,
