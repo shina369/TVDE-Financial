@@ -417,6 +417,14 @@ def main(page: ft.Page):
                 name.error_text = "O nome deve ter mais de 4 caracteres."
             name.update()
             validate_form()
+
+        def validate_surname(e):
+            if len(surname.value) > 4:
+                surname.error_text = None
+            else:
+                surname.error_text = "O nome deve ter mais de 4 caracteres."
+            surname.update()
+            validate_form()
            
         def validate_email(e):
             global email_exist
@@ -460,7 +468,7 @@ def main(page: ft.Page):
             validate_form()
 
         def validate_form():
-            if (len(name.value) > 4 and
+            if (len(name.value) > 4 and len(surname.value) > 4 and
                 re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value) and
                 password.value == password_confirm.value and password.value != "" and password_confirm.value != "" and not email_exist):
                 button_to_db.disabled = False
@@ -498,12 +506,13 @@ def main(page: ft.Page):
             conn.close()
         
         name = ft.TextField(label="Name", border_radius=21, on_change=validate_name)
+        surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
         email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
         
         button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
-                                          on_click=lambda e: add_in_db(name.value, email.value, password.value))
+                                          on_click=lambda e: add_in_db(name.value, surname.value, email.value, password.value))
         page.views.append(
             ft.View(
                 "/register",
@@ -513,6 +522,7 @@ def main(page: ft.Page):
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
                     ft.Row(controls=[name]),
+                    ft.Row(controls=[surname]),
                     ft.Row(controls=[email]),
                     ft.Row(controls=[password]),
                     ft.Row(controls=[password_confirm]),
