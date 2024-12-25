@@ -42,7 +42,6 @@ def main(page: ft.Page):
                 )
             ]
         )
-    
 
     bottom_menu = ft.BottomAppBar(
             content=ft.Row(
@@ -75,6 +74,14 @@ def main(page: ft.Page):
         page.update()
         time.sleep(3)
 
+    def title_app(icon, title):
+        return ft.Container(  # Retornando o Container corretamente
+            content=ft.Row(  # Para alinhar o ícone e o título
+                controls=[icon, title],  # Passando o ícone diretamente
+                alignment=ft.MainAxisAlignment.CENTER  # Alinha no centro
+            )
+    )
+    
     def page_login():
         page.views.clear()
 
@@ -172,7 +179,10 @@ def main(page: ft.Page):
                 "/page_new_goal",
                 controls=[
                     header,
-                    
+                    title_app(
+                           icon = ft.Icon(ft.icons.MORE_TIME),
+                           title = ft.Text("Novo Objetivo")
+                    ),
                     bottom_menu
                 ]
             )
