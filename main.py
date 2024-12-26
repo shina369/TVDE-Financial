@@ -212,9 +212,9 @@ def main(page: ft.Page):
             suffix=ft.IconButton(
                 icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, goal_start),
-                 style=ft.ButtonStyle(
+                style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
-        )
+                )
             )
         )
 
