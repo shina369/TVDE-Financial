@@ -84,7 +84,6 @@ def main(page: ft.Page):
             border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREEN_900))
         )
 
-    
     def page_login():
         page.views.clear()
 
