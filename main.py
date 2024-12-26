@@ -80,9 +80,10 @@ def main(page: ft.Page):
                 controls=[icon, title],  # Passando o ícone diretamente
                 alignment=ft.MainAxisAlignment.CENTER  # Alinha no centro
             ),
-            padding=ft.padding.only(bottom=15),
-            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREEN_900)),
+            padding=ft.padding.only(bottom=21),
+            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREEN_900))
         )
+
     
     def page_login():
         page.views.clear()
@@ -184,7 +185,7 @@ def main(page: ft.Page):
                 size=14,               # Tamanho opcional
             ),
             helper_text="* Valor líquido pretendido ao fim da meta.",
-            content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
+            content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
         )
         
         date_picker = ft.DatePicker(on_change=None)  # on_change definido depois dinamicamente
@@ -197,13 +198,13 @@ def main(page: ft.Page):
             if date_picker.value:
                 field.value = date_picker.value.strftime("%d/%m/%Y")
                 page.update()
-
         goal_start = ft.TextField(
             label="Início da meta",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
-                size=14,               # Tamanho opcional
+                size=14,          # Tamanho opcional
             ),
+            width=page.width * 0.47,
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -211,7 +212,10 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
                 icon=ft.icons.CALENDAR_MONTH,
-                on_click=lambda e: pick_date(e, goal_start)
+                on_click=lambda e: pick_date(e, goal_start),
+                 style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
+        )
             )
         )
 
@@ -219,8 +223,9 @@ def main(page: ft.Page):
             label="Fim da meta",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
-                size=14,               # Tamanho opcional
+                size=14,          # Tamanho opcional
             ),
+            width=page.width * 0.47,
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -232,6 +237,11 @@ def main(page: ft.Page):
             )
         )
 
+        goal_dates = ft.Container(
+            ft.Row(
+                controls=[goal_start, goal_end]
+            )
+        )
         day_off = ft.TextField(
             label="Dias de Folga",
             label_style=ft.TextStyle(
@@ -251,7 +261,7 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=14,               # Tamanho opcional
             ),
-            prefix_text ="%",
+            suffix_text="%",
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -264,7 +274,7 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=14,               # Tamanho opcional
             ),
-            prefix_text ="%",
+            suffix_text="%",
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -275,8 +285,9 @@ def main(page: ft.Page):
         button_salve = ft.ElevatedButton(
             text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
         )
+        global space_space_space
 
-        space_space_space = ft.Container(height=0.2)
+        space_space_space = ft.Container(height=0.9)
     
         page.overlay.append(date_picker)
         page.views.append(
@@ -288,15 +299,17 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.MORE_TIME),
                            title = ft.Text("NOVO OBJETIVO", size=18, weight=ft.FontWeight.BOLD),
                     ),
+                    space_space_space,
                     goal_value_liquid,
                     space_space_space,
-                    goal_start,
-                    goal_end,
+                    goal_dates,
                     space_space_space,
                     day_off,
                     space_space_space,
                     fleet_discount,
+                    space_space_space,
                     tax_discount,    
+                    space_space_space,
                     button_salve,
                     bottom_menu
                 ]
