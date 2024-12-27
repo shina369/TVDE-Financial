@@ -81,7 +81,7 @@ def main(page: ft.Page):
                 alignment=ft.MainAxisAlignment.CENTER  # Alinha no centro
             ),
             padding=ft.padding.only(bottom=21),
-            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREEN_900))
+            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREY_900))
         )
 
     def page_login():
@@ -176,9 +176,40 @@ def main(page: ft.Page):
 
     def page_new_goal():
         page.views.clear()
+
+        def format_number(e):
+        # Remove qualquer caractere que não seja dígito
+            raw_value = ''.join(filter(str.isdigit, e.control.value))
+            
+            if raw_value:
+                # Converte para inteiro e formata com separador de milhar
+                formatted_value = f"{int(raw_value):,}".replace(',', '.')
+            else:
+                formatted_value = ""
+
+            # Atualiza o TextField com o valor formatado
+            e.control.value = formatted_value
+            e.control.update()
+
+        def format_number_only99(e):
+        # Remove qualquer caractere que não seja dígito
+            raw_value = ''.join(filter(str.isdigit, e.control.value))
+            
+            if raw_value:
+                # Converte para inteiro e formata com separador de milhar
+                integer_value = min(int(raw_value[:2]), 99)
+                formatted_value = str(integer_value)
+            else:
+                formatted_value = ""
+
+            # Atualiza o TextField com o valor formatado
+            e.control.value = formatted_value
+            e.control.update()
+
         goal_value_liquid = ft.TextField(label="Valor total da meta", prefix_text="€",
             border_radius=21, 
             text_size=18,
+            on_change=format_number,
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=14,               # Tamanho opcional
@@ -197,6 +228,7 @@ def main(page: ft.Page):
             if date_picker.value:
                 field.value = date_picker.value.strftime("%d/%m/%Y")
                 page.update()
+        
         goal_start = ft.TextField(
             label="Início da meta",
             label_style=ft.TextStyle(
@@ -243,6 +275,7 @@ def main(page: ft.Page):
         )
         day_off = ft.TextField(
             label="Dias de Folga",
+            on_change=format_number_only99,
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=14,               # Tamanho opcional
@@ -256,6 +289,7 @@ def main(page: ft.Page):
         
         fleet_discount = ft.TextField(
             label="Desconto da Frota",
+            on_change=format_number_only99,
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=14,               # Tamanho opcional
@@ -269,6 +303,7 @@ def main(page: ft.Page):
         )
         tax_discount = ft.TextField(
             label="Imposto",
+            on_change=format_number_only99,
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=14,               # Tamanho opcional
@@ -296,7 +331,7 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.MORE_TIME),
-                           title = ft.Text("NOVO OBJETIVO", size=18, weight=ft.FontWeight.BOLD),
+                           title = ft.Text("NOVO OBJETIVO", size=18),
                     ),
                     space_space_space,
                     goal_value_liquid,
