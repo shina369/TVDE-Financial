@@ -46,7 +46,7 @@ def main(page: ft.Page):
     bottom_menu = ft.BottomAppBar(
             content=ft.Row(
                 [
-                    ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_parcial")),
+                    ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_expense")),
                     ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
                     ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial", size=150)),
                     ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
@@ -178,18 +178,33 @@ def main(page: ft.Page):
         page.views.clear()
 
         def format_number(e):
-        # Remove qualquer caractere que não seja dígito
+            # Remove qualquer caractere que não seja dígito
             raw_value = ''.join(filter(str.isdigit, e.control.value))
-            
+
             if raw_value:
-                # Converte para inteiro e formata com separador de milhar
-                formatted_value = f"{int(raw_value):,}".replace(',', '.')
+                # Adiciona vírgula para centavos, separando os dois últimos dígitos
+                if len(raw_value) > 2:
+                    raw_value = raw_value[:-2] + ',' + raw_value[-2:]
+                else:
+                    raw_value = '00,' + raw_value
+
+                # Converte para inteiro e formata com separador de milhar (ponto)
+                integer_part = raw_value.split(',')[0]
+                decimal_part = raw_value.split(',')[1]
+
+                # Formata a parte inteira com ponto como separador de milhar
+                formatted_integer = f"{int(integer_part):,}".replace(',', '.')
+
+                # Junta a parte inteira formatada com a parte decimal
+                formatted_value = f"{formatted_integer},{decimal_part}"
+
             else:
                 formatted_value = ""
 
             # Atualiza o TextField com o valor formatado
             e.control.value = formatted_value
             e.control.update()
+
 
         def format_number_only99(e):
         # Remove qualquer caractere que não seja dígito
@@ -206,7 +221,7 @@ def main(page: ft.Page):
             e.control.value = formatted_value
             e.control.update()
 
-        goal_value_liquid = ft.TextField(label="Valor total da meta", prefix_text="€",
+        goal_value_liquid = ft.TextField(label="Valor total da meta", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
             on_change=format_number,
@@ -316,6 +331,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
 
+        global button_salve
         button_salve = ft.ElevatedButton(
             text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
         )
@@ -343,6 +359,165 @@ def main(page: ft.Page):
                     fleet_discount,
                     space_space_space,
                     tax_discount,    
+                    space_space_space,
+                    button_salve,
+                    bottom_menu
+                ]
+            )
+        )
+        page.update()
+
+    def page_expense():
+        page.views.clear()
+
+        def format_number_accounting(e):
+            # Remove qualquer caractere que não seja dígito
+            raw_value = ''.join(filter(str.isdigit, e.control.value))
+
+            if raw_value:
+                # Adiciona vírgula para centavos, separando os dois últimos dígitos
+                if len(raw_value) > 2:
+                    raw_value = raw_value[:-2] + ',' + raw_value[-2:]
+                else:
+                    raw_value = '00,' + raw_value
+
+                # Converte para inteiro e formata com separador de milhar (ponto)
+                integer_part = raw_value.split(',')[0]
+                decimal_part = raw_value.split(',')[1]
+
+                # Formata a parte inteira com ponto como separador de milhar
+                formatted_integer = f"{int(integer_part):,}".replace(',', '.')
+
+                # Junta a parte inteira formatada com a parte decimal
+                formatted_value = f"{formatted_integer},{decimal_part}"
+
+            else:
+                formatted_value = ""
+
+            # Atualiza o TextField com o valor formatado
+            e.control.value = formatted_value
+            e.control.update()
+
+        global expense_value
+        expense_value = ft.TextField(label="Valor da despesa", prefix_text="€ ",
+            border_radius=21, 
+            text_size=18,
+            on_change=format_number_accounting,
+            label_style=ft.TextStyle(
+              color="#AAAAAA",  # Cor do label
+              size=14,          # Tamanho opcional
+            ),
+            helper_text="* Valor líquido pretendido ao fim da meta.",
+            content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
+        )
+
+        def pick_date(e, field):
+            # Adiciona o DatePicker à página antes de abrir
+            page.add(date_picker2)
+            page.open(date_picker2)  # Usa o método correto para abrir o DatePicker
+
+        def on_date_selected(e, field):
+            if date_picker2.value:
+                # Formata a data selecionada no formato "dd/mm/yyyy"
+                field.value = date_picker2.value.strftime("%d/%m/%Y")
+                page.update()
+
+        # Criação do DatePicker
+        date_picker2 = ft.DatePicker(
+            on_change=lambda e: on_date_selected(e, expense_date)  # Define o on_change diretamente
+        )
+
+        # Criação do TextField para data
+        expense_date = ft.TextField(
+            label="Data da despesa",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,          # Tamanho opcional
+            ),
+            border_radius=21,
+            text_size=18,
+            keyboard_type=ft.KeyboardType.DATETIME,
+            helper_text="* Data da despesa.",
+            content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+            suffix=ft.IconButton(
+                icon=ft.icons.CALENDAR_MONTH,
+                on_click=lambda e: pick_date(e, expense_date),  # Chama pick_date para abrir o DatePicker
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão
+                )
+            )
+        )
+        global observation
+
+        observation = ft.TextField(
+            label="Observação",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,          # Tamanho opcional
+            ),
+            border_radius=21,
+            text_size=18,
+            helper_text="*Observação",
+        )
+    
+        dropdown = ft.Dropdown(
+            label="Despesas:",  # Texto de rótulo do dropdown
+            options=[
+                ft.dropdown.Option("Manutenção"),
+                ft.dropdown.Option("Gasolína"),
+                ft.dropdown.Option("Gasóleo"),
+                ft.dropdown.Option("GPL"),
+                ft.dropdown.Option("Recarga Bateria"),
+                ft.dropdown.Option("Alimentação"),
+                ft.dropdown.Option("Portagem")
+            ],
+            on_change=lambda e: on_option_selected(e),  # Defina uma função para tratar a mudança
+            border_radius=21,
+            content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+            
+        )
+        def on_option_selected(e):
+            # Alterar a cor de fundo e do texto dependendo da seleção
+            if e.control.value == "Manutenção":
+                dropdown.bgcolor = "#E0E0E0"  # Cor de fundo quando "Opção 1" é selecionada
+                dropdown.style = ft.TextStyle(color="#FF5722")  # Cor do texto para "Opção 1"
+            elif e.control.value == "Gasolína":
+                dropdown.bgcolor = "#FFEB3B"  # Cor de fundo quando "Opção 2" é selecionada
+                dropdown.style = ft.TextStyle(color="#000000")  # Cor do texto para "Opção 2"
+            elif e.control.value == "Gasóleo":
+                dropdown.bgcolor = "#B25900"  # Cor de fundo quando "Opção 3" é selecionada
+                dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+            elif e.control.value == "GPL":
+                dropdown.bgcolor = "#4CAF50"  # Cor de fundo quando "Opção 3" é selecionada
+                dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+            elif e.control.value == "Recarga Bateria":
+                dropdown.bgcolor = "#B200B2"  # Cor de fundo quando "Opção 3" é selecionada
+                dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+            elif e.control.value == "Alimentação":
+                dropdown.bgcolor = "#FF7F00"  # Cor de fundo quando "Opção 3" é selecionada
+                dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+            else:
+                dropdown.bgcolor = "#00B200"  # Cor de fundo quando "Opção 4" é selecionada
+                dropdown.style = ft.TextStyle(color="#CCCCCC")  # Cor do texto para "Opção 4"
+            
+            page.update()  # Atualizar a página após a mudança
+
+        page.views.append(
+            ft.View(
+                "/page_expense",
+                controls=[
+                    header,
+                    title_app(
+                           icon = ft.Icon(ft.icons.MONEY_OFF_SHARP),
+                           title = ft.Text("NOVA DESPESA", size=18),
+                    ),
+                    expense_value,
+                    space_space_space,
+                    expense_date,
+                    space_space_space,
+                    dropdown,
+                    space_space_space,
+                    observation,
                     space_space_space,
                     button_salve,
                     bottom_menu
@@ -936,6 +1111,8 @@ def main(page: ft.Page):
             page_parcial()
         elif page.route == "/page_add_daily":
             page_add_daily()
+        elif page.route == "/page_expense":
+            page_expense()
         elif page.route.startswith("/page_add_daily"):
             # Captura o valor do parâmetro da URL
             param = page.route.split("?param=")[-1] if "?param=" in page.route else "Desconhecido"
