@@ -47,7 +47,7 @@ def main(page: ft.Page):
             content=ft.Row(
                 [
                     ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_expense")),
-                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
+                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.go("/page_new_goal")),
                     ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial", size=150)),
                     ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
                     ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
@@ -256,6 +256,7 @@ def main(page: ft.Page):
             keyboard_type=ft.KeyboardType.DATETIME,
             helper_text="* Data do Início da meta",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+            expand=True,
             suffix=ft.IconButton(
                 icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, goal_start),
@@ -273,6 +274,7 @@ def main(page: ft.Page):
             ),
             width=page.width * 0.47,
             border_radius=21,
+            expand=True,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
             helper_text="* Data do Fim da Meta",
@@ -628,7 +630,6 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=14,          # Tamanho opcional
             ),
-            width=page.width * 0.47,
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -675,17 +676,26 @@ def main(page: ft.Page):
             page.update()
 
         working_hours = ft.TextField(
-            label="Hora trabalhadas (HH:MM)",
+            label="Tempo gasto (HH:MM)",
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
+            expand=True,
             on_change=hour_validy
+            
         )
 
         distance_traveled = ft.TextField(
             label="Distância percorrida",suffix_text="KMs",
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
+            expand=True,
             on_change=format_number_only999
+        )
+
+        contatenate_textfield = ft.Container(
+            ft.Row(
+                controls=[working_hours, distance_traveled]
+            )
         )
 
         trips_made = ft.TextField(
@@ -728,9 +738,7 @@ def main(page: ft.Page):
                     space_space_space,
                     daily_bolt_date,
                     space_space_space,
-                    working_hours,
-                    space_space_space,
-                    distance_traveled,
+                    contatenate_textfield,
                     space_space_space,
                     trips_made,
                     space_space_space,
