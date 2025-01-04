@@ -1108,32 +1108,6 @@ def main(page: ft.Page):
         )
         page.update()
 
-    def page_add_daily(param):
-        page.views.clear()
-        
-        title_page_daily = ft.Text(f"DIÁRIA {param.upper()}")
-        value_daily = ft.TextField(label=f"Valor diária {param}", border_radius=21)
-        date_daily = ft.TextField(label="Data", border_radius=21)
-        expenses_page_daily= ft.Text("GASTOS DO DIA")
-        value_expenses_daily = ft.TextField(label="Valor Gasto do dia", border_radius=21)
-        button_add_daily = ft.ElevatedButton(text="Cadastrar")
-
-        page.views.append(
-            ft.View(
-                "/page_add_daily",
-                controls=[
-                    bottom_menu,
-                    title_page_daily,
-                    value_daily,
-                    date_daily,
-                    expenses_page_daily,
-                    value_expenses_daily,
-                    button_add_daily
-                ]
-            )
-        )
-        page.update()
-
     def page_forget_password():
         page.views.clear()
         
@@ -1324,8 +1298,6 @@ def main(page: ft.Page):
             page_new_password()
         elif page.route == "/page_parcial":
             page_parcial()
-        elif page.route == "/page_add_daily":
-            page_add_daily()
         elif page.route == "/page_expense":
             page_expense()
         elif page.route == "/page_daily_bolt":
