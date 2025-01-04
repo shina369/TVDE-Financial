@@ -120,7 +120,7 @@ def main(page: ft.Page):
                 stored_password = result[0]   
                 if hash_password_login == stored_password:
                     print("Login bem-sucedido!")
-                    page.go("/page_new_goal")  # Navegar para "page_new_goal" se o login for bem-sucedido
+                    page.go("/page_parcial")  # Navegar para "page_new_goal" se o login for bem-sucedido
                 else:
                     password_login.error_text = "Senha incorreta"
                     password_login.update()
@@ -447,6 +447,7 @@ def main(page: ft.Page):
                 )
             )
         )
+        
         global observation
 
         observation = ft.TextField(
@@ -519,6 +520,221 @@ def main(page: ft.Page):
                     space_space_space,
                     observation,
                     space_space_space,
+                    button_salve,
+                    bottom_menu
+                ]
+            )
+        )
+        page.update()
+    def page_daily_bolt(param):
+        page.views.clear()
+
+        def format_number(e):
+            # Remove qualquer caractere que não seja dígito
+            raw_value = ''.join(filter(str.isdigit, e.control.value))
+
+            if raw_value:
+                # Adiciona vírgula para centavos, separando os dois últimos dígitos
+                if len(raw_value) > 2:
+                    raw_value = raw_value[:-2] + ',' + raw_value[-2:]
+                else:
+                    raw_value = '00,' + raw_value
+
+                # Converte para inteiro e formata com separador de milhar (ponto)
+                integer_part = raw_value.split(',')[0]
+                decimal_part = raw_value.split(',')[1]
+
+                # Formata a parte inteira com ponto como separador de milhar
+                formatted_integer = f"{int(integer_part):,}".replace(',', '.')
+
+                # Junta a parte inteira formatada com a parte decimal
+                formatted_value = f"{formatted_integer},{decimal_part}"
+
+            else:
+                formatted_value = ""
+
+            # Atualiza o TextField com o valor formatado
+            e.control.value = formatted_value
+            e.control.update()
+
+        def format_number_only99(e):
+        # Remove qualquer caractere que não seja dígito
+            raw_value = ''.join(filter(str.isdigit, e.control.value))
+            
+            if raw_value:
+                # Converte para inteiro e formata com separador de milhar
+                integer_value = min(int(raw_value[:2]), 99)
+                formatted_value = str(integer_value)
+            else:
+                formatted_value = ""
+
+            # Atualiza o TextField com o valor formatado
+            e.control.value = formatted_value
+            e.control.update()
+        
+        def format_number_only999(e):
+        # Remove qualquer caractere que não seja dígito
+            raw_value = ''.join(filter(str.isdigit, e.control.value))
+            
+            if raw_value:
+                # Converte para inteiro e formata com separador de milhar
+                integer_value = min(int(raw_value[:3]), 999)
+                formatted_value = str(integer_value)
+            else:
+                formatted_value = ""
+
+            # Atualiza o TextField com o valor formatado
+            e.control.value = formatted_value
+            e.control.update()
+
+        daily_value_bolt = ft.TextField(label=f"Valor líquido da {param}", prefix_text="€ ",
+            border_radius=21, 
+            text_size=18,
+            on_change=format_number,
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,               # Tamanho opcional
+            ),
+            helper_text=f"* *Valor líquido das corridas. Sem a % da {param}.",
+            content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
+        )
+
+        daily_value_bolt_tips = ft.TextField(label=f"Valor gorjetas da {param}", prefix_text="€ ",
+            border_radius=21, 
+            text_size=18,
+            on_change=format_number,
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,               # Tamanho opcional
+            ),
+            helper_text="* Valor das gorjetas",
+            content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
+        )
+        
+        date_picker = ft.DatePicker(on_change=None)  # on_change definido depois dinamicamente
+
+        def pick_date(e, field):
+            date_picker.on_change = lambda e: on_date_selected(e, field)
+            date_picker.pick_date()
+
+        def on_date_selected(e, field):
+            if date_picker.value:
+                field.value = date_picker.value.strftime("%d/%m/%Y")
+                page.update()
+        
+        daily_bolt_date = ft.TextField(
+            label=f"Data da diária da {param}",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,          # Tamanho opcional
+            ),
+            width=page.width * 0.47,
+            border_radius=21,
+            text_size=18,
+            keyboard_type=ft.KeyboardType.DATETIME,
+            helper_text="* Data da diária",
+            content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+            suffix=ft.IconButton(
+                icon=ft.icons.CALENDAR_MONTH,
+                on_click=lambda e: pick_date(e, daily_bolt_date),
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
+                )
+            )
+        )
+
+        def hour_validy(e):
+            texto = e.control.value
+            if not texto:
+                return
+            # Remove tudo o que não for número
+            texto = ''.join(filter(str.isdigit, texto))
+
+            # Verifica se o texto tem pelo menos 4 caracteres (para hora e minutos)
+            if len(texto) == 4:
+                # Corrige o formato para HH:MM
+                texto_corrigido = texto[:2] + ':' + texto[2:]
+                e.control.value = texto_corrigido
+                texto = texto_corrigido  # Atualiza a variável texto com o valor corrigido
+            elif len(texto) > 4:
+                # Se o usuário tentar inserir mais de 4 caracteres, limitamos à quantidade necessária
+                texto_corrigido = texto[:2] + ':' + texto[2:4]
+                e.control.value = texto_corrigido
+                texto = texto_corrigido  # Atualiza a variável texto com o valor corrigido
+
+            # Agora, validamos se a hora e os minutos são válidos
+            if len(texto) == 5 and texto[2] == ":" and texto[:2].isdigit() and texto[3:].isdigit():
+                horas, minutos = texto.split(":")
+                if 0 <= int(horas) <= 23 and 0 <= int(minutos) <= 59:
+                    e.control.border_color = ft.colors.GREEN
+                else:
+                    e.control.border_color = ft.colors.RED
+            else:
+                e.control.border_color = ft.colors.RED
+                
+            page.update()
+
+        working_hours = ft.TextField(
+            label="Hora trabalhadas (HH:MM)",
+            keyboard_type=ft.KeyboardType.NUMBER,
+            border_radius=21,
+            on_change=hour_validy
+        )
+
+        distance_traveled = ft.TextField(
+            label="Distância percorrida",suffix_text="KMs",
+            keyboard_type=ft.KeyboardType.NUMBER,
+            border_radius=21,
+            on_change=format_number_only999
+        )
+
+        trips_made = ft.TextField(
+            label="Viagens realizadas",
+            keyboard_type=ft.KeyboardType.NUMBER,
+            border_radius=21,
+            on_change=format_number_only99
+        )
+
+        button_salve = ft.ElevatedButton(
+            text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
+        )
+
+        space_space_space = ft.Container(height=0.9)
+        observation = ft.TextField(
+            label="Observação",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,          # Tamanho opcional
+            ),
+            border_radius=21,
+            text_size=18,
+            helper_text="*Observação",
+        )
+
+        page.overlay.append(date_picker)
+        page.views.append(
+            ft.View(
+                "/page_daily_bolt",
+                controls=[
+                    header,
+                    title_app(
+                           icon = ft.Icon(ft.icons.MORE_TIME),
+                           title = ft.Text(f"DIÁRIA {param.upper()}", size=18),
+                    ),
+                    space_space_space,
+                    daily_value_bolt,
+                    space_space_space,
+                    daily_value_bolt_tips,
+                    space_space_space,
+                    daily_bolt_date,
+                    space_space_space,
+                    working_hours,
+                    space_space_space,
+                    distance_traveled,
+                    space_space_space,
+                    trips_made,
+                    space_space_space,
+                    observation,
                     button_salve,
                     bottom_menu
                 ]
@@ -717,7 +933,6 @@ def main(page: ft.Page):
             ],
             spacing=0,
         )
-        global param
         button_bolt_uber = ft.Row(
             controls=[
                 ft.Container(
@@ -731,7 +946,7 @@ def main(page: ft.Page):
                                     width=154,
                                     height=51,
                                 ),
-                                on_click=lambda e: page.go("/page_add_daily?param=Bolt")
+                                on_click=lambda e: page.go("/page_daily_bolt?param=Bolt")
                             ),
                             ft.Container(
                                 content=ft.Image(
@@ -739,7 +954,7 @@ def main(page: ft.Page):
                                     width=154,
                                     height=51,
                                 ),
-                                on_click=lambda e: page.go("/page_add_daily?param=Uber")
+                                on_click=lambda e: page.go("/page_daily_bolt?param=Uber")
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -896,7 +1111,7 @@ def main(page: ft.Page):
     def page_add_daily(param):
         page.views.clear()
         
-        title_page_daily = ft.Text(f"CADASTRAR DIÁRIA {param.upper()}")
+        title_page_daily = ft.Text(f"DIÁRIA {param.upper()}")
         value_daily = ft.TextField(label=f"Valor diária {param}", border_radius=21)
         date_daily = ft.TextField(label="Data", border_radius=21)
         expenses_page_daily= ft.Text("GASTOS DO DIA")
@@ -1113,10 +1328,12 @@ def main(page: ft.Page):
             page_add_daily()
         elif page.route == "/page_expense":
             page_expense()
-        elif page.route.startswith("/page_add_daily"):
+        elif page.route == "/page_daily_bolt":
+            page_daily_bolt()
+        elif page.route.startswith("/page_daily_bolt"):
             # Captura o valor do parâmetro da URL
             param = page.route.split("?param=")[-1] if "?param=" in page.route else "Desconhecido"
-            page_add_daily(param)
+            page_daily_bolt(param)
 
     # Definindo o handler para mudanças de rota
     page.on_route_change = route_change
