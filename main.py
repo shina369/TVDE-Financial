@@ -29,16 +29,15 @@ def main(page: ft.Page):
             controls=[
                 ft.Container(
                     width=399,
+                    expand=True,
                     height=66,
                     content=ft.Row(
                         controls=[
                             ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png", width=154, height=51),
                             ft.IconButton(ft.icons.MENU, on_click=lambda _:  page.drawer.toggle(), icon_size=33),
                         ],
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                        
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN, 
                     ),
-    
                 )
             ]
         )
@@ -528,6 +527,7 @@ def main(page: ft.Page):
             )
         )
         page.update()
+    
     def page_daily_bolt(param):
         page.views.clear()
 
