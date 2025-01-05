@@ -37,12 +37,12 @@ def main(page: ft.Page):
         items=[
                 ft.PopupMenuItem(text="MENU"),
                 
-                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta"),
-                ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais",on_click=lambda _: page.go("/page_parcial")),
-                ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo",on_click=lambda _: page.go("/page_new_goal")),
-                ft.PopupMenuItem(icon=ft.icons.CALCULATE_OUTLINED, text="Relatórios"),
-                ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração"),
-                ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="PREMIUM"),
+                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_accont")),
+                ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
+                ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
+                ft.PopupMenuItem(icon=ft.icons.CALCULATE_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
+                ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração", on_click=lambda _: page.go("/page_settings")),
+                ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="PREMIUM", on_click=lambda _: page.go("/page_premium")),
                 ft.PopupMenuItem(),  # divider
                 ft.PopupMenuItem(
                     icon=ft.icons.EXIT_TO_APP_SHARP, text="SAIR",on_click=lambda _: page.go("/")
@@ -85,6 +85,10 @@ def main(page: ft.Page):
 
     button_salve = ft.ElevatedButton(
         text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
+        )
+    
+    button_premium = ft.ElevatedButton(
+        text="Quero", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
         )
 
     def page_message_screen(msg):
@@ -153,6 +157,85 @@ def main(page: ft.Page):
             )
         page.update
 
+    def page_premium():
+        page.views.clear()
+
+        page.views.append(
+            ft.View(
+                "/page_premium",
+                controls=[
+                    header,
+                    title_app(
+                           icon = ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED),
+                           title = ft.Text("PREMIUM", size=18),
+                    ),
+                    button_premium,
+                    bottom_menu
+                ]
+            )
+        )
+
+        page.update()
+
+    def page_my_accont():
+        page.views.clear()
+
+        page.views.append(
+            ft.View(
+                "/page_my_accont",
+                controls=[
+                    header,
+                    title_app(
+                           icon = ft.Icon(ft.icons.CONTACTS_OUTLINED),
+                           title = ft.Text("MINHA CONTA", size=18),
+                    ),
+                    button_premium,
+                    bottom_menu
+                ]
+            )
+        )
+
+        page.update()
+
+    def page_reports():
+        page.views.clear()
+
+        page.views.append(
+            ft.View(
+                "/page_reports",
+                controls=[
+                    header,
+                    title_app(
+                           icon = ft.Icon(ft.icons.CALCULATE_OUTLINED),
+                           title = ft.Text("RELATÓRIOS", size=18),
+                    ),
+                    button_premium,
+                    bottom_menu
+                ]
+            )
+        )
+
+        page.update()
+    
+    def page_settings():
+        page.views.clear()
+
+        page.views.append(
+            ft.View(
+                "/page_settings",
+                controls=[
+                    header,
+                    title_app(
+                           icon = ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
+                           title = ft.Text("CONFIGURAÇÃO", size=18),
+                    ),
+                    button_premium,
+                    bottom_menu
+                ]
+            )
+        )
+
+        page.update()
 
     def page_login():
         page.views.clear()
@@ -1376,6 +1459,14 @@ def main(page: ft.Page):
             page_daily_bolt()
         elif page.route == "/page_menu":
             page_menu()
+        elif page.route == "/page_premium":
+            page_premium()
+        elif page.route == "/page_my_accont":
+            page_my_accont()
+        elif page.route == "/page_reports":
+            page_reports()
+        elif page.route == "/page_settings":
+            page_settings()
         elif page.route.startswith("/page_daily_bolt"):
             # Captura o valor do parâmetro da URL
             param = page.route.split("?param=")[-1] if "?param=" in page.route else "Desconhecido"
