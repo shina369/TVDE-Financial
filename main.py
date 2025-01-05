@@ -25,6 +25,32 @@ def main(page: ft.Page):
         )
     )
 
+    def check_item_clicked(e):
+        e.control.checked = not e.control.checked
+        page.update()
+
+    pb = ft.PopupMenuButton(
+        icon=ft.icons.MENU,
+        icon_size=39,
+        items=[
+            ft.PopupMenuItem(text="Item 1"),
+            ft.PopupMenuItem(icon=ft.icons.POWER_INPUT, text="Check power"),
+            ft.PopupMenuItem(
+                content=ft.Row(
+                    [
+                        ft.Icon(ft.icons.HOURGLASS_TOP_OUTLINED),
+                        ft.Text("Item with a custom content"),
+                    ]
+                ),
+                on_click=lambda _: print("Button with a custom content clicked!"),
+            ),
+            ft.PopupMenuItem(),  # divider
+            ft.PopupMenuItem(
+                text="Checked item", checked=False, on_click=check_item_clicked
+            ),
+        ]
+    )
+
     header = ft.Row(
             controls=[
                 ft.Container(
@@ -34,7 +60,7 @@ def main(page: ft.Page):
                     content=ft.Row(
                         controls=[
                             ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png", width=154, height=51),
-                            ft.IconButton(ft.icons.MENU, on_click=lambda _:  page.drawer.toggle(), icon_size=33),
+                            pb
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN, 
                     ),
@@ -47,8 +73,8 @@ def main(page: ft.Page):
                 [
                     ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_expense")),
                     ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.go("/page_new_goal")),
-                    ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial", size=150)),
-                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Busca clicada!")))),
+                    ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial", size=12)),
+                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.go("/page_menu")),
                     ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_AROUND,
@@ -82,6 +108,48 @@ def main(page: ft.Page):
             padding=ft.padding.only(bottom=21),
             border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREY_900))
         )
+    
+    def page_menu():
+        page.views.clear()
+
+        page_menu_open = ft.Container(
+            bgcolor=ft.colors.AMBER_300,
+            width=435,
+            height=600,
+            border_radius=21,
+            content=ft.Column(
+                controls=[
+                    ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
+                    ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
+                    ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREY_900)),
+                    ft.Container(height=90),
+                    ft.Text("Nome: "),
+                    ft.Text("Email: "),
+                    ft.Text("Tipo de Conta: "),
+                    ft.Container(height=90),
+                    ft.Text("Seja PREMIUM agora"),
+                    ft.Row(
+                        ft.Text("SEJA \n PREMIUM \n AQUI"),
+                        ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
+                        ft.Text("Desbloqueie relatórios completos..."),
+                    ),
+                    ft.ElevatedButton(
+                        text="SAIR", bgcolor={"disabled": "#D00000", "": "#4CAF50"}, color="white"
+                    )
+                ]
+            )
+        )
+        page.views.append(
+                ft.View(
+                    "/page_menu",
+                    controls=[
+                        page_menu_open
+                    ]
+                )
+
+            )
+        page.update
+
 
     def page_login():
         page.views.clear()
@@ -772,6 +840,7 @@ def main(page: ft.Page):
                 return resultado[0]  # Resultado[0] contém o nome do usuário
             else:
                 return None 
+        global user_name
 
         user_name = search_user_name(email_login.value)
 
@@ -1310,6 +1379,8 @@ def main(page: ft.Page):
             page_expense()
         elif page.route == "/page_daily_bolt":
             page_daily_bolt()
+        elif page.route == "/page_menu":
+            page_menu()
         elif page.route.startswith("/page_daily_bolt"):
             # Captura o valor do parâmetro da URL
             param = page.route.split("?param=")[-1] if "?param=" in page.route else "Desconhecido"
