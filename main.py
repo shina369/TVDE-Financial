@@ -88,7 +88,7 @@ def main(page: ft.Page):
         )
     
     button_premium = ft.ElevatedButton(
-        text="Quero", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
+        text="CONTINUAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
         )
 
     def page_message_screen(msg):
@@ -169,6 +169,37 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED),
                            title = ft.Text("PREMIUM", size=18),
                     ),
+                    ft.Row(
+                        controls=[
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Text("CONTROLE SEUS GANHOS E GASTOS")
+                        ]
+                    ), 
+                    ft.Row(
+                        controls=[
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Text("DESBLOQUEIE RELATÓRIOS COMPLETOS")
+                        ]
+                    ),
+                    ft.Row(
+                        controls=[
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Text("RELATÓRIOS EXCLUSIVOS")
+                        ]
+                    ),
+                    ft.Row(
+                        controls=[
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Text("SEM PROPAGANDAS")
+                        ]
+                    ),
+                    ft.Row(
+                        controls=[
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Text("CANCELE A QUALQUER MOMENTO")
+                        ]
+                    ),
+                    ft.Container(),
                     button_premium,
                     bottom_menu
                 ]
