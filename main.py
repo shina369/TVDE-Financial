@@ -31,23 +31,21 @@ def main(page: ft.Page):
 
     pb = ft.PopupMenuButton(
         icon=ft.icons.MENU,
-        icon_size=39,
+        shadow_color=ft.colors.GREEN_300,
+        splash_radius=21,
+        icon_size=36,
         items=[
-            ft.PopupMenuItem(text="Item 1"),
-            ft.PopupMenuItem(icon=ft.icons.POWER_INPUT, text="Check power"),
-            ft.PopupMenuItem(
-                content=ft.Row(
-                    [
-                        ft.Icon(ft.icons.HOURGLASS_TOP_OUTLINED),
-                        ft.Text("Item with a custom content"),
-                    ]
+                ft.PopupMenuItem(text="MENU"),
+                ft.PopupMenuItem(),
+                ft.PopupMenuItem(icon=ft.icons.POINT_OF_SALE, text="Novo Objetivo"),
+                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta"),
+                ft.PopupMenuItem(icon=ft.icons.HELP_CENTER_OUTLINED, text="Ajuda"),
+                ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração"),
+                ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="PREMIUM"),
+                ft.PopupMenuItem(),  # divider
+                ft.PopupMenuItem(
+                    icon=ft.icons.EXIT_TO_APP_SHARP, text="SAIR"
                 ),
-                on_click=lambda _: print("Button with a custom content clicked!"),
-            ),
-            ft.PopupMenuItem(),  # divider
-            ft.PopupMenuItem(
-                text="Checked item", checked=False, on_click=check_item_clicked
-            ),
         ]
     )
 
@@ -840,6 +838,7 @@ def main(page: ft.Page):
                 return resultado[0]  # Resultado[0] contém o nome do usuário
             else:
                 return None 
+            
         global user_name
 
         user_name = search_user_name(email_login.value)
