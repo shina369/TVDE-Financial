@@ -32,19 +32,19 @@ def main(page: ft.Page):
     pb = ft.PopupMenuButton(
         icon=ft.icons.MENU,
         shadow_color=ft.colors.GREEN_300,
-        splash_radius=21,
+        bgcolor="#F1F1F1",
         icon_size=36,
         items=[
                 ft.PopupMenuItem(text="MENU"),
-                ft.PopupMenuItem(),
-                ft.PopupMenuItem(icon=ft.icons.POINT_OF_SALE, text="Novo Objetivo"),
+                ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais",on_click=lambda _: page.go("/page_parcial")),
+                ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo",on_click=lambda _: page.go("/page_new_goal")),
                 ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta"),
                 ft.PopupMenuItem(icon=ft.icons.HELP_CENTER_OUTLINED, text="Ajuda"),
                 ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração"),
                 ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="PREMIUM"),
                 ft.PopupMenuItem(),  # divider
                 ft.PopupMenuItem(
-                    icon=ft.icons.EXIT_TO_APP_SHARP, text="SAIR"
+                    icon=ft.icons.EXIT_TO_APP_SHARP, text="SAIR",on_click=lambda _: page.go("/")
                 ),
         ]
     )
@@ -80,6 +80,10 @@ def main(page: ft.Page):
             bgcolor="#EEEEEE",
             padding=10,
             height=60
+        )
+
+    button_salve = ft.ElevatedButton(
+        text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
         )
 
     def page_message_screen(msg):
@@ -397,15 +401,7 @@ def main(page: ft.Page):
             helper_text="Imposto.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
-
-        global button_salve
-        button_salve = ft.ElevatedButton(
-            text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
-        )
-        global space_space_space
-
-        space_space_space = ft.Container(height=0.9)
-    
+       
         page.overlay.append(date_picker)
         page.views.append(
             ft.View(
@@ -416,17 +412,17 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.MORE_TIME),
                            title = ft.Text("NOVO OBJETIVO", size=18),
                     ),
-                    space_space_space,
+                    ft.Container(height=0.9),
                     goal_value_liquid,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     goal_dates,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     day_off,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     fleet_discount,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     tax_discount,    
-                    space_space_space,
+                    ft.Container(height=0.9),
                     button_salve,
                     bottom_menu
                 ]
@@ -580,13 +576,13 @@ def main(page: ft.Page):
                            title = ft.Text("NOVA DESPESA", size=18),
                     ),
                     expense_value,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     expense_date,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     dropdown,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     observation,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     button_salve,
                     bottom_menu
                 ]
@@ -775,7 +771,6 @@ def main(page: ft.Page):
             text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
         )
 
-        space_space_space = ft.Container(height=0.9)
         observation = ft.TextField(
             label="Observação",
             label_style=ft.TextStyle(
@@ -797,17 +792,17 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.MORE_TIME),
                            title = ft.Text(f"DIÁRIA {param.upper()}", size=18),
                     ),
-                    space_space_space,
+                    ft.Container(height=0.9),
                     daily_value_bolt,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     daily_value_bolt_tips,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     daily_bolt_date,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     contatenate_textfield,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     trips_made,
-                    space_space_space,
+                    ft.Container(height=0.9),
                     observation,
                     button_salve,
                     bottom_menu
