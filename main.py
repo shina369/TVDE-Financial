@@ -33,13 +33,14 @@ def main(page: ft.Page):
         icon=ft.icons.MENU,
         shadow_color=ft.colors.GREEN_300,
         bgcolor="#F1F1F1",
-        icon_size=36,
+        icon_size=33,
         items=[
                 ft.PopupMenuItem(text="MENU"),
+                
+                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta"),
                 ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais",on_click=lambda _: page.go("/page_parcial")),
                 ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo",on_click=lambda _: page.go("/page_new_goal")),
-                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta"),
-                ft.PopupMenuItem(icon=ft.icons.HELP_CENTER_OUTLINED, text="Ajuda"),
+                ft.PopupMenuItem(icon=ft.icons.CALCULATE_OUTLINED, text="Relatórios"),
                 ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração"),
                 ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="PREMIUM"),
                 ft.PopupMenuItem(),  # divider
