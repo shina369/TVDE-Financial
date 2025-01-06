@@ -36,13 +36,12 @@ def main(page: ft.Page):
         icon_size=33,
         items=[
                 ft.PopupMenuItem(text="MENU"),
-                
-                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
                 ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
                 ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
                 ft.PopupMenuItem(icon=ft.icons.CALCULATE_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
+                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
                 ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração", on_click=lambda _: page.go("/page_settings")),
-                ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="PREMIUM", on_click=lambda _: page.go("/page_premium")),
+                ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="SEJA PREMIUM", on_click=lambda _: page.go("/page_premium")),
                 ft.PopupMenuItem(),  # divider
                 ft.PopupMenuItem(
                     icon=ft.icons.EXIT_TO_APP_SHARP, text="SAIR",on_click=lambda _: page.go("/")
@@ -72,9 +71,9 @@ def main(page: ft.Page):
                 [
                     ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_expense")),
                     ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.go("/page_new_goal")),
-                    ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial", size=12)),
-                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.go("/page_menu")),
-                    ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.snack_bar.show(ft.SnackBar(ft.Text("Configurações clicadas!")))),
+                    ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial")),
+                    ft.IconButton(ft.icons.CALCULATE_OUTLINED, on_click=lambda _: page.go("/page_reports")),
+                    ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/page_settings")),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_AROUND,
             ),
@@ -229,7 +228,9 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[ft.Text("TIpo de Conta: ")]
                     ),
-                    button_premium,
+                    ft.Row(
+                        controls=[ft.Text("Data: ")]
+                    ),
                     bottom_menu
                 ]
             )
@@ -249,7 +250,6 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.CALCULATE_OUTLINED),
                            title = ft.Text("RELATÓRIOS", size=18),
                     ),
-                    button_premium,
                     bottom_menu
                 ]
             )
@@ -269,7 +269,6 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
                            title = ft.Text("CONFIGURAÇÃO", size=18),
                     ),
-                    button_premium,
                     bottom_menu
                 ]
             )
