@@ -37,7 +37,7 @@ def main(page: ft.Page):
         items=[
                 ft.PopupMenuItem(text="MENU"),
                 
-                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_accont")),
+                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
                 ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
                 ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
                 ft.PopupMenuItem(icon=ft.icons.CALCULATE_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
@@ -208,17 +208,26 @@ def main(page: ft.Page):
 
         page.update()
 
-    def page_my_accont():
+    def page_my_account():
         page.views.clear()
 
         page.views.append(
             ft.View(
-                "/page_my_accont",
+                "/page_my_account",
                 controls=[
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.CONTACTS_OUTLINED),
                            title = ft.Text("MINHA CONTA", size=18),
+                    ),
+                    ft.Row(
+                        controls=[ft.Text("Nome: ")]  
+                    ),
+                    ft.Row(
+                        controls=[ft.Text("Email: ")]
+                    ),
+                    ft.Row(
+                        controls=[ft.Text("TIpo de Conta: ")]
                     ),
                     button_premium,
                     bottom_menu
@@ -1492,8 +1501,8 @@ def main(page: ft.Page):
             page_menu()
         elif page.route == "/page_premium":
             page_premium()
-        elif page.route == "/page_my_accont":
-            page_my_accont()
+        elif page.route == "/page_my_account":
+            page_my_account()
         elif page.route == "/page_reports":
             page_reports()
         elif page.route == "/page_settings":
