@@ -69,7 +69,7 @@ def main(page: ft.Page):
     bottom_menu = ft.BottomAppBar(
             content=ft.Row(
                 [
-                    ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_expense")),
+                    ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_more_date")),
                     ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.go("/page_new_goal")),
                     ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial")),
                     ft.IconButton(ft.icons.CALCULATE_OUTLINED, on_click=lambda _: page.go("/page_reports")),
@@ -713,7 +713,106 @@ def main(page: ft.Page):
         )
         page.update()
     
-    def page_daily_bolt(param):
+    def page_more_date():
+        page.views.clear()
+
+        big_button_bolt = ft.Container(
+                        width=180,
+                        height=135,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        margin=10,
+                        on_click=lambda e: page.go("/page_daily?param=Bolt"),
+                        content=
+                            ft.Column(  
+                                controls=[
+                                    ft.Image(src="https://i.ibb.co/FKM5tjP/icon-bolt51x51.png"),
+                                    ft.Text("Diária Bolt")
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                            )
+        )
+
+        big_button_uber = ft.Container(
+                        width=180,
+                        height=135,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        on_click=lambda e: page.go("/page_daily?param=Uber"),
+                        content=
+                            ft.Column(  
+                                controls=[
+                                    ft.Image(src="https://i.ibb.co/5xGNqkc/icon-uber51x51.png"),
+                                    ft.Text("Diária Uber")
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                            )
+                            
+        )
+
+
+        big_button_expense = ft.Container(
+                        width=180,
+                        height=135,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        margin=10,
+                        on_click=lambda e: page.go("/page_expense"),
+                        content=
+                            ft.Column(  
+                                controls=[
+                                    ft.Icon(ft.icons.MONEY_OFF_SHARP, size=48),
+                                    ft.Text("Nova Despesa")
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                            )
+        )
+
+        
+        big_button_new_goal = ft.Container(
+                        width=180,
+                        height=135,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        on_click=lambda e: page.go("/page_new_goal"),
+                        content=
+                            ft.Column(  
+                                controls=[
+                                    ft.Icon(ft.icons.ADD_CHART_OUTLINED, size=48),
+                                    ft.Text("Novo Objetivo")
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            )
+        )
+
+
+        page.views.append(
+            ft.View(
+                "page_more_date",
+                controls=[
+                    header,
+                    title_app(
+                        icon=ft.Icon(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED),
+                        title=ft.Text("Lançamentos")
+                    ),
+                    ft.Row(
+                        controls=[big_button_bolt, big_button_uber],
+                    ),
+                    ft.Row(
+                        controls=[big_button_expense, big_button_new_goal],
+                    ),
+                    bottom_menu
+                ]
+            )
+        )
+
+        page.update()
+
+    def page_daily(param):
         page.views.clear()
 
         def format_number(e):
@@ -908,7 +1007,7 @@ def main(page: ft.Page):
         page.overlay.append(date_picker)
         page.views.append(
             ft.View(
-                "/page_daily_bolt",
+                "/page_daily",
                 controls=[
                     header,
                     title_app(
@@ -1140,7 +1239,7 @@ def main(page: ft.Page):
                                     width=154,
                                     height=51,
                                 ),
-                                on_click=lambda e: page.go("/page_daily_bolt?param=Bolt")
+                                on_click=lambda e: page.go("/page_daily?param=Bolt")
                             ),
                             ft.Container(
                                 content=ft.Image(
@@ -1148,7 +1247,7 @@ def main(page: ft.Page):
                                     width=154,
                                     height=51,
                                 ),
-                                on_click=lambda e: page.go("/page_daily_bolt?param=Uber")
+                                on_click=lambda e: page.go("/page_daily?param=Uber")
                             ),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -1494,8 +1593,8 @@ def main(page: ft.Page):
             page_parcial()
         elif page.route == "/page_expense":
             page_expense()
-        elif page.route == "/page_daily_bolt":
-            page_daily_bolt()
+        elif page.route == "/page_daily":
+            page_daily()
         elif page.route == "/page_menu":
             page_menu()
         elif page.route == "/page_premium":
@@ -1506,10 +1605,12 @@ def main(page: ft.Page):
             page_reports()
         elif page.route == "/page_settings":
             page_settings()
-        elif page.route.startswith("/page_daily_bolt"):
+        elif page.route == "/page_more_date":
+            page_more_date()
+        elif page.route.startswith("/page_daily"):
             # Captura o valor do parâmetro da URL
             param = page.route.split("?param=")[-1] if "?param=" in page.route else "Desconhecido"
-            page_daily_bolt(param)
+            page_daily(param)
 
     # Definindo o handler para mudanças de rota
     page.on_route_change = route_change
