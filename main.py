@@ -240,6 +240,96 @@ def main(page: ft.Page):
     def page_reports():
         page.views.clear()
 
+        big_button_reports_daily_summary = ft.Container(
+                        width=180,
+                        height=135,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        margin=6,
+                        on_click=lambda e: page.go("/page_expense"),
+                        content=
+                            ft.Column(  
+                                controls=[
+                                    ft.Icon(ft.icons.TODAY, size=48),
+                                    ft.Text("Resumo Diário")
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                            )
+        )
+
+        big_button_reports_platform = ft.Container(
+                        width=180,
+                        height=135,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        margin=6,
+                        on_click=lambda e: page.go("/page_expense"),
+                        content=
+                            ft.Column(  
+                                controls=[
+                                    ft.Icon(ft.icons.ADD_TO_HOME_SCREEN, size=48),
+                                    ft.Text("Relatório de Plataforma")
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                            )
+        )
+
+        big_button_reports_delailed_expenses = ft.Container(
+                        width=180,
+                        height=135,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        margin=6,
+                        on_click=lambda e: page.go("/page_expense"),
+                        content=
+                            ft.Column(  
+                                controls=[
+                                    ft.Icon(ft.icons.EURO, size=48),
+                                    ft.Text("Despesas Detalhadas")
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                            )
+        )
+
+        big_button_reports_profit_by_race = ft.Container(
+                        width=180,
+                        height=135,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        margin=6,
+                        on_click=lambda e: page.go("/page_expense"),
+                        content=
+                            ft.Column(  
+                                controls=[
+                                    ft.Icon(ft.icons.DIRECTIONS_CAR, size=48),
+                                    ft.Text("Lucro por Corrida")
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                            )
+        )
+
+        big_button_reports_monthly = ft.Container(
+                        width=180,
+                        height=135,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        margin=6,
+                        on_click=lambda e: page.go("/page_expense"),
+                        content=
+                            ft.Column(  
+                                controls=[
+                                    ft.Icon(ft.icons.CALENDAR_MONTH, size=48),
+                                    ft.Text("Relatório Mensal")
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                            )
+        )
+
         page.views.append(
             ft.View(
                 "/page_reports",
@@ -249,6 +339,15 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.CALCULATE_OUTLINED),
                            title = ft.Text("RELATÓRIOS", size=18),
                     ),
+                    ft.Row(
+                        controls=[big_button_reports_daily_summary,
+                            big_button_reports_platform,]
+                    ),
+                    ft.Row(
+                        controls=[big_button_reports_delailed_expenses,
+                        big_button_reports_profit_by_race]
+                    ),
+                    big_button_reports_monthly,
                     bottom_menu
                 ]
             )
@@ -656,28 +755,40 @@ def main(page: ft.Page):
                 ft.dropdown.Option("Recarga Bateria"),
                 ft.dropdown.Option("Alimentação"),
                 ft.dropdown.Option("Portagem")
-            ],
-            on_change=lambda e: on_option_selected(e),  # Defina uma função para tratar a mudança
+            ], # Defina uma função para tratar a mudança
             border_radius=21,
+            on_change=lambda e: on_option_selected(e),
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             
         )
+
+        campo_litros = ft.TextField(label="Litros", visible=False, border_radius=21)
+        campo_metros_cubicos = ft.TextField(label="Metros Cúbicos (m³)", visible=False, border_radius=21)
+        campo_energia = ft.TextField(label="Energia (kWh)", visible=False, border_radius=21)
+
         def on_option_selected(e):
+            campo_litros.visible = False
+            campo_metros_cubicos.visible = False
+            campo_energia.visible = False
             # Alterar a cor de fundo e do texto dependendo da seleção
             if e.control.value == "Manutenção":
                 dropdown.bgcolor = "#E0E0E0"  # Cor de fundo quando "Opção 1" é selecionada
                 dropdown.style = ft.TextStyle(color="#FF5722")  # Cor do texto para "Opção 1"
             elif e.control.value == "Gasolína":
+                campo_litros.visible = True
                 dropdown.bgcolor = "#FFEB3B"  # Cor de fundo quando "Opção 2" é selecionada
                 dropdown.style = ft.TextStyle(color="#000000")  # Cor do texto para "Opção 2"
             elif e.control.value == "Gasóleo":
                 dropdown.bgcolor = "#B25900"  # Cor de fundo quando "Opção 3" é selecionada
+                campo_litros.visible = True
                 dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "GPL":
                 dropdown.bgcolor = "#4CAF50"  # Cor de fundo quando "Opção 3" é selecionada
+                campo_metros_cubicos.visible = True
                 dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "Recarga Bateria":
                 dropdown.bgcolor = "#B200B2"  # Cor de fundo quando "Opção 3" é selecionada
+                campo_energia.visible = True
                 dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "Alimentação":
                 dropdown.bgcolor = "#FF7F00"  # Cor de fundo quando "Opção 3" é selecionada
@@ -685,8 +796,9 @@ def main(page: ft.Page):
             else:
                 dropdown.bgcolor = "#00B200"  # Cor de fundo quando "Opção 4" é selecionada
                 dropdown.style = ft.TextStyle(color="#CCCCCC")  # Cor do texto para "Opção 4"
-            
-            page.update()  # Atualizar a página após a mudança
+             # Atualizar a página após a mudança
+
+            page.update()
 
         page.views.append(
             ft.View(
@@ -703,6 +815,9 @@ def main(page: ft.Page):
                     ft.Container(height=0.9),
                     dropdown,
                     ft.Container(height=0.9),
+                    campo_litros,
+                    campo_metros_cubicos,
+                    campo_energia,
                     observation,
                     ft.Container(height=0.9),
                     button_salve,
