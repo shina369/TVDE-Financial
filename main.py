@@ -165,7 +165,7 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED),
-                           title = ft.Text("PREMIUM", size=18),
+                           title = ft.Text("PREMIUM", size=21),
                     ),
                     ft.Row(
                         controls=[
@@ -216,10 +216,13 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.CONTACTS_OUTLINED),
-                           title = ft.Text("MINHA CONTA", size=18),
+                           title = ft.Text("MINHA CONTA", size=21),
                     ),
                     ft.Row(
                         controls=[ft.Text("Nome: ")]  
+                    ),
+                    ft.Row(
+                        controls=[ft.Text("Sobrenome: ")]  
                     ),
                     ft.Row(
                         controls=[ft.Text("Email: ")]
@@ -337,7 +340,7 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.CALCULATE_OUTLINED),
-                           title = ft.Text("RELATÓRIOS", size=18),
+                           title = ft.Text("RELATÓRIOS", size=21),
                     ),
                     ft.Row(
                         controls=[big_button_reports_daily_summary,
@@ -365,8 +368,12 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
-                           title = ft.Text("CONFIGURAÇÃO", size=18),
+                           title = ft.Text("CONFIGURAÇÃO", size=21),
                     ),
+                    ft.Text("Idioma do APP"),
+                    ft.Text("Tema: Claro / Escuro"),
+                    ft.Text("Apagar dados"),
+                    ft.Text("Personalizar graficos"),
                     bottom_menu
                 ]
             )
@@ -631,7 +638,7 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.MORE_TIME),
-                           title = ft.Text("NOVO OBJETIVO", size=18),
+                           title = ft.Text("NOVO OBJETIVO", size=21),
                     ),
                     ft.Container(height=0.9),
                     goal_value_liquid,
@@ -807,7 +814,7 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.MONEY_OFF_SHARP),
-                           title = ft.Text("NOVA DESPESA", size=18),
+                           title = ft.Text("NOVA DESPESA", size=21),
                     ),
                     expense_value,
                     ft.Container(height=0.9),
@@ -911,7 +918,7 @@ def main(page: ft.Page):
                     header,
                     title_app(
                         icon=ft.Icon(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED),
-                        title=ft.Text("Lançamentos")
+                        title=ft.Text("LANÇAMENTOS", size=21)
                     ),
                     ft.Row(
                         controls=[big_button_bolt, big_button_uber],
@@ -1126,7 +1133,7 @@ def main(page: ft.Page):
                     header,
                     title_app(
                            icon = ft.Icon(ft.icons.MORE_TIME),
-                           title = ft.Text(f"DIÁRIA {param.upper()}", size=18),
+                           title = ft.Text(f"DIÁRIA {param.upper()}", size=21),
                     ),
                     ft.Container(height=0.9),
                     daily_value_bolt,
