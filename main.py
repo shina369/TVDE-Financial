@@ -69,9 +69,8 @@ def main(page: ft.Page):
     bottom_menu = ft.BottomAppBar(
             content=ft.Row(
                 [
-                    ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_more_date")),
-                    ft.IconButton(ft.icons.DOCUMENT_SCANNER_OUTLINED, on_click=lambda _: page.go("/page_new_goal")),
                     ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial")),
+                    ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_more_date")),
                     ft.IconButton(ft.icons.CALCULATE_OUTLINED, on_click=lambda _: page.go("/page_reports")),
                     ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/page_settings")),
                 ],
