@@ -254,7 +254,7 @@ def main(page: ft.Page):
                         content=
                             ft.Column(  
                                 controls=[
-                                    ft.Icon(ft.icons.TODAY, size=48),
+                                    ft.Icon(ft.icons.TODAY, size=36),
                                     ft.Text("Resumo Diário")
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
