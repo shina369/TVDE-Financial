@@ -38,6 +38,7 @@ def main(page: ft.Page):
                 ft.PopupMenuItem(text="MENU"),
                 ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
                 ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
+                ft.PopupMenuItem(icon=ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, text="Lançamentos" , on_click=lambda _: page.go("/page_more_date")),
                 ft.PopupMenuItem(icon=ft.icons.CALCULATE_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
                 ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
                 ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração", on_click=lambda _: page.go("/page_settings")),
@@ -271,7 +272,7 @@ def main(page: ft.Page):
                         content=
                             ft.Column(  
                                 controls=[
-                                    ft.Icon(ft.icons.ADD_TO_HOME_SCREEN, size=48),
+                                    ft.Icon(ft.icons.ADD_TO_HOME_SCREEN, size=36),
                                     ft.Text("Relatório de Plataforma")
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
@@ -289,7 +290,7 @@ def main(page: ft.Page):
                         content=
                             ft.Column(  
                                 controls=[
-                                    ft.Icon(ft.icons.EURO, size=48),
+                                    ft.Icon(ft.icons.EURO, size=39),
                                     ft.Text("Despesas Detalhadas")
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
@@ -307,7 +308,7 @@ def main(page: ft.Page):
                         content=
                             ft.Column(  
                                 controls=[
-                                    ft.Icon(ft.icons.DIRECTIONS_CAR, size=48),
+                                    ft.Icon(ft.icons.DIRECTIONS_CAR, size=36),
                                     ft.Text("Lucro por Corrida")
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
@@ -325,7 +326,7 @@ def main(page: ft.Page):
                         content=
                             ft.Column(  
                                 controls=[
-                                    ft.Icon(ft.icons.CALENDAR_MONTH, size=48),
+                                    ft.Icon(ft.icons.CALENDAR_MONTH, size=36    ),
                                     ft.Text("Relatório Mensal")
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
@@ -1185,7 +1186,7 @@ def main(page: ft.Page):
             width=399,
             height=42,
             alignment=ft.Alignment(0, 0),
-            content=ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
+            content=ft.Text(f"Olá {user_name}, boa sorte!!!", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
         )
 
 
