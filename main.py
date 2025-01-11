@@ -37,8 +37,8 @@ def main(page: ft.Page):
         items=[
                 ft.PopupMenuItem(text="MENU"),
                 ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
-                ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
                 ft.PopupMenuItem(icon=ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, text="Lançamentos" , on_click=lambda _: page.go("/page_more_date")),
+                ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
                 ft.PopupMenuItem(icon=ft.icons.CALCULATE_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
                 ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
                 ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração", on_click=lambda _: page.go("/page_settings")),
@@ -84,6 +84,10 @@ def main(page: ft.Page):
 
     button_salve = ft.ElevatedButton(
         text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
+        )
+    
+    button_edit = ft.ElevatedButton(
+        text="Editar perfil", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
         )
     
     button_premium = ft.ElevatedButton(
@@ -216,24 +220,67 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.icons.CONTACTS_OUTLINED),
+                           icon = ft.Icon(ft.icons.ACCOUNT_CIRCLE_OUTLINED),
                            title = ft.Text("MINHA CONTA", size=21),
                     ),
-                    ft.Row(
-                        controls=[ft.Text("Nome: ")]  
+                    ft.Container(
+                        ft.Row(
+                            controls=[
+                                 ft.Container(
+                                    content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=18), 
+                                    padding=ft.padding.all(9),  # Adicione o padding desejado
+                                ),
+                                ft.Text("Fulano de Tals", size=15)
+                            ]
+                        ),
                     ),
-                    ft.Row(
-                        controls=[ft.Text("Sobrenome: ")]  
+                    ft.Container(
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
                     ),
-                    ft.Row(
-                        controls=[ft.Text("Email: ")]
+
+                    ft.Container(
+                        ft.Row(
+                            controls=[
+                                ft.Container(
+                                    content=ft.Icon(ft.icons.EMAIL_OUTLINED, size=18),
+                                    padding=ft.padding.all(9),  # Adicione o padding desejado
+                                ),
+                                ft.Text("Email@gmail.com", size=15)
+                            ]
+                        ),
                     ),
-                    ft.Row(
-                        controls=[ft.Text("TIpo de Conta: ")]
+                    ft.Container(
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
                     ),
-                    ft.Row(
-                        controls=[ft.Text("Data: ")]
+                    ft.Container(
+                        ft.Row(
+                            controls=[
+                                ft.Container(
+                                    content=ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED, size=18), 
+                                    padding=ft.padding.all(9),  # Adicione o padding desejado
+                                ),
+                                ft.Text("Tipo de Conta: PREMIUM -» Expira em: 25/10/2026", size=15)
+                            ]
+                        ),
                     ),
+                    ft.Container(
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
+                    ),
+                      ft.Container(
+                        ft.Row(
+                            controls=[
+                                 ft.Container(
+                                    content=ft.Icon(ft.icons.DATE_RANGE, size=18,),  
+                                    padding=ft.padding.all(9),  # Adicione o padding desejado
+                                ),
+                                ft.Text("Data da conta", size=15)
+                            ]
+                        ),
+                    ),
+                    ft.Container(
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
+                    ),
+                    button_edit,
                     bottom_menu
                 ]
             )
