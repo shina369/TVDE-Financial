@@ -338,7 +338,7 @@ def main(page: ft.Page):
                             ft.Column(  
                                 controls=[
                                     ft.Icon(ft.icons.EURO, size=39),
-                                    ft.Text("Despesas Detalhadas")
+                                    ft.Text("Despesas")
                                 ],
                                 alignment=ft.MainAxisAlignment.CENTER,
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER
@@ -1449,7 +1449,7 @@ def main(page: ft.Page):
         page.views.clear()
 
         def validate_name(e):
-            if len(name.value) > 4:
+            if len(name.value) > 3:
                 name.error_text = None
             else:
                 name.error_text = "O nome deve ter mais de 4 caracteres."
@@ -1457,7 +1457,7 @@ def main(page: ft.Page):
             validate_form()
 
         def validate_surname(e):
-            if len(surname.value) > 4:
+            if len(surname.value) > 3:
                 surname.error_text = None
             else:
                 surname.error_text = "O nome deve ter mais de 4 caracteres."
@@ -1529,8 +1529,8 @@ def main(page: ft.Page):
 
             if name and email and password:
                 cursor.execute(
-                    """INSERT INTO users (name, surname, email, password) VALUES (%s, %s, %s, %s)""",
-                    (name, surname, email, hash_password)
+                    """INSERT INTO users (name, surname, account_type, email, password, date_start) VALUES (%s, %s, %s, %s, %s, CURDATE())""",
+                    (name, surname, "Básico", email, hash_password)
                 )
                 if cursor.rowcount > 0:
                     conn.commit()

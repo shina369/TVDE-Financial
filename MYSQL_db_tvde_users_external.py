@@ -35,10 +35,11 @@ CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     surname VARCHAR(255) NOT NULL,
-    phone VARCHAR(255) NOT NULL,
+    account_type VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    user_profile_photo BLOB
+    date_start VARCHAR(255) NOT NULL
+
 )
 """
 cursor.execute(create_table_query)
