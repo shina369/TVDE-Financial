@@ -230,7 +230,7 @@ def main(page: ft.Page):
                                     content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=18), 
                                     padding=ft.padding.all(9),  # Adicione o padding desejado
                                 ),
-                                ft.Text("Fulano de Tals", size=15)
+                                ft.Text(f"Nome: {user_name} {surname}", size=15)
                             ]
                         ),
                     ),
@@ -245,7 +245,7 @@ def main(page: ft.Page):
                                     content=ft.Icon(ft.icons.EMAIL_OUTLINED, size=18),
                                     padding=ft.padding.all(9),  # Adicione o padding desejado
                                 ),
-                                ft.Text("Email@gmail.com", size=15)
+                                ft.Text(f"Email: {email_login.value}", size=15)
                             ]
                         ),
                     ),
@@ -259,7 +259,7 @@ def main(page: ft.Page):
                                     content=ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED, size=18), 
                                     padding=ft.padding.all(9),  # Adicione o padding desejado
                                 ),
-                                ft.Text("Tipo de Conta: PREMIUM -» Expira em: 25/10/2026", size=15)
+                                ft.Text(f"Tipo de Conta: {account_type}", size=15)
                             ]
                         ),
                     ),
@@ -273,7 +273,7 @@ def main(page: ft.Page):
                                     content=ft.Icon(ft.icons.DATE_RANGE, size=18,),  
                                     padding=ft.padding.all(9),  # Adicione o padding desejado
                                 ),
-                                ft.Text("Data da conta", size=15)
+                                ft.Text(f"Data da conta: {date_start}" , size=15)
                             ]
                         ),
                     ),
@@ -1212,7 +1212,7 @@ def main(page: ft.Page):
             )
             cursor = conn.cursor()
 
-            cursor.execute("SELECT name FROM users WHERE email = %s", (email_login,))
+            cursor.execute("SELECT name, surname, email, account_type, date_start FROM users WHERE email = %s", (email_login,))
             resultado = cursor.fetchone()
 
             cursor.fetchall() 
@@ -1221,21 +1221,33 @@ def main(page: ft.Page):
             conn.close()
 
             if resultado:
-                return resultado[0]  # Resultado[0] contém o nome do usuário
+                return  {
+                    "name": resultado[0],
+                    "account_type": resultado[3],
+                    "surname": resultado[1],
+                    "date_start": resultado[4]
+                }  # Resultado[0] contém o nome do usuário...
             else:
                 return None 
             
         global user_name
+        global account_type
+        global date_start
+        global surname
 
-        user_name = search_user_name(email_login.value)
+        user_details = search_user_name(email_login.value)
 
+        user_name = user_details["name"]
+        surname = user_details["surname"]
+        account_type = user_details["account_type"]
+        date_start = user_details["date_start"]
+        
         message_welcome = ft.Container(
             width=399,
             height=42,
             alignment=ft.Alignment(0, 0),
             content=ft.Text(f"Olá {user_name}, boa sorte!!!", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
         )
-
 
         goal = ft.Row(
             controls=[
