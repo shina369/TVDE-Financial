@@ -30,7 +30,34 @@ CREATE TABLE IF NOT EXISTS goal (
     tax_discount TEXT NOT NULL
 );
 """
+create_table_query_bolt = """
+CREATE TABLE IF NOT EXISTS bolt (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    bolt_daily_value TEXT NOT NULL,
+    bolt_tips TEXT NOT NULL,
+    bolt_daily_date TEXT NOT NULL,
+    bolt_time_run TEXT NOT NULL,
+    bolt_distance_run TEXT NOT NULL,
+    bolt_trip TEXT NOT NULL,
+    bolt_observation TEXT NOT NULL
+);
+"""
+
+create_table_query_uber = """
+CREATE TABLE IF NOT EXISTS uber (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uber_daily_value TEXT NOT NULL,
+    uber_tips TEXT NOT NULL,
+    uber_daily_date TEXT NOT NULL,
+    uber_time_run TEXT NOT NULL,
+    uber_distance_run TEXT NOT NULL,
+    uber_trip TEXT NOT NULL,
+    uber_observation TEXT NOT NULL
+);
+"""
 cursor.execute(create_table_query)
+cursor.execute(create_table_query_bolt)
+cursor.execute(create_table_query_uber)
 
 # Salvar a transação e fechar o banco de dados
 commit_and_close_db()
