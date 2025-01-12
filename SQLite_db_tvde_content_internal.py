@@ -55,9 +55,21 @@ CREATE TABLE IF NOT EXISTS uber (
     uber_observation TEXT NOT NULL
 );
 """
+create_table_query_expense = """
+CREATE TABLE IF NOT EXISTS expense (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    expense_value TEXT NOT NULL,
+    expense_date TEXT NOT NULL,
+    expense_name TEXT NOT NULL,
+    expense_amount TEXT NOT NULL,
+    expense_observation TEXT NOT NULL
+);
+"""
+
 cursor.execute(create_table_query)
 cursor.execute(create_table_query_bolt)
 cursor.execute(create_table_query_uber)
+cursor.execute(create_table_query_expense)
 
 # Salvar a transação e fechar o banco de dados
 commit_and_close_db()
