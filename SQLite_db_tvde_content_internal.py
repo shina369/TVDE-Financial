@@ -22,11 +22,12 @@ connect()
 create_table_query = """
 CREATE TABLE IF NOT EXISTS goal (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    new_goal_value TEXT NOT NULL,
-    start_date_goal TEXT NOT NULL,
-    end_date_goal TEXT NOT NULL,
-    time_off TEXT NOT NULL,
-    discount TEXT NOT NULL
+    goal TEXT NOT NULL,
+    goal_start TEXT NOT NULL,
+    goal_end TEXT NOT NULL,
+    day_off TEXT NOT NULL,
+    fleet_discount TEXT NOT NULL,
+    tax_discount TEXT NOT NULL
 );
 """
 cursor.execute(create_table_query)

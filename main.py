@@ -82,10 +82,6 @@ def main(page: ft.Page):
             height=60
         )
 
-    button_salve = ft.ElevatedButton(
-        text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
-        )
-    
     button_edit = ft.ElevatedButton(
         text="Editar perfil", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
         )
@@ -566,7 +562,7 @@ def main(page: ft.Page):
             e.control.value = formatted_value
             e.control.update()
 
-        goal_value_liquid = ft.TextField(label="Valor total da meta", prefix_text="€ ",
+        goal_field = ft.TextField(label="Valor total da meta", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
             on_change=format_number,
@@ -582,14 +578,14 @@ def main(page: ft.Page):
 
         def pick_date(e, field):
             date_picker.on_change = lambda e: on_date_selected(e, field)
-            date_picker.pick_date()
+            page.open(date_picker)
 
         def on_date_selected(e, field):
             if date_picker.value:
                 field.value = date_picker.value.strftime("%d/%m/%Y")
                 page.update()
         
-        goal_start = ft.TextField(
+        goal_start_field = ft.TextField(
             label="Início da meta",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
@@ -604,14 +600,14 @@ def main(page: ft.Page):
             expand=True,
             suffix=ft.IconButton(
                 icon=ft.icons.CALENDAR_MONTH,
-                on_click=lambda e: pick_date(e, goal_start),
+                on_click=lambda e: pick_date(e, goal_start_field),
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
                 )
             )
         )
 
-        goal_end = ft.TextField(
+        goal_end_field = ft.TextField(
             label="Fim da meta",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
@@ -626,16 +622,16 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
                 icon=ft.icons.CALENDAR_MONTH,
-                on_click=lambda e: pick_date(e, goal_end)
+                on_click=lambda e: pick_date(e, goal_end_field)
             )
         )
 
         goal_dates = ft.Container(
             ft.Row(
-                controls=[goal_start, goal_end]
+                controls=[goal_start_field, goal_end_field]
             )
         )
-        day_off = ft.TextField(
+        day_off_field = ft.TextField(
             label="Dias de Folga",
             on_change=format_number_only99,
             label_style=ft.TextStyle(
@@ -649,7 +645,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
         
-        fleet_discount = ft.TextField(
+        fleet_discount_field = ft.TextField(
             label="Desconto da Frota",
             on_change=format_number_only99,
             label_style=ft.TextStyle(
@@ -663,7 +659,7 @@ def main(page: ft.Page):
             helper_text="Desconto da frota.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
-        tax_discount = ft.TextField(
+        tax_discount_field = ft.TextField(
             label="Imposto",
             on_change=format_number_only99,
             label_style=ft.TextStyle(
@@ -678,6 +674,53 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
        
+           # Função para salvar no banco de dados
+        
+        def save_goal(e):
+        
+                # Coletar os valores dos campos
+                goal = float(goal_field.value.replace('.', '').replace(',', '.'))
+                goal_start = goal_start_field.value
+                goal_end = goal_end_field.value
+                day_off = int(day_off_field.value)
+                fleet_discount = float(fleet_discount_field.value)
+                tax_discount = float(tax_discount_field.value)
+
+                # Conectar ao banco e inserir os dados
+                conn = sqlite3.connect("db_tvde_content_internal.db")
+                cursor = conn.cursor()
+
+                cursor.execute("""
+                INSERT INTO goal (goal, goal_start, goal_end, day_off, fleet_discount, tax_discount)
+                VALUES (?,?,?,?,?,?)
+                """, (goal, goal_start, goal_end, day_off, fleet_discount, tax_discount)
+                )
+                
+                conn.commit()
+                conn.close()
+
+                # Feedback e limpeza
+                if cursor.rowcount > 0:
+                    page_message_screen("Meta cadastrada com sucesso!!!")
+                    page.go("/page_parcial")
+                else:
+                    page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
+                    page.go("/page_new_goal")
+
+
+        # Exibe o SnackBar de sucesso
+
+                goal_field.value = ""
+                goal_start_field.value = ""
+                goal_end_field.value = ""
+                day_off_field.value = ""
+                fleet_discount_field.value = ""
+                tax_discount_field.value = ""
+                page.update()
+
+        button_salve = ft.ElevatedButton(
+        text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", on_click=save_goal)
+
         page.overlay.append(date_picker)
         page.views.append(
             ft.View(
@@ -689,15 +732,15 @@ def main(page: ft.Page):
                            title = ft.Text("NOVO OBJETIVO", size=21),
                     ),
                     ft.Container(height=0.9),
-                    goal_value_liquid,
+                    goal_field,
                     ft.Container(height=0.9),
                     goal_dates,
                     ft.Container(height=0.9),
-                    day_off,
+                    day_off_field,
                     ft.Container(height=0.9),
-                    fleet_discount,
+                    fleet_discount_field,
                     ft.Container(height=0.9),
-                    tax_discount,    
+                    tax_discount_field,    
                     ft.Container(height=0.9),
                     button_salve,
                     bottom_menu
@@ -875,7 +918,6 @@ def main(page: ft.Page):
                     campo_energia,
                     observation,
                     ft.Container(height=0.9),
-                    button_salve,
                     bottom_menu
                 ]
             )
