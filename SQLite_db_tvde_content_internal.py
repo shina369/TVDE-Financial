@@ -32,27 +32,26 @@ CREATE TABLE IF NOT EXISTS goal (
 """
 create_table_query_bolt = """
 CREATE TABLE IF NOT EXISTS bolt (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    bolt_daily_value TEXT NOT NULL,
-    bolt_tips TEXT NOT NULL,
-    bolt_daily_date TEXT NOT NULL,
-    bolt_time_run TEXT NOT NULL,
-    bolt_distance_run TEXT NOT NULL,
-    bolt_trip TEXT NOT NULL,
-    bolt_observation TEXT NOT NULL
+    daily_value TEXT NOT NULL,
+    daily_value_tips TEXT NOT NULL,
+    daily_date TEXT NOT NULL,
+    working_hours TEXT NOT NULL,
+    distance_traveled TEXT NOT NULL,
+    trips_made TEXT NOT NULL,
+    observation TEXT NOT NULL
 );
 """
 
 create_table_query_uber = """
 CREATE TABLE IF NOT EXISTS uber (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uber_daily_value TEXT NOT NULL,
-    uber_tips TEXT NOT NULL,
-    uber_daily_date TEXT NOT NULL,
-    uber_time_run TEXT NOT NULL,
-    uber_distance_run TEXT NOT NULL,
-    uber_trip TEXT NOT NULL,
-    uber_observation TEXT NOT NULL
+    daily_value TEXT NOT NULL,
+    daily_value_tips TEXT NOT NULL,
+    daily_date TEXT NOT NULL,
+    working_hours TEXT NOT NULL,
+    distance_traveled TEXT NOT NULL,
+    trips_made TEXT NOT NULL,
+    observation TEXT NOT NULL
 );
 """
 create_table_query_expense = """

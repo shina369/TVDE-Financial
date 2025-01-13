@@ -677,7 +677,6 @@ def main(page: ft.Page):
            # Função para salvar no banco de dados
         
         def save_goal(e):
-        
                 # Coletar os valores dos campos
                 goal = float(goal_field.value.replace('.', '').replace(',', '.'))
                 goal_start = goal_start_field.value
@@ -829,10 +828,9 @@ def main(page: ft.Page):
                 )
             )
         )
-        
-        global observation
 
-        observation = ft.TextField(
+
+        observation_expense = ft.TextField(
             label="Observação",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
@@ -916,7 +914,7 @@ def main(page: ft.Page):
                     campo_litros,
                     campo_metros_cubicos,
                     campo_energia,
-                    observation,
+                    observation_expense,
                     ft.Container(height=0.9),
                     bottom_menu
                 ]
@@ -1025,7 +1023,7 @@ def main(page: ft.Page):
 
     def page_daily(param):
         page.views.clear()
-
+        
         def format_number(e):
             # Remove qualquer caractere que não seja dígito
             raw_value = ''.join(filter(str.isdigit, e.control.value))
@@ -1084,7 +1082,7 @@ def main(page: ft.Page):
             e.control.value = formatted_value
             e.control.update()
 
-        daily_value_bolt = ft.TextField(label=f"Valor líquido da {param}", prefix_text="€ ",
+        daily_value_field = ft.TextField(label=f"Valor líquido da {param}", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
             on_change=format_number,
@@ -1096,7 +1094,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
         )
 
-        daily_value_bolt_tips = ft.TextField(label=f"Valor gorjetas da {param}", prefix_text="€ ",
+        daily_value_tips_field = ft.TextField(label=f"Valor gorjetas da {param}", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
             on_change=format_number,
@@ -1119,7 +1117,7 @@ def main(page: ft.Page):
                 field.value = date_picker.value.strftime("%d/%m/%Y")
                 page.update()
         
-        daily_bolt_date = ft.TextField(
+        daily_date_field = ft.TextField(
             label=f"Data da diária da {param}",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
@@ -1132,7 +1130,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
                 icon=ft.icons.CALENDAR_MONTH,
-                on_click=lambda e: pick_date(e, daily_bolt_date),
+                on_click=lambda e: pick_date(e, daily_date_field),
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
                 )
@@ -1170,7 +1168,7 @@ def main(page: ft.Page):
                 
             page.update()
 
-        working_hours = ft.TextField(
+        working_hours_field = ft.TextField(
             label="Tempo gasto (HH:MM)",
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
@@ -1179,7 +1177,7 @@ def main(page: ft.Page):
             
         )
 
-        distance_traveled = ft.TextField(
+        distance_traveled_field = ft.TextField(
             label="Distância percorrida",suffix_text="KMs",
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
@@ -1187,24 +1185,20 @@ def main(page: ft.Page):
             on_change=format_number_only999
         )
 
-        contatenate_textfield = ft.Container(
+        contatenate_textfield_field = ft.Container(
             ft.Row(
-                controls=[working_hours, distance_traveled]
+                controls=[working_hours_field, distance_traveled_field]
             )
         )
 
-        trips_made = ft.TextField(
+        trips_made_field = ft.TextField(
             label="Viagens realizadas",
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
             on_change=format_number_only99
         )
 
-        button_salve = ft.ElevatedButton(
-            text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
-        )
-
-        observation = ft.TextField(
+        observation_field = ft.TextField(
             label="Observação",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
@@ -1215,6 +1209,92 @@ def main(page: ft.Page):
             helper_text="*Observação",
         )
 
+        def save_daily_bolt_uber(param):
+            # Validar o parâmetro
+            if param not in ["Bolt", "Uber"]:
+                page_message_screen("Parâmetro inválido!")
+                return
+
+            # Coletar os valores dos campos
+            try:
+                daily_value = float(daily_value_field.value.replace('.', '').replace(',', '.')) if daily_value_field.value else 0.0
+                daily_value_tips = float(daily_value_tips_field.value.replace('.', '').replace(',', '.')) if daily_value_tips_field.value else 0.0
+                daily_date = daily_date_field.value if daily_date_field.value else None
+                working_hours = working_hours_field.value if working_hours_field.value else "00:00"
+                distance_traveled = float(distance_traveled_field.value) if distance_traveled_field.value else 0.0
+                trips_made = int(trips_made_field.value) if trips_made_field.value else 0
+                observation = observation_field.value if observation_field.value else ""
+            except ValueError as e:
+                page_message_screen("Erro ao coletar os valores dos campos. Verifique os dados inseridos!")
+                return
+
+            # Escolher a tabela com base no parâmetro
+            table_name = "Bolt" if param == "Bolt" else "Uber"
+
+            # Conectar ao banco e inserir os dados
+            try:
+                conn = sqlite3.connect("db_tvde_content_internal.db")
+                cursor = conn.cursor()
+                cursor.execute(f"""
+                INSERT INTO {table_name} 
+                (daily_value, daily_value_tips, daily_date, working_hours, distance_traveled, trips_made, observation)
+                VALUES (?,?,?,?,?,?,?)
+                """, (daily_value, daily_value_tips, daily_date, working_hours, distance_traveled, trips_made, observation))
+                
+                conn.commit()
+
+                if cursor.rowcount > 0:
+                    page_message_screen(f"Diária {param} cadastrada com sucesso!!")
+                else:
+                    page_message_screen("Houve algum erro. Tente novamente mais tarde!")
+            except sqlite3.Error as e:
+                page_message_screen(f"Erro ao salvar os dados: {e}")
+            finally:
+                conn.close()
+
+            # Limpar os campos após o cadastro
+            daily_value_field.value = ""
+            daily_value_tips_field.value = ""
+            daily_date_field.value = ""
+            working_hours_field.value = ""
+            distance_traveled_field.value = ""
+            trips_made_field.value = ""
+            observation_field.value = ""
+            page.update()
+
+            # Ir para a página parcial
+            page.go("/page_parcial")
+
+        def configure_buttons(param):
+            # Verifica o valor de 'param' e ajusta a visibilidade
+            if param == "Bolt":
+                btn_bolt.visible = True
+                btn_uber.visible = False
+            elif param == "Uber":
+                btn_bolt.visible = False
+                btn_uber.visible = True
+            else:
+                # Caso param seja inválido, torna ambos invisíveis
+                btn_bolt.visible = False
+                btn_uber.visible = False
+
+            # Atualiza a página para refletir as mudanças
+            page.update()
+
+        btn_bolt = ft.ElevatedButton(
+            text="Cadastrar Bolt",
+            on_click=lambda _: save_daily_bolt_uber("Bolt"),
+            visible=False  # Inicialmente invisível
+        )
+
+        btn_uber = ft.ElevatedButton(
+            text="Cadastrar Uber",
+            on_click=lambda _: save_daily_bolt_uber("Uber"),
+            visible=False  # Inicialmente invisível
+        )
+
+        configure_buttons(param)
+        
         page.overlay.append(date_picker)
         page.views.append(
             ft.View(
@@ -1226,18 +1306,19 @@ def main(page: ft.Page):
                            title = ft.Text(f"DIÁRIA {param.upper()}", size=21),
                     ),
                     ft.Container(height=0.9),
-                    daily_value_bolt,
+                    daily_value_field,
                     ft.Container(height=0.9),
-                    daily_value_bolt_tips,
+                    daily_value_tips_field,
                     ft.Container(height=0.9),
-                    daily_bolt_date,
+                    daily_date_field,
                     ft.Container(height=0.9),
-                    contatenate_textfield,
+                    contatenate_textfield_field,
                     ft.Container(height=0.9),
-                    trips_made,
+                    trips_made_field,
                     ft.Container(height=0.9),
-                    observation,
-                    button_salve,
+                    observation_field,
+                    btn_bolt,
+                    btn_uber,
                     bottom_menu
                 ]
             )
