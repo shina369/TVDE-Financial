@@ -1,6 +1,7 @@
 import flet as ft
 import re
 import mysql.connector
+from datetime import datetime
 import time
 from hashlib import sha256
 import smtplib
@@ -751,6 +752,24 @@ def main(page: ft.Page):
     def page_expense():
         page.views.clear()
 
+        def validate_date(e):
+        # Obtém o valor do TextField
+            input_date = expense_date.value
+            try:
+                # Verifica se a data está no formato esperado
+                parsed_date = datetime.strptime(input_date, "%d/%m/%Y")
+                result_label.value = f"Data válida: {parsed_date.strftime('%d/%m/%Y')}"
+                result_label.color = "green"
+                button_add_expense.disabled = False 
+            except ValueError:
+                result_label.value = "Data inválida! Use o formato DD/MM/AAAA."
+                result_label.color = "red"
+                button_add_expense.disabled = True 
+            
+        page.update()
+
+        result_label = ft.Text(value="", color="black")
+
         def format_number_accounting(e):
             # Remove qualquer caractere que não seja dígito
             raw_value = ''.join(filter(str.isdigit, e.control.value))
@@ -814,6 +833,7 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=14,          # Tamanho opcional
             ),
+            on_change=validate_date,
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -993,8 +1013,16 @@ def main(page: ft.Page):
             ''', (expense_value_text, expense_date_text, expense_name_text, expense_amount_liters_value, expense_amount_cubic_meters_value, expense_amount_energy_value, observation_expense_value))
 
             # Confirmar a transação e fechar a conexão
+        
+            if cursor.rowcount > 0:
+                page_message_screen("Despesa cadastrada com sucesso!")
+                page.go("/page_more_date")
+            else:
+                page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
+                page.go("/page_more_date")
+           
             conn.commit()
-            conn.close()
+            conn.close()        
 
             # Limpar os campos após o cadastro (se necessário)
             expense_value.value = ""
@@ -1008,11 +1036,10 @@ def main(page: ft.Page):
             # Atualizar a página para refletir a limpeza dos campos
             page.update()
 
-
         # Criação do botão para adicionar a despesa
         button_add_expense = ft.ElevatedButton(
             text="Cadastrar Despesa", 
-            on_click=lambda e: cadastrar_despesa()
+            on_click=lambda e: cadastrar_despesa(),
         )
 
         # Adicionando os controles na página
@@ -1035,6 +1062,7 @@ def main(page: ft.Page):
                     expense_amount_cubic_meters,
                     expense_amount_energy,
                     observation_expense,
+                    result_label,
                     ft.Container(height=0.9),
                     button_add_expense,
                     bottom_menu
@@ -1042,8 +1070,6 @@ def main(page: ft.Page):
             )
         )
         page.update()
-
-
 
     def page_more_date():
         page.views.clear()
