@@ -60,8 +60,10 @@ CREATE TABLE IF NOT EXISTS expense (
     expense_value TEXT NOT NULL,
     expense_date TEXT NOT NULL,
     expense_name TEXT NOT NULL,
-    expense_amount TEXT NOT NULL,
-    expense_observation TEXT NOT NULL
+    expense_amount_liters TEXT,
+    expense_amount_energy TEXT,
+    expense_amount_cubic_meters TEXT,
+    observation_expense TEXT
 );
 """
 

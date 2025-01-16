@@ -785,10 +785,9 @@ def main(page: ft.Page):
             text_size=18,
             on_change=format_number_accounting,
             label_style=ft.TextStyle(
-              color="#AAAAAA",  # Cor do label
-              size=14,          # Tamanho opcional
+                color="#AAAAAA",  # Cor do label
+                size=14,          # Tamanho opcional
             ),
-            helper_text="* Valor líquido pretendido ao fim da meta.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
         )
 
@@ -807,7 +806,7 @@ def main(page: ft.Page):
         date_picker2 = ft.DatePicker(
             on_change=lambda e: on_date_selected(e, expense_date)  # Define o on_change diretamente
         )
-
+        global expense_date
         # Criação do TextField para data
         expense_date = ft.TextField(
             label="Data da despesa",
@@ -828,8 +827,8 @@ def main(page: ft.Page):
                 )
             )
         )
-
-
+        
+        global observation_expense
         observation_expense = ft.TextField(
             label="Observação",
             label_style=ft.TextStyle(
@@ -838,10 +837,12 @@ def main(page: ft.Page):
             ),
             border_radius=21,
             text_size=18,
-            helper_text="*Observação",
+            helper_text="Observação",
+            multiline=True
         )
-    
-        dropdown = ft.Dropdown(
+
+        global expense_name
+        expense_name = ft.Dropdown(
             label="Despesas:",  # Texto de rótulo do dropdown
             options=[
                 ft.dropdown.Option("Manutenção"),
@@ -850,78 +851,200 @@ def main(page: ft.Page):
                 ft.dropdown.Option("GPL"),
                 ft.dropdown.Option("Recarga Bateria"),
                 ft.dropdown.Option("Alimentação"),
+                ft.dropdown.Option("Seguro"),
                 ft.dropdown.Option("Portagem")
             ], # Defina uma função para tratar a mudança
             border_radius=21,
             on_change=lambda e: on_option_selected(e),
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
-            
         )
 
-        campo_litros = ft.TextField(label="Litros", visible=False, border_radius=21)
-        campo_metros_cubicos = ft.TextField(label="Metros Cúbicos (m³)", visible=False, border_radius=21)
-        campo_energia = ft.TextField(label="Energia (kWh)", visible=False, border_radius=21)
+        global expense_amount_cubic_meters, expense_amount_energy, expense_amount_liters
+        expense_amount_liters = ft.TextField(label="Litros", visible=False, border_radius=21)
+        expense_amount_cubic_meters = ft.TextField(label="Metros Cúbicos (m³)", visible=False, border_radius=21)
+        expense_amount_energy = ft.TextField(label="Energia (kWh)", visible=False, border_radius=21)
 
         def on_option_selected(e):
-            campo_litros.visible = False
-            campo_metros_cubicos.visible = False
-            campo_energia.visible = False
+            expense_amount_liters.visible = False
+            expense_amount_cubic_meters.visible = False
+            expense_amount_energy.visible = False
             # Alterar a cor de fundo e do texto dependendo da seleção
             if e.control.value == "Manutenção":
-                dropdown.bgcolor = "#E0E0E0"  # Cor de fundo quando "Opção 1" é selecionada
-                dropdown.style = ft.TextStyle(color="#FF5722")  # Cor do texto para "Opção 1"
+                expense_name.bgcolor = "#E0E0E0"  # Cor de fundo quando "Opção 1" é selecionada
+                expense_name.style = ft.TextStyle(color="#FF5722")  # Cor do texto para "Opção 1"
             elif e.control.value == "Gasolína":
-                campo_litros.visible = True
-                dropdown.bgcolor = "#FFEB3B"  # Cor de fundo quando "Opção 2" é selecionada
-                dropdown.style = ft.TextStyle(color="#000000")  # Cor do texto para "Opção 2"
+                expense_amount_liters.visible = True
+                expense_name.bgcolor = "#FFEB3B"  # Cor de fundo quando "Opção 2" é selecionada
+                expense_name.style = ft.TextStyle(color="#000000")  # Cor do texto para "Opção 2"
             elif e.control.value == "Gasóleo":
-                dropdown.bgcolor = "#B25900"  # Cor de fundo quando "Opção 3" é selecionada
-                campo_litros.visible = True
-                dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+                expense_name.bgcolor = "#B25900"  # Cor de fundo quando "Opção 3" é selecionada
+                expense_amount_liters.visible = True
+                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "GPL":
-                dropdown.bgcolor = "#4CAF50"  # Cor de fundo quando "Opção 3" é selecionada
-                campo_metros_cubicos.visible = True
-                dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+                expense_name.bgcolor = "#4CAF50"  # Cor de fundo quando "Opção 3" é selecionada
+                expense_amount_cubic_meters.visible = True
+                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "Recarga Bateria":
-                dropdown.bgcolor = "#B200B2"  # Cor de fundo quando "Opção 3" é selecionada
-                campo_energia.visible = True
-                dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+                expense_name.bgcolor = "#B200B2"  # Cor de fundo quando "Opção 3" é selecionada
+                expense_amount_energy.visible = True
+                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "Alimentação":
-                dropdown.bgcolor = "#FF7F00"  # Cor de fundo quando "Opção 3" é selecionada
-                dropdown.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+                expense_name.bgcolor = "#FF7F00"  # Cor de fundo quando "Opção 3" é selecionada
+                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+            elif e.control.value == "Seguro":
+                expense_name.bgcolor = "#007FFF"  # Cor de fundo quando "Opção 3" é selecionada
+                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             else:
-                dropdown.bgcolor = "#00B200"  # Cor de fundo quando "Opção 4" é selecionada
-                dropdown.style = ft.TextStyle(color="#CCCCCC")  # Cor do texto para "Opção 4"
-             # Atualizar a página após a mudança
-
+                expense_name.bgcolor = "#00B200"  # Cor de fundo quando "Opção 4" é selecionada
+                expense_name.style = ft.TextStyle(color="#CCCCCC")  # Cor do texto para "Opção 4"
+            # Atualizar a página após a mudança
             page.update()
 
+        # Agora você pode acessar o valor dela corretamente
+        def cadastrar_despesa():
+            # Limpar mensagens de erro anteriores e bordas
+            page.controls = [control for control in page.controls if not isinstance(control, ft.Text) or control.color != "red"]
+
+            # Verificar se os campos obrigatórios estão preenchidos
+            error_messages = []
+
+            # Verificar campos obrigatórios
+            if not expense_value.value:
+                expense_value.border_color = "red"  # Mudar a borda para vermelho
+                error_messages.append(("O valor da despesa é obrigatório.", expense_value))
+                page.update()
+            else:
+                expense_value.border_color = None  # Restaurar a borda original
+
+            if not expense_date.value:
+                expense_date.border_color = "red"
+                error_messages.append(("A data da despesa é obrigatória.", expense_date))
+                page.update()
+            else:
+                expense_date.border_color = None
+
+            if not expense_name.value:
+                expense_name.border_color = "red"
+                error_messages.append(("O nome da despesa é obrigatório.", expense_name))
+                page.update()
+            else:
+                expense_name.border_color = None
+
+            # Verificar os campos de quantidade obrigatórios
+            if not expense_amount_liters.value and (expense_name.value == "Gasolína" or expense_name.value == "Gasóleo"):
+                expense_amount_liters.border_color = "red"
+                error_messages.append(("A quantidade de litros é obrigatória.", expense_amount_liters))
+                page.update()
+            else:
+                expense_amount_liters.border_color = None
+
+            if not expense_amount_cubic_meters.value and expense_name.value == "GPL":
+                expense_amount_cubic_meters.border_color = "red"
+                error_messages.append(("A quantidade de metros cúbicos é obrigatória.", expense_amount_cubic_meters))
+                page.update()
+            else:
+                expense_amount_cubic_meters.border_color = None
+
+            if not expense_amount_energy.value and expense_name.value == "Recarga Bateria":
+                expense_amount_energy.border_color = "red"
+                error_messages.append(("A quantidade de energia é obrigatória.", expense_amount_energy))
+                page.update()
+            else:
+                expense_amount_energy.border_color = None
+
+            # Se houver mensagens de erro, exiba-as abaixo dos campos correspondentes
+            if error_messages:
+                # Organizar as mensagens abaixo dos campos correspondentes
+                for i, (message, control) in enumerate(error_messages):
+                    # Adicionar a mensagem abaixo do campo
+                    page.add(ft.Text(message, color="red"), top=control.top + control.height + 10)
+                
+                # Atualizar a página imediatamente após adicionar as mensagens
+                page.update()
+                return  # Impede o cadastro se houver erro
+
+            # Obter os valores dos campos
+            expense_value_text = expense_value.value.replace("€", "").replace(".", "").replace(",", ".")
+            expense_date_text = expense_date.value
+            observation_expense_value = observation_expense.value
+            expense_name_text = expense_name.value
+
+            # Inicializar as variáveis de valor das quantidades específicas com valores vazios ou None
+            expense_amount_liters_value = None
+            expense_amount_cubic_meters_value = None
+            expense_amount_energy_value = None
+
+            # Obter o valor da despesa com base na opção selecionada
+            if expense_name_text == "Gasolína" or expense_name_text == "Gasóleo":
+                expense_amount_liters_value = expense_amount_liters.value
+            elif expense_name_text == "GPL":
+                expense_amount_cubic_meters_value = expense_amount_cubic_meters.value
+            elif expense_name_text == "Recarga Bateria":
+                expense_amount_energy_value = expense_amount_energy.value
+
+            # Conectar ao banco de dados SQLite
+            conn = sqlite3.connect("db_tvde_content_internal.db")
+            cursor = conn.cursor()
+
+            # Inserir os dados na tabela
+            cursor.execute('''
+                INSERT INTO expense (expense_value, expense_date, expense_name, expense_amount_liters, expense_amount_cubic_meters, expense_amount_energy, observation_expense)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (expense_value_text, expense_date_text, expense_name_text, expense_amount_liters_value, expense_amount_cubic_meters_value, expense_amount_energy_value, observation_expense_value))
+
+            # Confirmar a transação e fechar a conexão
+            conn.commit()
+            conn.close()
+
+            # Limpar os campos após o cadastro (se necessário)
+            expense_value.value = ""
+            expense_date.value = ""
+            expense_name.value = None
+            observation_expense.value = ""
+            expense_amount_liters.value = ""
+            expense_amount_cubic_meters.value = ""
+            expense_amount_energy.value = ""
+
+            # Atualizar a página para refletir a limpeza dos campos
+            page.update()
+
+
+        # Criação do botão para adicionar a despesa
+        button_add_expense = ft.ElevatedButton(
+            text="Cadastrar Despesa", 
+            on_click=lambda e: cadastrar_despesa()
+        )
+
+        # Adicionando os controles na página
         page.views.append(
             ft.View(
                 "/page_expense",
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.icons.MONEY_OFF_SHARP),
-                           title = ft.Text("NOVA DESPESA", size=21),
+                        icon=ft.Icon(ft.icons.MONEY_OFF_SHARP),
+                        title=ft.Text("NOVA DESPESA", size=21),
                     ),
                     expense_value,
                     ft.Container(height=0.9),
                     expense_date,
                     ft.Container(height=0.9),
-                    dropdown,
+                    expense_name,
                     ft.Container(height=0.9),
-                    campo_litros,
-                    campo_metros_cubicos,
-                    campo_energia,
+                    expense_amount_liters,
+                    expense_amount_cubic_meters,
+                    expense_amount_energy,
                     observation_expense,
                     ft.Container(height=0.9),
+                    button_add_expense,
                     bottom_menu
                 ]
             )
         )
         page.update()
-    
+
+
+
     def page_more_date():
         page.views.clear()
 
