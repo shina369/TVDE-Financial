@@ -3,6 +3,7 @@ import re
 import mysql.connector
 from datetime import datetime
 import time
+import datetime
 from hashlib import sha256
 import smtplib
 import random
@@ -519,6 +520,59 @@ def main(page: ft.Page):
     def page_new_goal():
         page.views.clear()
 
+        def validate_date(e=None):
+            # Inicializa as mensagens de erro e o estado do botão
+            start_date_error = None
+            end_date_error = None
+            valid = True
+
+            try:
+                # Verifica se o campo de início tem um valor válido
+                if goal_start_field.value.strip():
+                    start_date = datetime.datetime.strptime(goal_start_field.value.strip(), "%d/%m/%Y")
+                else:
+                    start_date_error = "Use DD/MM/AAAA."
+                    valid = False
+
+                # Verifica se o campo de fim tem um valor válido
+                if goal_end_field.value.strip():
+                    end_date = datetime.datetime.strptime(goal_end_field.value.strip(), "%d/%m/%Y")
+                else:
+                    end_date_error = "Use DD/MM/AAAA."
+                    valid = False
+
+                # Verifica se as datas são válidas e comparáveis
+                if valid and start_date >= end_date:
+                    start_date_error = "Data Início < Data Fim "
+                    end_date_error = "Data de fim > data de início"
+                    valid = False
+
+            except ValueError:
+                # Define mensagens de erro para valores inválidos
+                if goal_start_field.value.strip():
+                    start_date_error = "Use DD/MM/AAAA."
+                if goal_end_field.value.strip():
+                    end_date_error = "Use DD/MM/AAAA."
+                valid = False
+
+            # Atualiza os campos com mensagens de erro
+            goal_start_field.error_text = start_date_error
+            goal_end_field.error_text = end_date_error
+            button_salve.disabled = not valid
+
+            # Atualiza os elementos na interface
+            goal_start_field.update()
+            goal_end_field.update()
+            button_salve.update()
+
+        # Vincule a função aos eventos de mudança de valor dos campos
+            goal_start_field.on_change = validate_date
+            goal_end_field.on_change = validate_date
+
+
+
+
+
         def format_number(e):
             # Remove qualquer caractere que não seja dígito
             raw_value = ''.join(filter(str.isdigit, e.control.value))
@@ -546,7 +600,6 @@ def main(page: ft.Page):
             # Atualiza o TextField com o valor formatado
             e.control.value = formatted_value
             e.control.update()
-
 
         def format_number_only99(e):
         # Remove qualquer caractere que não seja dígito
@@ -584,6 +637,7 @@ def main(page: ft.Page):
         def on_date_selected(e, field):
             if date_picker.value:
                 field.value = date_picker.value.strftime("%d/%m/%Y")
+                validate_date(e)  
                 page.update()
         
         goal_start_field = ft.TextField(
@@ -592,6 +646,7 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=14,          # Tamanho opcional
             ),
+            on_change=validate_date,
             width=page.width * 0.47,
             border_radius=21,
             text_size=18,
@@ -610,6 +665,7 @@ def main(page: ft.Page):
 
         goal_end_field = ft.TextField(
             label="Fim da meta",
+            on_change=validate_date,
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=14,          # Tamanho opcional
@@ -1622,15 +1678,15 @@ def main(page: ft.Page):
                                 content=ft.Row(
                                     controls=[
                                         ft.Container(
-                                            padding=3,
+                                          
                                             content=ft.Image(
                                                 src="https://i.ibb.co/80MV450/flag.png",
                                             ),
                                         ),
                                         ft.Container(
+                                            padding=ft.padding.only(top=9),
                                             content=ft.Image(
                                                 src="https://i.ibb.co/RQcfZVd/car.png",
-                                                width=154,
                                             ),
                                         ),
                                         ft.Container(
@@ -1667,7 +1723,7 @@ def main(page: ft.Page):
                     border_radius=25,
                     content=ft.Column(
                         controls=[
-                            ft.Text("OBJETIVO DE HOJE", size=15, color=ft.colors.BLACK),
+                            ft.Text("PRÓXIMO OBJETIVO", size=15, color=ft.colors.BLACK),
                             ft.Text("€ 125.83", size=36, color="#15CD74", weight=ft.FontWeight.BOLD),
                             ft.Text("valores brutos", size=12, color="#B0B0B0"),
                             ],
