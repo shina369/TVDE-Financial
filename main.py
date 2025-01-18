@@ -1228,49 +1228,91 @@ def main(page: ft.Page):
 
     def page_daily(param):
         page.views.clear()
-        
-        def format_number(e):
-            # Remove qualquer caractere que não seja dígito
-            raw_value = ''.join(filter(str.isdigit, e.control.value))
+    
+        def validate_fields():
+            # Inicializa variáveis de erro para cada campo
+            value_error = None
+            trips_error = None
+            date_error = None
+            hour_error = None
 
-            if raw_value:
-                # Adiciona vírgula para centavos, separando os dois últimos dígitos
-                if len(raw_value) > 2:
-                    raw_value = raw_value[:-2] + ',' + raw_value[-2:]
-                else:
-                    raw_value = '00,' + raw_value
-
-                # Converte para inteiro e formata com separador de milhar (ponto)
-                integer_part = raw_value.split(',')[0]
-                decimal_part = raw_value.split(',')[1]
-
-                # Formata a parte inteira com ponto como separador de milhar
-                formatted_integer = f"{int(integer_part):,}".replace(',', '.')
-
-                # Junta a parte inteira formatada com a parte decimal
-                formatted_value = f"{formatted_integer},{decimal_part}"
-
+            # Validação do campo de valor líquido (daily_value_field)
+            if daily_value_field.value:
+                try:
+                    value = float(daily_value_field.value.replace('€ ', '').replace('.', '').replace(',', '.'))
+                    if value <= 0:
+                        value_error = "* O valor líquido deve ser maior que zero."
+                except ValueError:
+                    value_error = "* O valor líquido não está formatado corretamente."
+            
+            # Validação do campo de viagens realizadas (trips_made_field)
+            if trips_made_field.value:
+                try:
+                    trips = int(trips_made_field.value)
+                    if trips <= 0:
+                        trips_error = "* O número de viagens realizadas deve ser maior que zero."
+                except ValueError:
+                    trips_error = "* O número de viagens deve ser um valor válido."
             else:
-                formatted_value = ""
+                trips_error = "* O campo de viagens realizadas é obrigatório e deve ser maior que zero."
 
-            # Atualiza o TextField com o valor formatado
-            e.control.value = formatted_value
-            e.control.update()
+            # Validação do campo de data (daily_date_field)
+            if daily_date_field.value:
+                try:
+                    date_value = datetime.datetime.strptime(daily_date_field.value, "%d/%m/%Y")
+                except ValueError:
+                    date_error = "* A data não está no formato correto (DD/MM/AAAA)."
+            else:
+                date_error = "* A data da diária é obrigatória."
+
+            # Validação do campo de tempo gasto (working_hours_field)
+            if working_hours_field.value:
+                try:
+                    time_value = datetime.datetime.strptime(working_hours_field.value, "%H:%M")
+                    if time_value.hour < 0 or time_value.hour > 23 or time_value.minute < 0 or time_value.minute > 59:
+                        hour_error = "* Entre 00:00 e 23:59."
+                except ValueError:
+                    hour_error = "* Entre 00:00 e 23:59."
+            else:
+                hour_error = "* O campo é obrigatório."
+
+            # Aplica as mensagens de erro nos campos correspondentes
+            daily_value_field.error_text = value_error
+            trips_made_field.error_text = trips_error
+            daily_date_field.error_text = date_error
+            working_hours_field.error_text = hour_error
+
+            # Se qualquer erro ocorrer, desabilita os botões
+            if value_error or trips_error or date_error or hour_error:
+                btn_bolt.visible = False
+                btn_bolt.disabled = True
+                btn_uber.visible = False
+                btn_uber.disabled = True
+            else:
+                btn_bolt.visible = True
+                btn_bolt.disabled = False
+                btn_uber.visible = True
+                btn_uber.disabled = False
+
+            # Atualiza os campos e botões
+            daily_value_field.update()
+            trips_made_field.update()
+            daily_date_field.update()
+            working_hours_field.update()
+            btn_bolt.update()
+            btn_uber.update()
+        # Você pode chamar `validate_fields` em `on_change` de todos os campos:
+        def format_number(e):
+            # Chama a validação sempre que o valor do campo mudar
+            validate_fields()
 
         def format_number_only99(e):
-        # Remove qualquer caractere que não seja dígito
-            raw_value = ''.join(filter(str.isdigit, e.control.value))
-            
-            if raw_value:
-                # Converte para inteiro e formata com separador de milhar
-                integer_value = min(int(raw_value[:2]), 99)
-                formatted_value = str(integer_value)
-            else:
-                formatted_value = ""
+            # Chama a validação sempre que o valor do campo mudar
+            validate_fields()
 
-            # Atualiza o TextField com o valor formatado
-            e.control.value = formatted_value
-            e.control.update()
+        def validate_date(e):
+            # Chama a validação sempre que a data mudar
+            validate_fields()
         
         def format_number_only999(e):
         # Remove qualquer caractere que não seja dígito
@@ -1290,24 +1332,23 @@ def main(page: ft.Page):
         daily_value_field = ft.TextField(label=f"Valor líquido da {param}", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
-            on_change=format_number,
+            on_change=lambda e: validate_fields(), 
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
-                size=14,               # Tamanho opcional
+                size=15,               # Tamanho opcional
             ),
-            helper_text=f"* *Valor líquido das corridas. Sem a % da {param}.",
+            helper_text=f"* Valor das corridas. Sem a % da {param}.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
         )
 
         daily_value_tips_field = ft.TextField(label=f"Valor gorjetas da {param}", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
-            on_change=format_number,
+            on_change=lambda e: validate_fields(), 
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
-                size=14,               # Tamanho opcional
+                size=15,               # Tamanho opcional
             ),
-            helper_text="* Valor das gorjetas",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
         )
         
@@ -1320,14 +1361,16 @@ def main(page: ft.Page):
         def on_date_selected(e, field):
             if date_picker.value:
                 field.value = date_picker.value.strftime("%d/%m/%Y")
+                validate_date(e)
                 page.update()
         
         daily_date_field = ft.TextField(
             label=f"Data da diária da {param}",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
-                size=14,          # Tamanho opcional
+                size=15,          # Tamanho opcional
             ),
+            on_change=validate_date,
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -1344,42 +1387,51 @@ def main(page: ft.Page):
 
         def hour_validy(e):
             texto = e.control.value
+            hour_error = None
+
             if not texto:
-                return
-            # Remove tudo o que não for número
-            texto = ''.join(filter(str.isdigit, texto))
-
-            # Verifica se o texto tem pelo menos 4 caracteres (para hora e minutos)
-            if len(texto) == 4:
-                # Corrige o formato para HH:MM
-                texto_corrigido = texto[:2] + ':' + texto[2:]
-                e.control.value = texto_corrigido
-                texto = texto_corrigido  # Atualiza a variável texto com o valor corrigido
-            elif len(texto) > 4:
-                # Se o usuário tentar inserir mais de 4 caracteres, limitamos à quantidade necessária
-                texto_corrigido = texto[:2] + ':' + texto[2:4]
-                e.control.value = texto_corrigido
-                texto = texto_corrigido  # Atualiza a variável texto com o valor corrigido
-
-            # Agora, validamos se a hora e os minutos são válidos
-            if len(texto) == 5 and texto[2] == ":" and texto[:2].isdigit() and texto[3:].isdigit():
-                horas, minutos = texto.split(":")
-                if 0 <= int(horas) <= 23 and 0 <= int(minutos) <= 59:
-                    e.control.border_color = ft.colors.GREEN
-                else:
-                    e.control.border_color = ft.colors.RED
+                hour_error = "* O campo de tempo gasto é obrigatório."
             else:
-                e.control.border_color = ft.colors.RED
-                
-            page.update()
+                # Remove tudo o que não for número
+                texto = ''.join(filter(str.isdigit, texto))
+
+                # Verifica se o texto tem pelo menos 4 caracteres (para hora e minutos)
+                if len(texto) == 4:
+                    # Corrige o formato para HH:MM
+                    texto_corrigido = texto[:2] + ':' + texto[2:]
+                    e.control.value = texto_corrigido
+                    texto = texto_corrigido  # Atualiza a variável texto com o valor corrigido
+                elif len(texto) > 4:
+                    # Se o usuário tentar inserir mais de 4 caracteres, limitamos à quantidade necessária
+                    texto_corrigido = texto[:2] + ':' + texto[2:4]
+                    e.control.value = texto_corrigido
+                    texto = texto_corrigido  # Atualiza a variável texto com o valor corrigido
+
+                # Agora, validamos se a hora e os minutos são válidos
+                if len(texto) == 5 and texto[2] == ":" and texto[:2].isdigit() and texto[3:].isdigit():
+                    horas, minutos = texto.split(":")
+                    if 0 <= int(horas) <= 23 and 0 <= int(minutos) <= 59:
+                        e.control.border_color = ft.colors.GREEN
+                    else:
+                        hour_error = "* 00:00 e 23:59."
+                        e.control.border_color = ft.colors.RED
+                else:
+                    hour_error = "* Use HH:MM."
+                    e.control.border_color = ft.colors.RED
+
+            # Atualiza a mensagem de erro
+            e.control.error_text = hour_error
+            e.control.update()
+
+            # Verifica se todos os campos estão válidos
+            validate_fields()
 
         working_hours_field = ft.TextField(
             label="Tempo gasto (HH:MM)",
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
             expand=True,
-            on_change=hour_validy
-            
+            on_change=lambda e: hour_validy(e)  # Chama a validação sempre que o campo for alterado
         )
 
         distance_traveled_field = ft.TextField(
@@ -1400,6 +1452,7 @@ def main(page: ft.Page):
             label="Viagens realizadas",
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
+            helper_text="* Viagens realizadas",
             on_change=format_number_only99
         )
 
@@ -1407,11 +1460,10 @@ def main(page: ft.Page):
             label="Observação",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
-                size=14,          # Tamanho opcional
+                size=15,          # Tamanho opcional
             ),
             border_radius=21,
             text_size=18,
-            helper_text="*Observação",
         )
 
         def save_daily_bolt_uber(param):
@@ -1487,15 +1539,17 @@ def main(page: ft.Page):
             page.update()
 
         btn_bolt = ft.ElevatedButton(
-            text="Cadastrar Bolt",
-            on_click=lambda _: save_daily_bolt_uber("Bolt"),
-            visible=False  # Inicialmente invisível
-        )
+        text="Cadastrar Bolt",
+        on_click=lambda _: save_daily_bolt_uber("Bolt"),
+        visible=False,  # Inicialmente invisível
+        disabled=True    # Inicialmente desabilitado
+    )
 
         btn_uber = ft.ElevatedButton(
-            text="Cadastrar Uber",
-            on_click=lambda _: save_daily_bolt_uber("Uber"),
-            visible=False  # Inicialmente invisível
+        text="Cadastrar Uber",
+        on_click=lambda _: save_daily_bolt_uber("Uber"),
+        visible=False,  # Inicialmente invisível
+        disabled=True    # Inicialmente desabilitado
         )
 
         configure_buttons(param)
@@ -1513,13 +1567,13 @@ def main(page: ft.Page):
                     ft.Container(height=0.9),
                     daily_value_field,
                     ft.Container(height=0.9),
-                    daily_value_tips_field,
+                    trips_made_field,
                     ft.Container(height=0.9),
                     daily_date_field,
                     ft.Container(height=0.9),
-                    contatenate_textfield_field,
+                    daily_value_tips_field,
                     ft.Container(height=0.9),
-                    trips_made_field,
+                    contatenate_textfield_field,
                     ft.Container(height=0.9),
                     observation_field,
                     btn_bolt,
