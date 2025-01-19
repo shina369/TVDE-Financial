@@ -568,13 +568,9 @@ def main(page: ft.Page):
         # Vincule a função aos eventos de mudança de valor dos campos
             goal_start_field.on_change = validate_date
             goal_end_field.on_change = validate_date
-
-
-
-
-
+      
         def format_number(e):
-            # Remove qualquer caractere que não seja dígito
+            # Filtra e mantém apenas os dígitos numéricos
             raw_value = ''.join(filter(str.isdigit, e.control.value))
 
             if raw_value:
@@ -594,12 +590,43 @@ def main(page: ft.Page):
                 # Junta a parte inteira formatada com a parte decimal
                 formatted_value = f"{formatted_integer},{decimal_part}"
 
-            else:
-                formatted_value = ""
+                # Atualiza o campo com o valor formatado, sem o símbolo de euro
+                e.control.value = formatted_value
+                e.control.update()
 
-            # Atualiza o TextField com o valor formatado
-            e.control.value = formatted_value
-            e.control.update()
+                # Verifica se o valor é menor ou igual a 0
+                if int(raw_value.replace(',', '')) <= 0:
+                    # Exibe uma mensagem de erro
+                    e.control.error_text = "O valor deve ser maior que 0."
+                    e.control.update()
+
+                    # Desabilita o botão
+                    for control in e.page.controls:
+                        if hasattr(control, 'name') and control.name == 'button_salve':
+                            control.enabled = False
+                            control.update()
+                else:
+                    # Limpa a mensagem de erro se o valor for válido
+                    e.control.error_text = ""
+                    e.control.update()
+
+                    # Habilita o botão se o valor for válido
+                    for control in e.page.controls:
+                        if hasattr(control, 'name') and control.name == 'button_salve':
+                            control.enabled = True
+                            control.update()
+
+            else:
+                # Campo vazio
+                e.control.value = ""
+                e.control.error_text = "Campo não pode estar vazio."
+                e.control.update()
+
+                # Desabilita o botão se o campo estiver vazio
+                for control in e.page.controls:
+                    if hasattr(control, 'name') and control.name == 'button_salve':
+                        control.enabled = False
+                        control.update()
 
         def format_number_only99(e):
         # Remove qualquer caractere que não seja dígito
