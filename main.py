@@ -1408,7 +1408,7 @@ def main(page: ft.Page):
         daily_value_tips_field = ft.TextField(label=f"Valor gorjetas da {param}", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
-            on_change=format_number_only99,
+            on_change=format_number_accounting,
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=15,               # Tamanho opcional
