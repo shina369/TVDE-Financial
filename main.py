@@ -1328,6 +1328,9 @@ def main(page: ft.Page):
             working_hours_field.update()
             btn_bolt.update()
             btn_uber.update()
+            configure_buttons(param)
+
+            
         # Você pode chamar `validate_fields` em `on_change` de todos os campos:
         def format_number(e):
             # Chama a validação sempre que o valor do campo mudar
