@@ -1255,13 +1255,14 @@ def main(page: ft.Page):
 
     def page_daily(param):
         page.views.clear()
-    
+
         def validate_fields():
             # Inicializa variáveis de erro para cada campo
             value_error = None
             trips_error = None
             date_error = None
             hour_error = None
+        
 
             # Validação do campo de valor líquido (daily_value_field)
             if daily_value_field.value:
@@ -1330,15 +1331,48 @@ def main(page: ft.Page):
             btn_uber.update()
             configure_buttons(param)
 
-            
-        # Você pode chamar `validate_fields` em `on_change` de todos os campos:
-        def format_number(e):
-            # Chama a validação sempre que o valor do campo mudar
-            validate_fields()
+        def format_number_accounting(e):
+                # Remove qualquer caractere que não seja dígito
+                raw_value = ''.join(filter(str.isdigit, e.control.value))
 
+                if raw_value:
+                    # Adiciona vírgula para centavos, separando os dois últimos dígitos
+                    if len(raw_value) > 2:
+                        raw_value = raw_value[:-2] + ',' + raw_value[-2:]
+                    else:
+                        raw_value = '00,' + raw_value
+
+                    # Converte para inteiro e formata com separador de milhar (ponto)
+                    integer_part = raw_value.split(',')[0]
+                    decimal_part = raw_value.split(',')[1]
+
+                    # Formata a parte inteira com ponto como separador de milhar
+                    formatted_integer = f"{int(integer_part):,}".replace(',', '.')
+
+                    # Junta a parte inteira formatada com a parte decimal
+                    formatted_value = f"{formatted_integer},{decimal_part}"
+
+                else:
+                    formatted_value = ""
+
+                # Atualiza o TextField com o valor formatado
+                e.control.value = formatted_value
+                e.control.update()
+            
         def format_number_only99(e):
-            # Chama a validação sempre que o valor do campo mudar
-            validate_fields()
+        # Remove qualquer caractere que não seja dígito
+            raw_value = ''.join(filter(str.isdigit, e.control.value))
+            
+            if raw_value:
+                # Converte para inteiro e formata com separador de milhar
+                integer_value = min(int(raw_value[:2]), 99)
+                formatted_value = str(integer_value)
+            else:
+                formatted_value = ""
+
+            # Atualiza o TextField com o valor formatado
+            e.control.value = formatted_value
+            e.control.update()
 
         def validate_date(e):
             # Chama a validação sempre que a data mudar
@@ -1362,7 +1396,7 @@ def main(page: ft.Page):
         daily_value_field = ft.TextField(label=f"Valor líquido da {param}", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
-            on_change=lambda e: validate_fields(), 
+            on_change=format_number_accounting, 
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=15,               # Tamanho opcional
@@ -1374,7 +1408,7 @@ def main(page: ft.Page):
         daily_value_tips_field = ft.TextField(label=f"Valor gorjetas da {param}", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
-            on_change=lambda e: validate_fields(), 
+            on_change=format_number_only99,
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=15,               # Tamanho opcional
