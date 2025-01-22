@@ -849,6 +849,31 @@ def main(page: ft.Page):
                 return False  # Data inválida
 
         result_label = ft.Text(value="", color="black")
+
+        def format_number_33(e):
+           # Filtra e mantém apenas os dígitos numéricos
+            raw_value = ''.join(filter(str.isdigit, e.control.value))
+
+            if raw_value:
+                # Adiciona vírgula para centavos, separando os dois últimos dígitos
+                if len(raw_value) > 2:
+                    raw_value = raw_value[:-2] + ',' + raw_value[-2:]
+                else:
+                    raw_value = '00,' + raw_value
+
+                # Converte para inteiro e formata com separador de milhar (ponto)
+                integer_part = raw_value.split(',')[0]
+                decimal_part = raw_value.split(',')[1]
+
+                # Formata a parte inteira com ponto como separador de milhar
+                formatted_integer = f"{int(integer_part):,}".replace(',', '.')
+
+                # Junta a parte inteira formatada com a parte decimal
+                formatted_value = f"{formatted_integer},{decimal_part}"
+
+                # Atualiza o campo com o valor formatado, sem o símbolo de euro
+                e.control.value = formatted_value
+                e.control.update()
     
         def on_date_selected(e):
         # Atualiza o campo de data com a seleção do DatePicker
@@ -1014,9 +1039,9 @@ def main(page: ft.Page):
         )
 
         global expense_amount_cubic_meters, expense_amount_energy, expense_amount_liters
-        expense_amount_liters = ft.TextField(label="Litros", visible=False, border_radius=21,  on_change=lambda e: validate_all_fields() )
-        expense_amount_cubic_meters = ft.TextField(label="Metros Cúbicos (m³)", visible=False, border_radius=21, on_change=lambda e: validate_all_fields())
-        expense_amount_energy = ft.TextField(label="Energia (kWh)", visible=False, border_radius=21,  on_change=lambda e: validate_all_fields() )
+        expense_amount_liters = ft.TextField(label="Litros", visible=False, border_radius=21, on_change=lambda e: (format_number_33(e), validate_all_fields()))
+        expense_amount_cubic_meters = ft.TextField(label="Metros Cúbicos (m³)", visible=False, border_radius=21, on_change=lambda e: (format_number_33(e), validate_all_fields()))
+        expense_amount_energy = ft.TextField(label="Energia (kWh)", visible=False, border_radius=21, on_change=lambda e: (format_number_33(e), validate_all_fields()))
 
         def on_option_selected(e):
             expense_amount_liters.visible = False
