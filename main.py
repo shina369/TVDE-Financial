@@ -3,7 +3,6 @@ import re
 import mysql.connector
 from datetime import datetime
 import time
-import datetime
 from hashlib import sha256
 import smtplib
 import random
@@ -835,28 +834,19 @@ def main(page: ft.Page):
     def page_expense():
         page.views.clear()
 
-        def validate_date(e=None):
+        def validate_date():
             # Obtém o valor do campo de data
             input_date = expense_date.value.strip()
             try:
-                # Verifica se o formato é DD/MM/AAAA e se a data é válida
                 parsed_date = datetime.strptime(input_date, "%d/%m/%Y")
-                
-                # Normaliza o campo para um formato consistente (opcional)
                 expense_date.value = parsed_date.strftime("%d/%m/%Y")
-                expense_date.error_text = None  # Limpa o erro
-                
-                # Habilita o botão se todos os campos estiverem válidos
-                button_add_expense.disabled = not all_fields_valid()
-            except ValueError:
-                # Exibe erro se a data for inválida
-                expense_date.error_text = (
-                    "Data inválida! Insira no formato DD/MM/AAAA e use uma data válida."
-                )
-                button_add_expense.disabled = True
-            finally:
+                expense_date.error_text = None
                 expense_date.update()
-                page.update()
+                return True  # Data válida
+            except ValueError:
+                expense_date.error_text = "Data inválida! Use o formato DD/MM/AAAA."
+                expense_date.update()
+                return False  # Data inválida
 
         result_label = ft.Text(value="", color="black")
     
@@ -865,7 +855,6 @@ def main(page: ft.Page):
             if date_picker2.value:
                 parsed_date = date_picker2.value
                 expense_date.value = parsed_date.strftime("%d/%m/%Y")
-                validate_date()  # Revalida após a seleção
                 page.update()
 
         def format_number(e):
@@ -926,50 +915,23 @@ def main(page: ft.Page):
                     if hasattr(control, 'name') and control.name == 'button_salve':
                         control.enabled = False
                         control.update()
+            page.update()
         
         def all_fields_valid():
         # Verifica se todos os campos obrigatórios estão válidos
             return (
+                validate_date() and
                 expense_value.value.strip() and  # Valor preenchido
-                expense_date.value.strip() and  # Data preenchida
                 not expense_date.error_text and  # Data válida
                 expense_name.value  # Nome da despesa selecionado
             )
 
         def validate_all_fields():
-            """
-            Verifica todos os campos obrigatórios e habilita o botão de cadastro se estiverem válidos.
-            """
-            # Verificar se todos os campos obrigatórios têm valores válidos
-            all_valid = (
-                bool(expense_value.value.strip()) and  # Verifica se o campo Valor da despesa não está vazio
-                bool(expense_date.value.strip()) and  # Verifica se a data da despesa foi preenchida
-                bool(expense_name.value)  # Verifica se uma despesa foi selecionada no dropdown
-            )
-
-            # Verificar campos condicionais (quantidades específicas para opções de despesas)
-            if expense_name.value in ["Gasolína", "Gasóleo"] and not expense_amount_liters.value.strip():
-                all_valid = False
-            elif expense_name.value == "GPL" and not expense_amount_cubic_meters.value.strip():
-                all_valid = False
-            elif expense_name.value == "Recarga Bateria" and not expense_amount_energy.value.strip():
-                all_valid = False
-
-            # Habilitar ou desabilitar o botão com base na validação
+               # Revalida todos os campos, mas sem chamar validate_date diretamente
+            all_valid = all_fields_valid()
             button_add_expense.disabled = not all_valid
+            button_add_expense.update()
             page.update()
-
-        global expense_value
-        expense_value = ft.TextField(label="Valor da despesa", prefix_text="€ ",
-            border_radius=21, 
-            text_size=18,
-            on_change=lambda e: (format_number(e), validate_all_fields()), 
-            label_style=ft.TextStyle(
-                color="#AAAAAA",  # Cor do label
-                size=14,          # Tamanho opcional
-            ),
-            content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
-        )
 
         def pick_date(e, field):
             # Adiciona o DatePicker à página antes de abrir
@@ -987,6 +949,17 @@ def main(page: ft.Page):
         # Criação do DatePicker
         date_picker2 = ft.DatePicker(on_change=on_date_selected)
         global expense_date
+        global expense_value
+        expense_value = ft.TextField(label="Valor da despesa", prefix_text="€ ",
+            border_radius=21, 
+            text_size=18,
+            on_change=lambda e: (format_number(e), validate_all_fields()), 
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,          # Tamanho opcional
+            ),
+            content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
+        )
         # Criação do TextField para data
         expense_date = ft.TextField(
             label="Data da despesa",
@@ -994,7 +967,7 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=14,          # Tamanho opcional
             ),
-            on_change=lambda e: (validate_date(e), validate_all_fields()), 
+            on_change=lambda e: validate_all_fields(), 
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -1029,7 +1002,7 @@ def main(page: ft.Page):
                 ft.dropdown.Option("Manutenção"),
                 ft.dropdown.Option("Gasolína"),
                 ft.dropdown.Option("Gasóleo"),
-                ft.dropdown.Option("GPL"),
+                ft.dropdown.Option("GNV"),
                 ft.dropdown.Option("Recarga Bateria"),
                 ft.dropdown.Option("Alimentação"),
                 ft.dropdown.Option("Seguro"),
@@ -1061,7 +1034,7 @@ def main(page: ft.Page):
                 expense_name.bgcolor = "#B25900"  # Cor de fundo quando "Opção 3" é selecionada
                 expense_amount_liters.visible = True
                 expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
-            elif e.control.value == "GPL":
+            elif e.control.value == "GNV":
                 expense_name.bgcolor = "#4CAF50"  # Cor de fundo quando "Opção 3" é selecionada
                 expense_amount_cubic_meters.visible = True
                 expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
@@ -1083,6 +1056,7 @@ def main(page: ft.Page):
 
         # Agora você pode acessar o valor dela corretamente
         def cadastrar_despesa():
+            all_fields_valid()
             # Limpar mensagens de erro anteriores e bordas
             page.controls = [control for control in page.controls if not isinstance(control, ft.Text) or control.color != "red"]
 
@@ -1090,17 +1064,26 @@ def main(page: ft.Page):
             error_messages = []
 
             # Verificar campos obrigatórios
-            if not expense_value.value:
-                expense_value.border_color = "red"  # Mudar a borda para vermelho
-                error_messages.append(("O valor da despesa é obrigatório.", expense_value))
-                page.update()
-            else:
-                expense_value.border_color = None  # Restaurar a borda original
+    # Verificar o campo `expense_value`
+            try:
+                # Converte o valor para float removendo os símbolos (€ e separadores)
+                expense_value_text = expense_value.value.replace("€", "").replace(".", "").replace(",", ".").strip()
+                expense_value_number = float(expense_value_text)
+                
+                # Valida se o valor é maior que zero
+                if expense_value_number <= 0:
+                    raise ValueError("O valor da despesa deve ser maior que zero.")
+                else:
+                    expense_value.border_color = None
+            except (ValueError, TypeError):
+                expense_value.border_color = "red"
+                error_messages.append(("O valor da despesa é inválido ou menor que zero.", expense_value))
 
-            if not expense_date.value:
+
+             # Validar data
+            if not validate_date():
                 expense_date.border_color = "red"
-                error_messages.append(("A data da despesa é obrigatória.", expense_date))
-                page.update()
+                error_messages.append(("Data inválida! Use o formato DD/MM/AAAA.", expense_date))
             else:
                 expense_date.border_color = None
 
@@ -1119,7 +1102,7 @@ def main(page: ft.Page):
             else:
                 expense_amount_liters.border_color = None
 
-            if not expense_amount_cubic_meters.value and expense_name.value == "GPL":
+            if not expense_amount_cubic_meters.value and expense_name.value == "GNV":
                 expense_amount_cubic_meters.border_color = "red"
                 error_messages.append(("A quantidade de metros cúbicos é obrigatória.", expense_amount_cubic_meters))
                 page.update()
@@ -1158,7 +1141,7 @@ def main(page: ft.Page):
             # Obter o valor da despesa com base na opção selecionada
             if expense_name_text == "Gasolína" or expense_name_text == "Gasóleo":
                 expense_amount_liters_value = expense_amount_liters.value
-            elif expense_name_text == "GPL":
+            elif expense_name_text == "GNV":
                 expense_amount_cubic_meters_value = expense_amount_cubic_meters.value
             elif expense_name_text == "Recarga Bateria":
                 expense_amount_energy_value = expense_amount_energy.value
