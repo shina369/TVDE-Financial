@@ -835,26 +835,41 @@ def main(page: ft.Page):
     def page_expense():
         page.views.clear()
 
-        def validate_date(e):
-        # Obtém o valor do TextField
-            input_date = expense_date.value
+        def validate_date(e=None):
+            # Obtém o valor do campo de data
+            input_date = expense_date.value.strip()
             try:
-                # Verifica se a data está no formato esperado
+                # Verifica se o formato é DD/MM/AAAA e se a data é válida
                 parsed_date = datetime.strptime(input_date, "%d/%m/%Y")
-                result_label.value = f"Data válida: {parsed_date.strftime('%d/%m/%Y')}"
-                result_label.color = "green"
-                button_add_expense.disabled = False 
+                
+                # Normaliza o campo para um formato consistente (opcional)
+                expense_date.value = parsed_date.strftime("%d/%m/%Y")
+                expense_date.error_text = None  # Limpa o erro
+                
+                # Habilita o botão se todos os campos estiverem válidos
+                button_add_expense.disabled = not all_fields_valid()
             except ValueError:
-                result_label.value = "Data inválida! Use o formato DD/MM/AAAA."
-                result_label.color = "red"
-                button_add_expense.disabled = True 
-            
-        page.update()
+                # Exibe erro se a data for inválida
+                expense_date.error_text = (
+                    "Data inválida! Insira no formato DD/MM/AAAA e use uma data válida."
+                )
+                button_add_expense.disabled = True
+            finally:
+                expense_date.update()
+                page.update()
 
         result_label = ft.Text(value="", color="black")
+    
+        def on_date_selected(e):
+        # Atualiza o campo de data com a seleção do DatePicker
+            if date_picker2.value:
+                parsed_date = date_picker2.value
+                expense_date.value = parsed_date.strftime("%d/%m/%Y")
+                validate_date()  # Revalida após a seleção
+                page.update()
 
-        def format_number_accounting(e):
-            # Remove qualquer caractere que não seja dígito
+        def format_number(e):
+            # Filtra e mantém apenas os dígitos numéricos
             raw_value = ''.join(filter(str.isdigit, e.control.value))
 
             if raw_value:
@@ -874,18 +889,81 @@ def main(page: ft.Page):
                 # Junta a parte inteira formatada com a parte decimal
                 formatted_value = f"{formatted_integer},{decimal_part}"
 
-            else:
-                formatted_value = ""
+                # Atualiza o campo com o valor formatado, sem o símbolo de euro
+                e.control.value = formatted_value
+                e.control.update()
 
-            # Atualiza o TextField com o valor formatado
-            e.control.value = formatted_value
-            e.control.update()
+                # Verifica se o valor é menor ou igual a 0
+                if int(raw_value.replace(',', '')) <= 0:
+                    # Exibe uma mensagem de erro
+                    e.control.error_text = "O valor deve ser maior que 0."
+                    e.control.update()
+
+                    # Desabilita o botão
+                    for control in e.page.controls:
+                        if hasattr(control, 'name') and control.name == 'button_salve':
+                            control.enabled = False
+                            control.update()
+                else:
+                    # Limpa a mensagem de erro se o valor for válido
+                    e.control.error_text = ""
+                    e.control.update()
+
+                    # Habilita o botão se o valor for válido
+                    for control in e.page.controls:
+                        if hasattr(control, 'name') and control.name == 'button_salve':
+                            control.enabled = True
+                            control.update()
+
+            else:
+                # Campo vazio
+                e.control.value = ""
+                e.control.error_text = "Campo não pode estar vazio."
+                e.control.update()
+
+                # Desabilita o botão se o campo estiver vazio
+                for control in e.page.controls:
+                    if hasattr(control, 'name') and control.name == 'button_salve':
+                        control.enabled = False
+                        control.update()
+        
+        def all_fields_valid():
+        # Verifica se todos os campos obrigatórios estão válidos
+            return (
+                expense_value.value.strip() and  # Valor preenchido
+                expense_date.value.strip() and  # Data preenchida
+                not expense_date.error_text and  # Data válida
+                expense_name.value  # Nome da despesa selecionado
+            )
+
+        def validate_all_fields():
+            """
+            Verifica todos os campos obrigatórios e habilita o botão de cadastro se estiverem válidos.
+            """
+            # Verificar se todos os campos obrigatórios têm valores válidos
+            all_valid = (
+                bool(expense_value.value.strip()) and  # Verifica se o campo Valor da despesa não está vazio
+                bool(expense_date.value.strip()) and  # Verifica se a data da despesa foi preenchida
+                bool(expense_name.value)  # Verifica se uma despesa foi selecionada no dropdown
+            )
+
+            # Verificar campos condicionais (quantidades específicas para opções de despesas)
+            if expense_name.value in ["Gasolína", "Gasóleo"] and not expense_amount_liters.value.strip():
+                all_valid = False
+            elif expense_name.value == "GPL" and not expense_amount_cubic_meters.value.strip():
+                all_valid = False
+            elif expense_name.value == "Recarga Bateria" and not expense_amount_energy.value.strip():
+                all_valid = False
+
+            # Habilitar ou desabilitar o botão com base na validação
+            button_add_expense.disabled = not all_valid
+            page.update()
 
         global expense_value
         expense_value = ft.TextField(label="Valor da despesa", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
-            on_change=format_number_accounting,
+            on_change=lambda e: (format_number(e), validate_all_fields()), 
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=14,          # Tamanho opcional
@@ -898,10 +976,12 @@ def main(page: ft.Page):
             page.add(date_picker2)
             page.open(date_picker2)  # Usa o método correto para abrir o DatePicker
 
-        def on_date_selected(e, field):
+        def on_date_selected(e):
+            # Atualiza o campo de data com a seleção do DatePicker
             if date_picker2.value:
-                # Formata a data selecionada no formato "dd/mm/yyyy"
-                field.value = date_picker2.value.strftime("%d/%m/%Y")
+                parsed_date = date_picker2.value
+                expense_date.value = parsed_date.strftime("%d/%m/%Y")
+                validate_date()  # Revalida após a seleção
                 page.update()
 
         # Criação do DatePicker
@@ -916,7 +996,7 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=14,          # Tamanho opcional
             ),
-            on_change=validate_date,
+            on_change=lambda e: (validate_date(e), validate_all_fields()), 
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -958,14 +1038,14 @@ def main(page: ft.Page):
                 ft.dropdown.Option("Portagem")
             ], # Defina uma função para tratar a mudança
             border_radius=21,
-            on_change=lambda e: on_option_selected(e),
+            on_change=lambda e: (on_option_selected(e), validate_all_fields()),
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
         )
 
         global expense_amount_cubic_meters, expense_amount_energy, expense_amount_liters
-        expense_amount_liters = ft.TextField(label="Litros", visible=False, border_radius=21)
-        expense_amount_cubic_meters = ft.TextField(label="Metros Cúbicos (m³)", visible=False, border_radius=21)
-        expense_amount_energy = ft.TextField(label="Energia (kWh)", visible=False, border_radius=21)
+        expense_amount_liters = ft.TextField(label="Litros", visible=False, border_radius=21,  on_change=lambda e: validate_all_fields() )
+        expense_amount_cubic_meters = ft.TextField(label="Metros Cúbicos (m³)", visible=False, border_radius=21, on_change=lambda e: validate_all_fields())
+        expense_amount_energy = ft.TextField(label="Energia (kWh)", visible=False, border_radius=21,  on_change=lambda e: validate_all_fields() )
 
         def on_option_selected(e):
             expense_amount_liters.visible = False
