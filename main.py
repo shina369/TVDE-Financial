@@ -985,9 +985,7 @@ def main(page: ft.Page):
                 page.update()
 
         # Criação do DatePicker
-        date_picker2 = ft.DatePicker(
-            on_change=lambda e: on_date_selected(e, expense_date)  # Define o on_change diretamente
-        )
+        date_picker2 = ft.DatePicker(on_change=on_date_selected)
         global expense_date
         # Criação do TextField para data
         expense_date = ft.TextField(
