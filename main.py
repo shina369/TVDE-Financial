@@ -1836,6 +1836,27 @@ def main(page: ft.Page):
             content=ft.Text(f"Olá {user_name}, boa sorte!!!", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
         )
 
+        def fetch_goal_from_db():
+            conn = sqlite3.connect("db_tvde_content_internal.db")
+            cursor = conn.cursor()
+
+            # Consulta o objetivo mais recente no banco de dados
+            cursor.execute("SELECT goal FROM goal ORDER BY id DESC LIMIT 1")
+            result = cursor.fetchone()
+
+            conn.close()
+            
+              # Verifica se foi encontrado um valor e formata corretamente
+            if result:
+                goal_value = float(result[0])  # Converte para float
+                return f"€ {goal_value:,.2f}".replace(",", ".")
+            else:
+                return "€ 0.00"
+        
+        global goal_value
+        
+        goal_value = fetch_goal_from_db()
+
         goal = ft.Row(
             controls=[
                 ft.Container(
@@ -1844,7 +1865,7 @@ def main(page: ft.Page):
                     content=ft.Column(
                         controls=[
                             ft.Text("OBJETIVO GERAL", size=15, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
-                            ft.Text("€ 1.720", size=27, color=ft.colors.BLACK),
+                            ft.Text(goal_value, size=27, color=ft.colors.BLACK),
                             ft.Text("valores líquidos", size=12, color="#858585"),
                             ],
                             spacing=0, 
