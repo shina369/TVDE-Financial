@@ -528,14 +528,14 @@ def main(page: ft.Page):
             try:
                 # Verifica se o campo de início tem um valor válido
                 if goal_start_field.value.strip():
-                    start_date = datetime.datetime.strptime(goal_start_field.value.strip(), "%d/%m/%Y")
+                    start_date = datetime.strptime(goal_start_field.value.strip(), "%d/%m/%Y")
                 else:
                     start_date_error = "Use DD/MM/AAAA."
                     valid = False
 
                 # Verifica se o campo de fim tem um valor válido
                 if goal_end_field.value.strip():
-                    end_date = datetime.datetime.strptime(goal_end_field.value.strip(), "%d/%m/%Y")
+                    end_date = datetime.strptime(goal_end_field.value.strip(), "%d/%m/%Y")
                 else:
                     end_date_error = "Use DD/MM/AAAA."
                     valid = False
@@ -1373,7 +1373,7 @@ def main(page: ft.Page):
             # Validação do campo de data (daily_date_field)
             if daily_date_field.value:
                 try:
-                    date_value = datetime.datetime.strptime(daily_date_field.value, "%d/%m/%Y")
+                    date_value = datetime.strptime(daily_date_field.value, "%d/%m/%Y")
                 except ValueError:
                     date_error = "* A data não está no formato correto (DD/MM/AAAA)."
             else:
@@ -1382,7 +1382,7 @@ def main(page: ft.Page):
             # Validação do campo de tempo gasto (working_hours_field)
             if working_hours_field.value:
                 try:
-                    time_value = datetime.datetime.strptime(working_hours_field.value, "%H:%M")
+                    time_value = datetime.strptime(working_hours_field.value, "%H:%M")
                     if time_value.hour < 0 or time_value.hour > 23 or time_value.minute < 0 or time_value.minute > 59:
                         hour_error = "* Entre 00:00 e 23:59."
                 except ValueError:
