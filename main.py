@@ -1345,10 +1345,9 @@ def main(page: ft.Page):
         def validate_fields():
             # Inicializa variáveis de erro para cada campo
             value_error = None
+            tips_error = None
             trips_error = None
             date_error = None
-            hour_error = None
-        
 
             # Validação do campo de valor líquido (daily_value_field)
             if daily_value_field.value:
@@ -1358,8 +1357,19 @@ def main(page: ft.Page):
                         value_error = "* O valor líquido deve ser maior que zero."
                 except ValueError:
                     value_error = "* O valor líquido não está formatado corretamente."
-            
-            # Validação do campo de viagens realizadas (trips_made_field)
+            else:
+                value_error = "* O campo de valor líquido é obrigatório."
+
+            # Validação do campo de gorjetas (daily_value_tips_field) - opcional
+            if daily_value_tips_field.value:
+                try:
+                    tips = float(daily_value_tips_field.value.replace('€ ', '').replace('.', '').replace(',', '.'))
+                    if tips < 0:
+                        tips_error = "* O valor das gorjetas não pode ser negativo."
+                except ValueError:
+                    tips_error = "* O valor das gorjetas não está formatado corretamente."
+
+            # Validação do campo de viagens realizadas (trips_made_field) - obrigatório
             if trips_made_field.value:
                 try:
                     trips = int(trips_made_field.value)
@@ -1368,7 +1378,7 @@ def main(page: ft.Page):
                 except ValueError:
                     trips_error = "* O número de viagens deve ser um valor válido."
             else:
-                trips_error = "* O campo de viagens realizadas é obrigatório e deve ser maior que zero."
+                trips_error = "* O campo de viagens realizadas é obrigatório."
 
             # Validação do campo de data (daily_date_field)
             if daily_date_field.value:
@@ -1387,17 +1397,15 @@ def main(page: ft.Page):
                         hour_error = "* Entre 00:00 e 23:59."
                 except ValueError:
                     hour_error = "* Entre 00:00 e 23:59."
-            else:
-                hour_error = "* O campo é obrigatório."
 
             # Aplica as mensagens de erro nos campos correspondentes
             daily_value_field.error_text = value_error
+            daily_value_tips_field.error_text = tips_error
             trips_made_field.error_text = trips_error
             daily_date_field.error_text = date_error
-            working_hours_field.error_text = hour_error
 
             # Se qualquer erro ocorrer, desabilita os botões
-            if value_error or trips_error or date_error or hour_error:
+            if value_error or tips_error or trips_error or date_error:
                 btn_bolt.visible = False
                 btn_bolt.disabled = True
                 btn_uber.visible = False
@@ -1410,12 +1418,17 @@ def main(page: ft.Page):
 
             # Atualiza os campos e botões
             daily_value_field.update()
+            daily_value_tips_field.update()
             trips_made_field.update()
             daily_date_field.update()
             working_hours_field.update()
             btn_bolt.update()
             btn_uber.update()
             configure_buttons(param)
+            
+            daily_value_field.on_change = lambda e: validate_fields()
+            trips_made_field.on_change = lambda e: validate_fields()
+            daily_date_field.on_change = lambda e: validate_fields()
 
         def format_number_accounting(e):
                 # Remove qualquer caractere que não seja dígito
@@ -1539,8 +1552,10 @@ def main(page: ft.Page):
             texto = e.control.value
             hour_error = None
 
+            # Verifica se o campo está vazio (campo opcional)
             if not texto:
-                hour_error = "* O campo de tempo gasto é obrigatório."
+                # Não gera erro se o campo for vazio
+                e.control.border_color = ft.colors.TRANSPARENT
             else:
                 # Remove tudo o que não for número
                 texto = ''.join(filter(str.isdigit, texto))
