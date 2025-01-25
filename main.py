@@ -462,7 +462,20 @@ def main(page: ft.Page):
                 stored_password = result[0]   
                 if hash_password_login == stored_password:
                     print("Login bem-sucedido!")
-                    page.go("/page_parcial")  # Navegar para "page_new_goal" se o login for bem-sucedido
+                     # Conectar ao banco SQLite para verificar metas
+                    conn_sqlite = sqlite3.connect("db_tvde_content_internal.db")
+                    cursor_sqlite = conn_sqlite.cursor()
+                    
+                    cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
+                    meta_count = cursor_sqlite.fetchone()[0]
+                    
+                    conn_sqlite.close()
+                    
+                    # Redirecionar o usuário com base na existência de metas
+                    if meta_count > 0:
+                        page.go("/page_parcial")  # Página principal
+                    else:
+                        page.go("/page_new_goal")  # Página de nova meta
                 else:
                     password_login.error_text = "Senha incorreta"
                     password_login.update()
