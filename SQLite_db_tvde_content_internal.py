@@ -23,6 +23,7 @@ create_table_query = """
 CREATE TABLE IF NOT EXISTS goal (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     goal TEXT NOT NULL,
+    goal_gross TEXT NOT NULL,
     goal_start TEXT NOT NULL,
     goal_end TEXT NOT NULL,
     day_off TEXT NOT NULL,

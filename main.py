@@ -746,7 +746,7 @@ def main(page: ft.Page):
         )
         
         fleet_discount_field = ft.TextField(
-            label="Desconto da Frota",
+            label="Taxa da Frota",
             on_change=format_number_only99,
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
@@ -756,7 +756,7 @@ def main(page: ft.Page):
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
-            helper_text="Desconto da frota.",
+            helper_text="Taxa da frota.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
         tax_discount_field = ft.TextField(
@@ -807,15 +807,25 @@ def main(page: ft.Page):
                 day_off = int(day_off_field.value)
                 fleet_discount = float(fleet_discount_field.value)
                 tax_discount = float(tax_discount_field.value)
+                   # Verifica se o campo de desconto de imposto não está vazio antes de converter
+                tax_discount_value = tax_discount_field.value.strip()  # Remove espaços em branco
+                if tax_discount_value:  # Verifica se não está vazio
+                    tax_discount = float(tax_discount_value)
+                else:
+                    tax_discount = 0.0  # Atribui um valor padrão (0.0) se estiver vazio
+                
+                # Calcular o valor bruto (goal_gross)
+                total_discount = fleet_discount + tax_discount
+                goal_gross = goal / (1 - (total_discount / 100))
 
                 # Conectar ao banco e inserir os dados
                 conn = sqlite3.connect("db_tvde_content_internal.db")
                 cursor = conn.cursor()
 
                 cursor.execute("""
-                INSERT INTO goal (goal, goal_start, goal_end, day_off, fleet_discount, tax_discount)
-                VALUES (?,?,?,?,?,?)
-                """, (goal, goal_start, goal_end, day_off, fleet_discount, tax_discount)
+                INSERT INTO goal (goal, goal_gross, goal_start, goal_end, day_off, fleet_discount, tax_discount)
+                VALUES (?,?,?,?,?,?,?)
+                """, (goal, goal_gross, goal_start, goal_end, day_off, fleet_discount, tax_discount)
                 )
                 
                 conn.commit()
@@ -1840,21 +1850,24 @@ def main(page: ft.Page):
             conn = sqlite3.connect("db_tvde_content_internal.db")
             cursor = conn.cursor()
 
-            # Consulta o objetivo mais recente no banco de dados
-            cursor.execute("SELECT goal FROM goal ORDER BY id DESC LIMIT 1")
+            # Executar a consulta para obter o valor do objetivo, fleet_discount e tax_discount
+            cursor.execute("SELECT goal, fleet_discount, tax_discount FROM goal ORDER BY id DESC LIMIT 1")  # Ajuste conforme necessário
             result = cursor.fetchone()
 
             conn.close()
-            
-              # Verifica se foi encontrado um valor e formata corretamente
+
             if result:
-                goal_value = float(result[0])  # Converte para float
-                return f"€ {goal_value:,.2f}".replace(",", ".")
+                # Garantir que goal_value, fleet_discount e tax_discount sejam do tipo float
+                try:
+                    goal_value = float(result[0])  # Convertendo para float
+                    # Formatar o valor final para exibição
+                    return f"€ {goal_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                except ValueError:
+                    return "Erro ao converter os valores"
             else:
                 return "€ 0.00"
-        
-        global goal_value
-        
+
+        # Exemplo de como chamar a função
         goal_value = fetch_goal_from_db()
 
         goal = ft.Row(
@@ -1864,9 +1877,9 @@ def main(page: ft.Page):
                     height=87,
                     content=ft.Column(
                         controls=[
-                            ft.Text("OBJETIVO GERAL", size=15, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal_value, size=27, color=ft.colors.BLACK),
-                            ft.Text("valores líquidos", size=12, color="#858585"),
+                            ft.Text("OBJETIVO GERAL", size=18, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
+                            ft.Text(goal_value, size=33, color=ft.colors.BLACK),
+                            ft.Text("Valores líquidos sem taxas e impostos", size=9, color="#858585"),
                             ],
                             spacing=0, 
                             alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
@@ -1936,6 +1949,39 @@ def main(page: ft.Page):
             ]
         )
 
+        def fetch_goal_from_db2():
+            # Conectando ao banco SQLite
+            conn = sqlite3.connect("db_tvde_content_internal.db")  # Nome correto do arquivo SQLite
+            cursor = conn.cursor()
+
+            # Realiza a consulta para pegar o valor da meta e as datas
+            cursor.execute("SELECT goal, goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+            result = cursor.fetchone()
+
+            conn.close()  # Fecha a conexão com o banco de dados
+
+            if result:
+                goal_value = result[0]
+                goal_start = datetime.strptime(result[1], "%d/%m/%Y")
+                goal_end = datetime.strptime(result[2], "%d/%m/%Y")
+
+                # Calcula os dias restantes
+                today = datetime.today()
+                remaining_days = (goal_end - today).days  # Diferença entre a data final e hoje
+
+                return goal_value, goal_start, goal_end, remaining_days
+            else:
+                return None, None, None, None
+
+        # Usando a função fetch_goal_from_db para obter o valor da meta e os dias restantes
+        goal_value, goal_start, goal_end, remaining_days = fetch_goal_from_db2()
+
+        # Se a meta e os dias restantes foram encontrados
+        if goal_value is not None:
+            remaining_text = remaining_days
+        else:
+            remaining_text = "XX"
+
         hourglass = ft.Row(
             controls=[
                 ft.Container(
@@ -1947,7 +1993,7 @@ def main(page: ft.Page):
                         controls=[
                             ft.Image(src="https://i.ibb.co/93ps7s5/hourglass.png", height=27, width=27),
                             ft.Container(
-                                ft.Text("FALTAM 15 DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
+                                ft.Text(f"FALTAM {remaining_text} DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
                                 padding=ft.padding.only(bottom=21),
                             ),
                             ft.Container(
@@ -1992,6 +2038,38 @@ def main(page: ft.Page):
                 
             ],
         )
+        
+        def fetch_goal_from_db4():
+            conn = sqlite3.connect("db_tvde_content_internal.db")
+            cursor = conn.cursor()
+
+            # Executar a consulta para obter o valor do objetivo bruto
+            cursor.execute("SELECT goal_gross, goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+            result = cursor.fetchone()
+
+            conn.close()
+
+            if result:
+                goal_gross = float(result[0])  # Garantir que goal_gross seja do tipo float
+                goal_start = datetime.strptime(result[1], "%d/%m/%Y")
+                goal_end = datetime.strptime(result[2], "%d/%m/%Y")
+
+                # Calcular os dias restantes
+                today = datetime.today()
+                remaining_days = (goal_end - today).days  # Número de dias restantes
+
+                # Garantir que a quantidade de dias não seja zero para evitar divisão por zero
+                if remaining_days > 0:
+                    # Dividir o valor bruto pelo número de dias restantes
+                    daily_value = goal_gross / remaining_days
+                    return daily_value
+                else:
+                    return "Dias restantes inválidos"  # Caso não haja dias restantes ou seja zero
+            else:
+                return "Erro ao recuperar os dados"
+        
+        daily_value = fetch_goal_from_db4()
+        
         goal_today = ft.Row(
             controls=[
                 ft.Container(
@@ -2004,7 +2082,7 @@ def main(page: ft.Page):
                     content=ft.Column(
                         controls=[
                             ft.Text("PRÓXIMO OBJETIVO", size=15, color=ft.colors.BLACK),
-                            ft.Text("€ 125.83", size=36, color="#15CD74", weight=ft.FontWeight.BOLD),
+                            ft.Text(f"€ {daily_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=39, color="#15CD74", weight=ft.FontWeight.BOLD),
                             ft.Text("valores brutos", size=12, color="#B0B0B0"),
                             ],
                             spacing=0, 
@@ -2015,6 +2093,7 @@ def main(page: ft.Page):
             ],
             spacing=0,
         )
+        
         button_bolt_uber = ft.Row(
             controls=[
                 ft.Container(
