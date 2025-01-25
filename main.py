@@ -564,6 +564,8 @@ def main(page: ft.Page):
             goal_end_field.update()
             button_salve.update()
 
+            validate_button_state()  # Atualiza o estado do botão
+
         # Vincule a função aos eventos de mudança de valor dos campos
             goal_start_field.on_change = validate_date
             goal_end_field.on_change = validate_date
@@ -626,6 +628,8 @@ def main(page: ft.Page):
                     if hasattr(control, 'name') and control.name == 'button_salve':
                         control.enabled = False
                         control.update()
+            
+            validate_button_state()  # Atualiza o estado do botão
 
         def format_number_only99(e):
         # Remove qualquer caractere que não seja dígito
@@ -724,7 +728,7 @@ def main(page: ft.Page):
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
-            helper_text="* Quantos dias terá de folga.",
+            helper_text="Quantos dias terá de folga.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
         
@@ -757,7 +761,30 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
        
-           # Função para salvar no banco de dados
+        def validate_button_state():
+            # Verifica se todos os campos estão validados
+            valid = True
+
+            # Verifica a validação da data
+            if goal_start_field.error_text or goal_end_field.error_text:
+                valid = False
+
+            # Verifica a validação do valor
+            if goal_field.error_text:
+                valid = False
+
+            # Verifica a validação do campo "day_off", se necessário
+            if day_off_field.error_text:
+                valid = False
+
+            # Verifica a validação do campo de descontos
+            if fleet_discount_field.error_text or tax_discount_field.error_text:
+                valid = False
+
+            # Ativa ou desativa o botão conforme o estado de validação
+            button_salve.disabled = not valid
+            button_salve.update()
+
         
         def save_goal(e):
                 # Coletar os valores dos campos
