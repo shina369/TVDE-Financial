@@ -1926,78 +1926,70 @@ def main(page: ft.Page):
                 goal_result = cursor.fetchone()
 
                 if goal_result:
-                    goal_start = datetime.strptime(goal_result[0], '%d/%m/%Y')  # Formato do banco
-                    goal_end = datetime.strptime(goal_result[1], '%d/%m/%Y')    # Formato do banco
+                    goal_start = datetime.strptime(goal_result[0], '%d/%m/%Y')  # Convertendo string para datetime
+                    goal_end = datetime.strptime(goal_result[1], '%d/%m/%Y')
                 else:
                     goal_start, goal_end = None, None
 
                 print(f"Goal Start: {goal_start}, Goal End: {goal_end}")
-
-                # Convertendo para strings no formato do banco (DD/MM/YYYY)
-                goal_start_str = goal_start.strftime('%d/%m/%Y') if goal_start else None
-                goal_end_str = goal_end.strftime('%d/%m/%Y') if goal_end else None
-
-                print(f"Goal Start (str): {goal_start_str}, Goal End (str): {goal_end_str}")
-
-                # Consultar os dados de despesas
-                cursor.execute("SELECT SUM(expense_value) FROM expense")
-                expenses_result = cursor.fetchone()
-                expenses = expenses_result[0] if expenses_result else 0.0
 
                 # Consultar o valor de "day_off" da tabela "goal"
                 cursor.execute("SELECT day_off FROM goal ORDER BY id DESC LIMIT 1")
                 day_off_result = cursor.fetchone()
                 day_off = day_off_result[0] if day_off_result else 0
 
+                def fetch_daily_values(table_name, start_date, end_date):
+                    """Consulta valores diários entre start_date e end_date."""
+                    cursor.execute(f"""
+                        SELECT daily_value
+                        FROM {table_name}
+                        WHERE 
+                            date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                            BETWEEN date(?) AND date(?)
+                    """, (start_date, end_date))
+                    return cursor.fetchall()
+
+                def fetch_expenses(start_date, end_date):
+                    """Consulta as despesas entre start_date e end_date."""
+                    cursor.execute("""
+                        SELECT SUM(expense_value)
+                        FROM expense
+                        WHERE date(substr(expense_date, 7, 4) || '-' || substr(expense_date, 4, 2) || '-' || substr(expense_date, 1, 2)) 
+                        BETWEEN date(?) AND date(?)
+                    """, (start_date, end_date))
+                    result = cursor.fetchone()
+                    return result[0] if result else 0.0
+
+                # Consultar despesas entre goal_start e goal_end
+                expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+
                 # Consultar Uber entre goal_start e goal_end
-                print(f"Consultando Uber entre {goal_start_str} e {goal_end_str}")
-                cursor.execute("""
-                    SELECT daily_date, daily_value 
-                    FROM uber 
-                    WHERE daily_date BETWEEN ? AND ?
-                """, (goal_start_str, goal_end_str))
-                uber_data = cursor.fetchall()
+                print(f"Consultando Uber entre {goal_start} e {goal_end}")
+                uber_data = fetch_daily_values("uber", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
                 print(f"Uber Data: {uber_data}")
 
                 # Consultar Bolt entre goal_start e goal_end
-                print(f"Consultando Bolt entre {goal_start_str} e {goal_end_str}")
-                cursor.execute("""
-                    SELECT daily_date, daily_value 
-                    FROM bolt 
-                    WHERE daily_date BETWEEN ? AND ?
-                """, (goal_start_str, goal_end_str))
-                bolt_data = cursor.fetchall()
+                print(f"Consultando Bolt entre {goal_start} e {goal_end}")
+                bolt_data = fetch_daily_values("bolt", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
                 print(f"Bolt Data: {bolt_data}")
 
-                # Função para converter valores em float com segurança
-                def safe_float(value):
-                    try:
-                        return float(value)
-                    except (ValueError, TypeError):
-                        print(f"Erro ao converter valor '{value}' para float.")
-                        return 0.0
+                # Somar os valores diários
+                uber_gain = sum(float(row[0]) for row in uber_data if row[0])
+                bolt_gain = sum(float(row[0]) for row in bolt_data if row[0])
 
-                # Calcular os ganhos
-                uber_gain = sum([safe_float(row[1]) for row in uber_data]) if uber_data else 0.0
-                bolt_gain = sum([safe_float(row[1]) for row in bolt_data]) if bolt_data else 0.0
-
-                # Calcular o ganho total
                 total_gain = uber_gain + bolt_gain
 
-                print(f"Uber Gain: {uber_gain}, Bolt Gain: {bolt_gain}, Total Gain: {total_gain}")
+                return goal_start, goal_end, expenses, total_gain, day_off
 
-            return goal_start, goal_end, expenses, total_gain, day_off
 
-        # Chamando a função
         goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
 
-        # Exibindo os resultados
+        # Exibir os resultados
         print(f"Goal Start: {goal_start}")
         print(f"Goal End: {goal_end}")
         print(f"Expenses: {expenses}")
         print(f"Total Gain: {total_gain}")
         print(f"Day Off: {day_off}")
-
 
 
 
@@ -2020,7 +2012,7 @@ def main(page: ft.Page):
                         height=99,
                         controls=[
                             ft.Text("Início do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal_start.strftime("%Y/%m/%d") if goal_start else "Data não encontrada", size=15),
+                            ft.Text(goal_start.strftime("%d/%m/%Y") if goal_start else "Data não encontrada", size=15),
                             ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text(str(days_of_work), size=15),
                             ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
@@ -2036,7 +2028,7 @@ def main(page: ft.Page):
                         horizontal_alignment=ft.CrossAxisAlignment.END,
                         controls=[
                             ft.Text("Fim do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal_end.strftime("%Y/%m/%d") if goal_end else "Data não encontrada", size=15),
+                            ft.Text(goal_end.strftime("%d/%m/%Y") if goal_end else "Data não encontrada", size=15),
                             ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text(str(day_off), size=15),  # Folgas: valor de day_off
                             ft.Text("Ganhos até o momento", size=15, weight=ft.FontWeight.BOLD),
