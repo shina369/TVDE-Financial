@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS goal (
 """
 create_table_query_bolt = """
 CREATE TABLE IF NOT EXISTS bolt (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,   
     daily_value TEXT NOT NULL,
     daily_value_tips TEXT NOT NULL,
     daily_date TEXT NOT NULL,

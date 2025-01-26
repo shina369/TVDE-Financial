@@ -1912,64 +1912,101 @@ def main(page: ft.Page):
             content=button,
             alignment=ft.alignment.center,  # Centraliza o botão
         )
+       
+        # Registrar adaptadores para datetime
+        sqlite3.register_adapter(datetime, lambda x: x.isoformat())
+        sqlite3.register_converter("datetime", lambda x: datetime.fromisoformat(x.decode("utf-8")))
 
         def fetch_goal_details_from_db():
-            conn = sqlite3.connect("db_tvde_content_internal.db")
-            cursor = conn.cursor()
+            with sqlite3.connect("db_tvde_content_internal.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
+                cursor = conn.cursor()
 
-            # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
-            cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
-            goal_result = cursor.fetchone()
+                # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
+                cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+                goal_result = cursor.fetchone()
 
-            if goal_result:
-                goal_start = datetime.strptime(goal_result[0], "%d/%m/%Y")
-                goal_end = datetime.strptime(goal_result[1], "%d/%m/%Y")
-            else:
-                goal_start, goal_end = None, None
+                if goal_result:
+                    goal_start = goal_result[0]
+                    goal_end = goal_result[1]
 
-            # Recuperar as despesas totais
-            cursor.execute("SELECT SUM(expense_value) FROM expense")
-            expenses_result = cursor.fetchone()
-            expenses = expenses_result[0] if expenses_result else 0.0
+                    if isinstance(goal_start, str):
+                        goal_start = datetime.strptime(goal_start, '%d/%m/%Y')  # Formato correto
+                    if isinstance(goal_end, str):
+                        goal_end = datetime.strptime(goal_end, '%d/%m/%Y')  # Formato correto
+                else:
+                    goal_start, goal_end = None, None
 
-            # Recuperar o valor de "day_off" da tabela de "goal"
-            cursor.execute("SELECT day_off FROM goal ORDER BY id DESC LIMIT 1")
-            day_off_result = cursor.fetchone()
-            day_off = day_off_result[0] if day_off_result else 0  # Default para 0 caso não exista valor
+                print(f"Goal Start: {goal_start}, Goal End: {goal_end}")
 
-            # Calcular o ganho até o momento (soma das diárias entre goal_start e goal_end)
-            cursor.execute(""" 
-                SELECT SUM(daily_value) 
-                FROM uber 
-                WHERE daily_date BETWEEN ? AND ?
-            """, (goal_start, goal_end))
-            uber_gain = cursor.fetchone()[0] or 0.0
-            print(f"Uber Gain: {uber_gain}")  # Debug
+                # Convertendo para string para a consulta no formato 'YYYY-MM-DD'
+                goal_start_str = goal_start.strftime('%Y-%m-%d') if goal_start else None
+                goal_end_str = goal_end.strftime('%Y-%m-%d') if goal_end else None
 
-            cursor.execute("""
-                SELECT SUM(daily_value) 
-                FROM bolt 
-                WHERE daily_date BETWEEN ? AND ?
-            """, (goal_start, goal_end))
-            bolt_gain = cursor.fetchone()[0] or 0.0
-            print(f"Bolt Gain: {bolt_gain}")  # Debug
+                print(f"Goal Start (str): {goal_start_str}, Goal End (str): {goal_end_str}")
 
-            total_gain = uber_gain + bolt_gain
+                # Consultar os dados de despesas
+                cursor.execute("SELECT SUM(expense_value) FROM expense")
+                expenses_result = cursor.fetchone()
+                expenses = expenses_result[0] if expenses_result else 0.0
 
-            conn.close()
+                # Consultar o valor de "day_off" da tabela "goal"
+                cursor.execute("SELECT day_off FROM goal ORDER BY id DESC LIMIT 1")
+                day_off_result = cursor.fetchone()
+                day_off = day_off_result[0] if day_off_result else 0
+
+                # Consultar Uber entre goal_start e goal_end
+                print(f"Consultando Uber entre {goal_start_str} e {goal_end_str}")
+                cursor.execute("""
+                   SELECT daily_date, daily_value 
+                    FROM uber 
+                    WHERE date(daily_date) BETWEEN ? AND ?
+                """, (goal_start_str, goal_end_str))
+                uber_data = cursor.fetchall()
+                print(f"Uber Data: {uber_data}")
+
+                # Consultar Bolt entre goal_start e goal_end
+                print(f"Consultando Bolt entre {goal_start_str} e {goal_end_str}")
+                cursor.execute("""
+                    SELECT daily_date, daily_value 
+                    FROM bolt 
+                    WHERE date(daily_date) BETWEEN ? AND ?
+                """, (goal_start_str, goal_end_str))
+                bolt_data = cursor.fetchall()
+                print(f"Bolt Data: {bolt_data}")
+
+                # Depuração para verificação dos valores de daily_value
+                if uber_data:
+                    print(f"Uber Data (daily_value): {[row[1] for row in uber_data]}")
+
+                if bolt_data:
+                    print(f"Bolt Data (daily_value): {[row[1] for row in bolt_data]}")
+
+             # Garantir que daily_value seja convertido para float corretamente
+                try:
+                    # Convertendo daily_value diretamente dentro do loop para garantir que seja um número
+                    uber_gain = sum([float(row[1]) if row[1] else 0.0 for row in uber_data]) if uber_data else 0.0
+                    bolt_gain = sum([float(row[1]) if row[1] else 0.0 for row in bolt_data]) if bolt_data else 0.0
+                except ValueError as e:
+                    print(f"Erro ao converter valores para float: {e}")
+                    uber_gain, bolt_gain = 0.0, 0.0
+
+                # Exibir os ganhos
+                print(f"Uber Gain: {uber_gain}, Bolt Gain: {bolt_gain}")
+
+                total_gain = uber_gain + bolt_gain
 
             return goal_start, goal_end, expenses, total_gain, day_off
 
 
-        # Chamada da função para recuperar os dados do banco
+
+
         goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
 
-        # Calcular os dias de trabalho
-        if goal_start and goal_end:
-            days_of_work = (goal_end - goal_start).days + 1
-        else:
-            days_of_work = 0
 
+        # Agora podemos calcular o número de dias de trabalho corretamente
+        days_of_work = (goal_end - goal_start).days + 1
+
+        
         expenses = expenses if expenses is not None else 0.0
 
         # Formatação e exibição dos dados
@@ -2009,7 +2046,7 @@ def main(page: ft.Page):
                 ),
             ]
         )
-
+        
         def fetch_goal_from_db2():
             # Conectando ao banco SQLite
             conn = sqlite3.connect("db_tvde_content_internal.db")  # Nome correto do arquivo SQLite
