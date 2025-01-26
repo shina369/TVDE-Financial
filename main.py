@@ -2070,20 +2070,19 @@ def main(page: ft.Page):
 
         # Se a meta e os dias restantes foram encontrados
         if goal_value is not None:
-            remaining_text = remaining_days + 1
+            remaining_text = remaining_days
         else:
             remaining_text = "XX"
 
                 # Garantir que remaining_text seja um número
         if isinstance(remaining_text, str):
             try:
-                remaining_text = int(remaining_text)
+                remaining_text = remaining_text
             except ValueError:
                 # Caso não seja possível converter para inteiro, atribui um valor padrão (0, por exemplo)
                 remaining_text = 0
 
         # Agora, subtraímos day_off de remaining_text
-        remaining_text -= int(day_off)
             
         remaining_text2 = ft.Text(
             f"{remaining_text}",  # O valor estilizado do texto
@@ -2176,7 +2175,7 @@ def main(page: ft.Page):
 
                 # Calcular os dias restantes
                 today = datetime.today()
-                remaining_days = (goal_end - today).days + 1  # Número de dias restantes
+                remaining_days = (goal_end - today).days  # Número de dias restantes
 
                 # Garantir que a quantidade de dias não seja zero para evitar divisão por zero
                 if remaining_days > 0:
