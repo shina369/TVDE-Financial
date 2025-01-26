@@ -1926,21 +1926,16 @@ def main(page: ft.Page):
                 goal_result = cursor.fetchone()
 
                 if goal_result:
-                    goal_start = goal_result[0]
-                    goal_end = goal_result[1]
-
-                    if isinstance(goal_start, str):
-                        goal_start = datetime.strptime(goal_start, '%d/%m/%Y')  # Formato correto
-                    if isinstance(goal_end, str):
-                        goal_end = datetime.strptime(goal_end, '%d/%m/%Y')  # Formato correto
+                    goal_start = datetime.strptime(goal_result[0], '%d/%m/%Y')  # Formato do banco
+                    goal_end = datetime.strptime(goal_result[1], '%d/%m/%Y')    # Formato do banco
                 else:
                     goal_start, goal_end = None, None
 
                 print(f"Goal Start: {goal_start}, Goal End: {goal_end}")
 
-                # Convertendo para string para a consulta no formato 'YYYY-MM-DD'
-                goal_start_str = goal_start.strftime('%Y-%m-%d') if goal_start else None
-                goal_end_str = goal_end.strftime('%Y-%m-%d') if goal_end else None
+                # Convertendo para strings no formato do banco (DD/MM/YYYY)
+                goal_start_str = goal_start.strftime('%d/%m/%Y') if goal_start else None
+                goal_end_str = goal_end.strftime('%d/%m/%Y') if goal_end else None
 
                 print(f"Goal Start (str): {goal_start_str}, Goal End (str): {goal_end_str}")
 
@@ -1957,9 +1952,9 @@ def main(page: ft.Page):
                 # Consultar Uber entre goal_start e goal_end
                 print(f"Consultando Uber entre {goal_start_str} e {goal_end_str}")
                 cursor.execute("""
-                   SELECT daily_date, daily_value 
+                    SELECT daily_date, daily_value 
                     FROM uber 
-                    WHERE date(daily_date) BETWEEN ? AND ?
+                    WHERE daily_date BETWEEN ? AND ?
                 """, (goal_start_str, goal_end_str))
                 uber_data = cursor.fetchall()
                 print(f"Uber Data: {uber_data}")
@@ -1969,33 +1964,40 @@ def main(page: ft.Page):
                 cursor.execute("""
                     SELECT daily_date, daily_value 
                     FROM bolt 
-                    WHERE date(daily_date) BETWEEN ? AND ?
+                    WHERE daily_date BETWEEN ? AND ?
                 """, (goal_start_str, goal_end_str))
                 bolt_data = cursor.fetchall()
                 print(f"Bolt Data: {bolt_data}")
 
-                # Depuração para verificação dos valores de daily_value
-                if uber_data:
-                    print(f"Uber Data (daily_value): {[row[1] for row in uber_data]}")
+                # Função para converter valores em float com segurança
+                def safe_float(value):
+                    try:
+                        return float(value)
+                    except (ValueError, TypeError):
+                        print(f"Erro ao converter valor '{value}' para float.")
+                        return 0.0
 
-                if bolt_data:
-                    print(f"Bolt Data (daily_value): {[row[1] for row in bolt_data]}")
+                # Calcular os ganhos
+                uber_gain = sum([safe_float(row[1]) for row in uber_data]) if uber_data else 0.0
+                bolt_gain = sum([safe_float(row[1]) for row in bolt_data]) if bolt_data else 0.0
 
-             # Garantir que daily_value seja convertido para float corretamente
-                try:
-                    # Convertendo daily_value diretamente dentro do loop para garantir que seja um número
-                    uber_gain = sum([float(row[1]) if row[1] else 0.0 for row in uber_data]) if uber_data else 0.0
-                    bolt_gain = sum([float(row[1]) if row[1] else 0.0 for row in bolt_data]) if bolt_data else 0.0
-                except ValueError as e:
-                    print(f"Erro ao converter valores para float: {e}")
-                    uber_gain, bolt_gain = 0.0, 0.0
-
-                # Exibir os ganhos
-                print(f"Uber Gain: {uber_gain}, Bolt Gain: {bolt_gain}")
-
+                # Calcular o ganho total
                 total_gain = uber_gain + bolt_gain
 
+                print(f"Uber Gain: {uber_gain}, Bolt Gain: {bolt_gain}, Total Gain: {total_gain}")
+
             return goal_start, goal_end, expenses, total_gain, day_off
+
+        # Chamando a função
+        goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
+
+        # Exibindo os resultados
+        print(f"Goal Start: {goal_start}")
+        print(f"Goal End: {goal_end}")
+        print(f"Expenses: {expenses}")
+        print(f"Total Gain: {total_gain}")
+        print(f"Day Off: {day_off}")
+
 
 
 
@@ -2006,7 +2008,6 @@ def main(page: ft.Page):
         # Agora podemos calcular o número de dias de trabalho corretamente
         days_of_work = (goal_end - goal_start).days + 1
 
-        
         expenses = expenses if expenses is not None else 0.0
 
         # Formatação e exibição dos dados
@@ -2019,7 +2020,7 @@ def main(page: ft.Page):
                         height=99,
                         controls=[
                             ft.Text("Início do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal_start.strftime("%d/%m/%Y") if goal_start else "Data não encontrada", size=15),
+                            ft.Text(goal_start.strftime("%Y/%m/%d") if goal_start else "Data não encontrada", size=15),
                             ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text(str(days_of_work), size=15),
                             ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
@@ -2035,7 +2036,7 @@ def main(page: ft.Page):
                         horizontal_alignment=ft.CrossAxisAlignment.END,
                         controls=[
                             ft.Text("Fim do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal_end.strftime("%d/%m/%Y") if goal_end else "Data não encontrada", size=15),
+                            ft.Text(goal_end.strftime("%Y/%m/%d") if goal_end else "Data não encontrada", size=15),
                             ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text(str(day_off), size=15),  # Folgas: valor de day_off
                             ft.Text("Ganhos até o momento", size=15, weight=ft.FontWeight.BOLD),
@@ -2065,7 +2066,7 @@ def main(page: ft.Page):
 
                 # Calcula os dias restantes
                 today = datetime.today()
-                remaining_days = (goal_end - today).days  # Diferença entre a data final e hoje
+                remaining_days = (goal_end - today).days + 1  # Diferença entre a data final e hoje
 
                 return goal_value, goal_start, goal_end, remaining_days
             else:

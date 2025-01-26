@@ -35,12 +35,12 @@ create_table_query_bolt = """
 CREATE TABLE IF NOT EXISTS bolt (
     id INTEGER PRIMARY KEY AUTOINCREMENT,   
     daily_value TEXT NOT NULL,
-    daily_value_tips TEXT NOT NULL,
+    daily_value_tips TEXT,
     daily_date TEXT NOT NULL,
-    working_hours TEXT NOT NULL,
-    distance_traveled TEXT NOT NULL,
-    trips_made TEXT NOT NULL,
-    observation TEXT NOT NULL
+    working_hours TEXT,
+    distance_traveled TEXT,
+    trips_made TEXT,
+    observation TEXT
 );
 """
 
