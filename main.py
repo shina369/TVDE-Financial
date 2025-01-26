@@ -2017,7 +2017,7 @@ def main(page: ft.Page):
                             ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text(str(days_of_work), size=15),
                             ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(f"€ {expenses:,.2f}".replace(",", "."), size=15)  # Formatação das despesas
+                            ft.Text(f"€ {expenses:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=15)  # Formatação das despesas
                         ],
                         spacing=0, 
                     ),
@@ -2033,7 +2033,7 @@ def main(page: ft.Page):
                             ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text(str(day_off), size=15),  # Folgas: valor de day_off
                             ft.Text("Ganhos até o momento", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(f"€ {total_gain:,.2f}".replace(",", "."), size=15)  # Formatação dos ganhos
+                            ft.Text(f"€ {total_gain:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=15)  # Formatação dos ganhos
                         ],
                         spacing=0, 
                     ),
