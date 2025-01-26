@@ -1880,7 +1880,7 @@ def main(page: ft.Page):
                     content=ft.Column(
                         controls=[
                             ft.Text("OBJETIVO GERAL", size=18, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal_value, size=33, color=ft.colors.BLACK),
+                            ft.Text(goal_value, size=36, color=ft.colors.BLACK),
                             ft.Text("Valores líquidos sem taxas e impostos", size=9, color="#858585"),
                             ],
                             spacing=0,
