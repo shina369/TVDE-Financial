@@ -2087,7 +2087,7 @@ def main(page: ft.Page):
             
         remaining_text2 = ft.Text(
             f"{remaining_text}",  # O valor estilizado do texto
-            size=18,
+            size=24,
             weight=ft.FontWeight.BOLD
         )
 
