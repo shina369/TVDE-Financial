@@ -1992,13 +1992,13 @@ def main(page: ft.Page):
         print(f"Day Off: {day_off}")
 
 
-
-
         goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
 
 
         # Agora podemos calcular o número de dias de trabalho corretamente
         days_of_work = (goal_end - goal_start).days + 1
+
+        days_of_work -= int(day_off)
 
         expenses = expenses if expenses is not None else 0.0
 
@@ -2058,7 +2058,7 @@ def main(page: ft.Page):
 
                 # Calcula os dias restantes
                 today = datetime.today()
-                remaining_days = (goal_end - today).days + 1  # Diferença entre a data final e hoje
+                remaining_days = (goal_end - today).days  # Diferença entre a data final e hoje
 
                 return goal_value, goal_start, goal_end, remaining_days
             else:
