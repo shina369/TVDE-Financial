@@ -800,6 +800,7 @@ def main(page: ft.Page):
 
         
         def save_goal(e):
+                global day_off
                 # Coletar os valores dos campos
                 goal = float(goal_field.value.replace('.', '').replace(',', '.'))
                 goal_start = goal_start_field.value
@@ -2072,6 +2073,17 @@ def main(page: ft.Page):
             remaining_text = remaining_days + 1
         else:
             remaining_text = "XX"
+
+                # Garantir que remaining_text seja um número
+        if isinstance(remaining_text, str):
+            try:
+                remaining_text = int(remaining_text)
+            except ValueError:
+                # Caso não seja possível converter para inteiro, atribui um valor padrão (0, por exemplo)
+                remaining_text = 0
+
+        # Agora, subtraímos day_off de remaining_text
+        remaining_text -= int(day_off)
             
         remaining_text2 = ft.Text(
             f"{remaining_text}",  # O valor estilizado do texto
