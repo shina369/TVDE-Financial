@@ -1543,7 +1543,7 @@ def main(page: ft.Page):
             e.control.value = formatted_value
             e.control.update()
 
-        daily_value_field = ft.TextField(label=f"Valor líquido da {param}", prefix_text="€ ",
+        daily_value_field = ft.TextField(label=f"Valor líquido da {param}.", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
             on_change=format_number_accounting, 
@@ -1551,7 +1551,7 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=15,               # Tamanho opcional
             ),
-            helper_text=f"* Valor das corridas. Sem a % da {param}.",
+            helper_text=f"* Valor líquido da {param} com impostos.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
         )
 
@@ -1668,7 +1668,7 @@ def main(page: ft.Page):
             label="Viagens realizadas",
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
-            helper_text="* Viagens realizadas",
+            helper_text=f"*Todas as Viagens realizadas da {param}",
             on_change=format_number_only99
         )
 
@@ -2106,12 +2106,12 @@ def main(page: ft.Page):
                                 width=27,
                             ),
                             ft.Container(
-                                padding=ft.Padding(top=6, bottom=15, left=0, right=0),   
+                                padding=ft.Padding(top=0, bottom=12, left=0, right=0),   
                                 content=ft.Row(
                                     controls=[
-                                        ft.Text("FALTAM ", size=15, color="#858585"),
+                                        ft.Text("FALTAM", size=15, color="#858585"),
                                         remaining_text2, # Coloca o texto estilizado no meio
-                                        ft.Text(" DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
+                                        ft.Text("DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,  # Alinha ao centro
                                     expand=True  # Torna o Row expansível
@@ -2176,7 +2176,7 @@ def main(page: ft.Page):
 
                 # Calcular os dias restantes
                 today = datetime.today()
-                remaining_days = (goal_end - today).days  # Número de dias restantes
+                remaining_days = (goal_end - today).days + 1  # Número de dias restantes
 
                 # Garantir que a quantidade de dias não seja zero para evitar divisão por zero
                 if remaining_days > 0:
@@ -2218,7 +2218,7 @@ def main(page: ft.Page):
             controls=[
                 ft.Container(
                     width=399,
-                    height=81,
+                    height=72,
                     content=ft.Row(
                         controls=[
                             ft.Container(
@@ -2253,6 +2253,7 @@ def main(page: ft.Page):
                     header,
                     message_welcome,
                     goal_today,
+                    ft.Container(),
                     hourglass,
                     goal,
                     button_bolt_uber,
