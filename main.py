@@ -1875,13 +1875,14 @@ def main(page: ft.Page):
                 ft.Container(
                     width=399,
                     height=87,
+                    padding=ft.Padding(top=6, bottom=6, left=0, right=0), 
                     content=ft.Column(
                         controls=[
                             ft.Text("OBJETIVO GERAL", size=18, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
                             ft.Text(goal_value, size=33, color=ft.colors.BLACK),
                             ft.Text("Valores líquidos sem taxas e impostos", size=9, color="#858585"),
                             ],
-                            spacing=0, 
+                            spacing=0,
                             alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
                     ),
@@ -1981,6 +1982,12 @@ def main(page: ft.Page):
             remaining_text = remaining_days
         else:
             remaining_text = "XX"
+            
+        remaining_text2 = ft.Text(
+            f"{remaining_text}",  # O valor estilizado do texto
+            size=18,
+            weight=ft.FontWeight.BOLD
+        )
 
         hourglass = ft.Row(
             controls=[
@@ -1991,10 +1998,22 @@ def main(page: ft.Page):
                     margin=0,
                     content=ft.Column(
                         controls=[
-                            ft.Image(src="https://i.ibb.co/93ps7s5/hourglass.png", height=27, width=27),
+                            ft.Image(
+                                src="https://i.ibb.co/93ps7s5/hourglass.png",
+                                height=27,
+                                width=27,
+                            ),
                             ft.Container(
-                                ft.Text(f"FALTAM {remaining_text} DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
-                                padding=ft.padding.only(bottom=21),
+                                padding=ft.Padding(top=6, bottom=15, left=0, right=0),   
+                                content=ft.Row(
+                                    controls=[
+                                        ft.Text("FALTAM ", size=15, color="#858585"),
+                                        remaining_text2, # Coloca o texto estilizado no meio
+                                        ft.Text(" DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
+                                    ],
+                                    alignment=ft.MainAxisAlignment.CENTER,  # Alinha ao centro
+                                    expand=True  # Torna o Row expansível
+                                ),
                             ),
                             ft.Container(
                                 width=399,
@@ -2004,7 +2023,6 @@ def main(page: ft.Page):
                                 content=ft.Row(
                                     controls=[
                                         ft.Container(
-                                          
                                             content=ft.Image(
                                                 src="https://i.ibb.co/80MV450/flag.png",
                                             ),
@@ -2023,21 +2041,21 @@ def main(page: ft.Page):
                                         ),
                                     ],
                                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                                ),  
+                                ),
                             ),
                             ft.Container(
                                 width=2,
                                 height=15,
                                 bgcolor="black",
-                            )
+                            ),
                         ],
-                        spacing=0, #remove espaçamento entre os elementos do Controls
-                        horizontal_alignment="center", # Centraliza horizontalmente
+                        spacing=0,  # Remove o espaçamento entre os elementos do Controls
+                        horizontal_alignment="center",  # Centraliza horizontalmente
                     ),
                 ),
-                
             ],
         )
+
         
         def fetch_goal_from_db4():
             conn = sqlite3.connect("db_tvde_content_internal.db")
@@ -2098,7 +2116,7 @@ def main(page: ft.Page):
             controls=[
                 ft.Container(
                     width=399,
-                    height=51,
+                    height=81,
                     content=ft.Row(
                         controls=[
                             ft.Container(
