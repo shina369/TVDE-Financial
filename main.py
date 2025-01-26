@@ -1843,7 +1843,7 @@ def main(page: ft.Page):
             width=399,
             height=42,
             alignment=ft.Alignment(0, 0),
-            content=ft.Text(f"Olá {user_name}, boa sorte!!!", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
+            content=ft.Text(f"Olá {user_name}, boa sorte!", size=18, text_align=ft.TextAlign.CENTER),
         )
 
         def fetch_goal_from_db():
@@ -1875,7 +1875,7 @@ def main(page: ft.Page):
                 ft.Container(
                     width=399,
                     height=87,
-                    padding=ft.Padding(top=6, bottom=6, left=0, right=0), 
+                    padding=ft.Padding(top=12, bottom=6, left=0, right=0), 
                     content=ft.Column(
                         controls=[
                             ft.Text("OBJETIVO GERAL", size=18, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
@@ -1913,6 +1913,66 @@ def main(page: ft.Page):
             alignment=ft.alignment.center,  # Centraliza o botão
         )
 
+        def fetch_goal_details_from_db():
+            conn = sqlite3.connect("db_tvde_content_internal.db")
+            cursor = conn.cursor()
+
+            # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
+            cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+            goal_result = cursor.fetchone()
+
+            if goal_result:
+                goal_start = datetime.strptime(goal_result[0], "%d/%m/%Y")
+                goal_end = datetime.strptime(goal_result[1], "%d/%m/%Y")
+            else:
+                goal_start, goal_end = None, None
+
+            # Recuperar as despesas totais
+            cursor.execute("SELECT SUM(expense_value) FROM expense")
+            expenses_result = cursor.fetchone()
+            expenses = expenses_result[0] if expenses_result else 0.0
+
+            # Recuperar o valor de "day_off" da tabela de "goal"
+            cursor.execute("SELECT day_off FROM goal ORDER BY id DESC LIMIT 1")
+            day_off_result = cursor.fetchone()
+            day_off = day_off_result[0] if day_off_result else 0  # Default para 0 caso não exista valor
+
+            # Calcular o ganho até o momento (soma das diárias entre goal_start e goal_end)
+            cursor.execute(""" 
+                SELECT SUM(daily_value) 
+                FROM uber 
+                WHERE daily_date BETWEEN ? AND ?
+            """, (goal_start, goal_end))
+            uber_gain = cursor.fetchone()[0] or 0.0
+            print(f"Uber Gain: {uber_gain}")  # Debug
+
+            cursor.execute("""
+                SELECT SUM(daily_value) 
+                FROM bolt 
+                WHERE daily_date BETWEEN ? AND ?
+            """, (goal_start, goal_end))
+            bolt_gain = cursor.fetchone()[0] or 0.0
+            print(f"Bolt Gain: {bolt_gain}")  # Debug
+
+            total_gain = uber_gain + bolt_gain
+
+            conn.close()
+
+            return goal_start, goal_end, expenses, total_gain, day_off
+
+
+        # Chamada da função para recuperar os dados do banco
+        goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
+
+        # Calcular os dias de trabalho
+        if goal_start and goal_end:
+            days_of_work = (goal_end - goal_start).days + 1
+        else:
+            days_of_work = 0
+
+        expenses = expenses if expenses is not None else 0.0
+
+        # Formatação e exibição dos dados
         details_goal = ft.Row(
             height=0,
             controls=[
@@ -1922,11 +1982,11 @@ def main(page: ft.Page):
                         height=99,
                         controls=[
                             ft.Text("Início do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("12/09/2024",size=15),
+                            ft.Text(goal_start.strftime("%d/%m/%Y") if goal_start else "Data não encontrada", size=15),
                             ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("24",size=15),
+                            ft.Text(str(days_of_work), size=15),
                             ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("€ 350,00", size=15)
+                            ft.Text(f"€ {expenses:,.2f}".replace(",", "."), size=15)  # Formatação das despesas
                         ],
                         spacing=0, 
                     ),
@@ -1938,11 +1998,11 @@ def main(page: ft.Page):
                         horizontal_alignment=ft.CrossAxisAlignment.END,
                         controls=[
                             ft.Text("Fim do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("12/10/2024", size=15),
+                            ft.Text(goal_end.strftime("%d/%m/%Y") if goal_end else "Data não encontrada", size=15),
                             ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("6", size=15),
+                            ft.Text(str(day_off), size=15),  # Folgas: valor de day_off
                             ft.Text("Ganhos até o momento", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text("€ 1.365,00", size=15)
+                            ft.Text(f"€ {total_gain:,.2f}".replace(",", "."), size=15)  # Formatação dos ganhos
                         ],
                         spacing=0, 
                     ),
@@ -1979,7 +2039,7 @@ def main(page: ft.Page):
 
         # Se a meta e os dias restantes foram encontrados
         if goal_value is not None:
-            remaining_text = remaining_days
+            remaining_text = remaining_days + 1
         else:
             remaining_text = "XX"
             
@@ -2099,7 +2159,7 @@ def main(page: ft.Page):
                     border_radius=25,
                     content=ft.Column(
                         controls=[
-                            ft.Text("PRÓXIMO OBJETIVO", size=15, color=ft.colors.BLACK),
+                            ft.Text("OBJETIVO DIÁRIO", size=15, color=ft.colors.BLACK),
                             ft.Text(f"€ {daily_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=39, color="#15CD74", weight=ft.FontWeight.BOLD),
                             ft.Text("valores brutos", size=12, color="#B0B0B0"),
                             ],
