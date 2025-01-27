@@ -1985,17 +1985,7 @@ def main(page: ft.Page):
 
         goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
 
-        # Exibir os resultados
-        print(f"Goal Start: {goal_start}")
-        print(f"Goal End: {goal_end}")
-        print(f"Expenses: {expenses}")
-        print(f"Total Gain: {total_gain}")
-        print(f"Day Off: {day_off}")
-
-
-        goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
-
-
+        global days_of_work    
         # Agora podemos calcular o número de dias de trabalho corretamente
         days_of_work = (goal_end - goal_start).days + 1
 
@@ -2070,7 +2060,7 @@ def main(page: ft.Page):
 
         # Se a meta e os dias restantes foram encontrados
         if goal_value is not None:
-            remaining_text = remaining_days
+            remaining_text = remaining_days - int(day_off)
         else:
             remaining_text = "XX"
 
@@ -2083,6 +2073,7 @@ def main(page: ft.Page):
                 remaining_text = 0
 
         # Agora, subtraímos day_off de remaining_text
+        remaining_text += 2
             
         remaining_text2 = ft.Text(
             f"{remaining_text}",  # O valor estilizado do texto
@@ -2180,14 +2171,15 @@ def main(page: ft.Page):
                 # Garantir que a quantidade de dias não seja zero para evitar divisão por zero
                 if remaining_days > 0:
                     # Dividir o valor bruto pelo número de dias restantes
-                    daily_value = goal_gross / remaining_days
+                    daily_value = goal_gross / days_of_work
                     return daily_value
                 else:
                     return "Dias restantes inválidos"  # Caso não haja dias restantes ou seja zero
             else:
                 return "Erro ao recuperar os dados"
         
-        daily_value = fetch_goal_from_db4()
+        daily_value_value = fetch_goal_from_db4()
+
         
         goal_today = ft.Row(
             controls=[
@@ -2201,7 +2193,7 @@ def main(page: ft.Page):
                     content=ft.Column(
                         controls=[
                             ft.Text("OBJETIVO DIÁRIO", size=15, color=ft.colors.BLACK),
-                            ft.Text(f"€ {daily_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=39, color="#15CD74", weight=ft.FontWeight.BOLD),
+                            ft.Text(f"€ {daily_value_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=39, color="#15CD74", weight=ft.FontWeight.BOLD),
                             ft.Text("valores brutos", size=12, color="#B0B0B0"),
                             ],
                             spacing=0, 
