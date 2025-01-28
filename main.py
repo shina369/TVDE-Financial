@@ -801,6 +801,7 @@ def main(page: ft.Page):
         
         def save_goal(e):
                 global day_off
+                global goal_start
                 # Coletar os valores dos campos
                 goal = float(goal_field.value.replace('.', '').replace(',', '.'))
                 goal_start = goal_start_field.value
@@ -1919,6 +1920,25 @@ def main(page: ft.Page):
         sqlite3.register_converter("datetime", lambda x: datetime.fromisoformat(x.decode("utf-8")))
 
         def fetch_goal_details_from_db():
+            def fetch_daily_values(cursor, table_name, start_date, end_date):
+                """
+                Consulta valores diários entre start_date e end_date.
+                Args:
+                    cursor: Cursor ativo para executar a consulta.
+                    table_name: Nome da tabela (string).
+                    start_date: Data de início no formato 'YYYY-MM-DD'.
+                    end_date: Data de fim no formato 'YYYY-MM-DD'.
+                """
+                query = f"""
+                    SELECT daily_value
+                    FROM {table_name}
+                    WHERE 
+                        date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                        BETWEEN date(?) AND date(?)
+                """
+                cursor.execute(query, (start_date, end_date))
+                return cursor.fetchall()
+
             with sqlite3.connect("db_tvde_content_internal.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
                 cursor = conn.cursor()
 
@@ -1939,17 +1959,6 @@ def main(page: ft.Page):
                 day_off_result = cursor.fetchone()
                 day_off = day_off_result[0] if day_off_result else 0
 
-                def fetch_daily_values(table_name, start_date, end_date):
-                    """Consulta valores diários entre start_date e end_date."""
-                    cursor.execute(f"""
-                        SELECT daily_value
-                        FROM {table_name}
-                        WHERE 
-                            date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
-                            BETWEEN date(?) AND date(?)
-                    """, (start_date, end_date))
-                    return cursor.fetchall()
-
                 def fetch_expenses(start_date, end_date):
                     """Consulta as despesas entre start_date e end_date."""
                     cursor.execute("""
@@ -1966,12 +1975,12 @@ def main(page: ft.Page):
 
                 # Consultar Uber entre goal_start e goal_end
                 print(f"Consultando Uber entre {goal_start} e {goal_end}")
-                uber_data = fetch_daily_values("uber", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+                uber_data = fetch_daily_values(cursor, "uber", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
                 print(f"Uber Data: {uber_data}")
 
                 # Consultar Bolt entre goal_start e goal_end
                 print(f"Consultando Bolt entre {goal_start} e {goal_end}")
-                bolt_data = fetch_daily_values("bolt", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+                bolt_data = fetch_daily_values(cursor, "bolt", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
                 print(f"Bolt Data: {bolt_data}")
 
                 # Somar os valores diários
@@ -1985,13 +1994,15 @@ def main(page: ft.Page):
 
         goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
 
-        global days_of_work    
+        global days_of_work
         # Agora podemos calcular o número de dias de trabalho corretamente
         days_of_work = (goal_end - goal_start).days + 1
 
         days_of_work -= int(day_off)
 
         expenses = expenses if expenses is not None else 0.0
+
+
 
         # Formatação e exibição dos dados
         details_goal = ft.Row(
@@ -2149,36 +2160,43 @@ def main(page: ft.Page):
         )
 
         
-        def fetch_goal_from_db4():
-            conn = sqlite3.connect("db_tvde_content_internal.db")
-            cursor = conn.cursor()
+        def fetch_goal_from_db4(total_gain):
+            with sqlite3.connect("db_tvde_content_internal.db") as conn:
+                cursor = conn.cursor()
 
-            # Executar a consulta para obter o valor do objetivo bruto
-            cursor.execute("SELECT goal_gross, goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
-            result = cursor.fetchone()
-
-            conn.close()
+                # Executar a consulta para obter o valor do objetivo bruto e datas
+                cursor.execute("SELECT goal_gross, goal_start, goal_end, day_off FROM goal ORDER BY id DESC LIMIT 1")
+                result = cursor.fetchone()
 
             if result:
+                # Extrair os valores do resultado da consulta
                 goal_gross = float(result[0])  # Garantir que goal_gross seja do tipo float
                 goal_start = datetime.strptime(result[1], "%d/%m/%Y")
                 goal_end = datetime.strptime(result[2], "%d/%m/%Y")
+                day_off = int(result[3]) if result[3] else 0  # Garantir que day_off seja um número inteiro
 
-                # Calcular os dias restantes
-                today = datetime.today()
-                remaining_days = (goal_end - today).days  # Número de dias restantes
+                # Calcular os dias de trabalho
+                days_of_work = (goal_end - goal_start).days + 1  # Intervalo total
+                days_of_work -= day_off  # Subtrair os dias de folga
 
-                # Garantir que a quantidade de dias não seja zero para evitar divisão por zero
-                if remaining_days > 0:
-                    # Dividir o valor bruto pelo número de dias restantes
-                    daily_value = goal_gross / days_of_work
+                # Verificar se há dias válidos para evitar divisão por zero
+                if days_of_work > 0:
+                    # Subtrair o valor total_gain de goal_gross antes de dividir
+                    remaining_goal = goal_gross - total_gain
+                    daily_value = remaining_goal / days_of_work
                     return daily_value
                 else:
-                    return "Dias restantes inválidos"  # Caso não haja dias restantes ou seja zero
+                    return "Dias de trabalho inválidos (0 ou negativos)"
             else:
-                return "Erro ao recuperar os dados"
-        
-        daily_value_value = fetch_goal_from_db4()
+                return "Erro ao recuperar os dados do banco de dados"
+
+                
+        # Assumindo que `total_gain` é obtido da outra função
+        goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
+
+        # Calcular daily_value_value com base no total_gain
+        daily_value_value = fetch_goal_from_db4(total_gain)
+
 
         
         goal_today = ft.Row(
