@@ -2092,12 +2092,12 @@ def main(page: ft.Page):
             weight=ft.FontWeight.BOLD
         )
         # Exemplo de valor total_gain que varia de 0 a 100%
-        total_gain = 50  # Exemplo: 50% de progresso (meio do caminho)
+        total_gain = 50  # Exemplo: 100% de progresso (carro no final)
 
         # Largura total disponível dentro do container roxo
-        container_width = 380  # Largura do container roxo
-        flag_width = 30  # Largura da bandeira
-        car_width = 40  # Largura do carro (aproximada)
+        container_width = 399  # Largura do container roxo
+        flag_width = 0  # Largura da bandeira
+        car_width = 21  # Largura do carro (aproximada)
         finish_width = 30  # Largura da linha de chegada
 
         # Definir os limites do espaço em que o carro pode se mover
@@ -2137,41 +2137,35 @@ def main(page: ft.Page):
                             ft.Container(
                                 width=399,
                                 height=30,
-                                bgcolor="purple",
                                 margin=0,
                                 border=ft.border.only(bottom=ft.border.BorderSide(2, ft.colors.BLACK)),
-                                content=ft.Row(
+                                content=ft.Stack(
                                     controls=[
                                         # Bandeira vermelha fixada à esquerda
                                         ft.Container(
-                                            bgcolor="red",
+                                            left=0,
                                             content=ft.Image(
                                                 src="https://i.ibb.co/80MV450/flag.png",
                                             ),
                                         ),
                                         # Carro verde com posição dinâmica baseada no total_gain
                                         ft.Container(
-                                            bgcolor="green",
-                                            padding=ft.padding.only(top=9),
+                                            left=car_position,
+                                            padding=ft.padding.only(top=9, left=0, right=5, bottom=0),
                                             content=ft.Image(
-                                                src="https://i.ibb.co/RQcfZVd/car.png",
+                                                src="https://i.ibb.co/27GrFHLV/car.png",
                                             ),
                                             alignment=ft.Alignment(0, 0),
-                                            margin=ft.Margin(left=car_position, top=0, right=0, bottom=0),
                                         ),
-                                        ft.Container(expand=True), 
-                                        # Linha de chegada preta fixada à direita
+                                        # Linha de chegada preta fixada à direita (não será empurrada)
                                         ft.Container(
-                                            bgcolor="black",
-                                            padding=3,
+                                            right=0,  # Garante que fique sempre na extrema direita
+                                            width=finish_width,  # Mantém a largura correta
                                             content=ft.Image(
                                                 src="https://i.ibb.co/M5nXHpq/finish-line-5-stars.png",
                                             ),
-                                            alignment=ft.alignment.center_right
                                         ),
                                     ],
-                                    alignment=ft.MainAxisAlignment.START,
-                                    expand=True,
                                 ),
                             ),
                             ft.Container(
@@ -2186,6 +2180,7 @@ def main(page: ft.Page):
                 ),
             ],
         )
+
             
         def fetch_goal_from_db4(total_gain):
             with sqlite3.connect("db_tvde_content_internal.db") as conn:
