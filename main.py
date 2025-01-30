@@ -2129,11 +2129,7 @@ def main(page: ft.Page):
         # Calcular a posição do carro baseado no progresso
         car_position = start_position + (total_gain_car_position / 100) * (end_position - start_position)
 
-              # Verificar se o carrinho chegou a 100% e exibir mensagem
-        if total_gain_car_position >= 100:
-            success_message = "Parabéns! Você bateu a meta!"
-        else:
-            success_message = ""  # Não exibe mensagem se não for 100%
+  
 
         # Criar a interface
         hourglass = ft.Row(
@@ -2196,12 +2192,7 @@ def main(page: ft.Page):
                                     ],
                                 ),
                             ),
-                             # Se a meta for batida, exibe a mensagem de sucesso
-                            ft.Container(
-                                content=ft.Text(success_message, size=18, color="green", weight=ft.FontWeight.BOLD),
-                                visible=bool(success_message),  # Torna a mensagem visível apenas quando for 100%
-                                margin=ft.Margin(top=10, left=0, right=5, bottom=0),
-                            ),
+
                             ft.Container(
                                 width=2,
                                 height=15,
