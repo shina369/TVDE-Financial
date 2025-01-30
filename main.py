@@ -2091,7 +2091,23 @@ def main(page: ft.Page):
             size=24,
             weight=ft.FontWeight.BOLD
         )
+        # Exemplo de valor total_gain que varia de 0 a 100%
+        total_gain = 50  # Exemplo: 50% de progresso (meio do caminho)
 
+        # Largura total disponível dentro do container roxo
+        container_width = 380  # Largura do container roxo
+        flag_width = 30  # Largura da bandeira
+        car_width = 40  # Largura do carro (aproximada)
+        finish_width = 30  # Largura da linha de chegada
+
+        # Definir os limites do espaço em que o carro pode se mover
+        start_position = -flag_width  # Para sobrepor a bandeira
+        end_position = container_width - finish_width - car_width  # Para alinhar com a linha de chegada
+
+        # Calcular a posição do carro baseado no progresso
+        car_position = start_position + (total_gain / 100) * (end_position - start_position)
+
+        # Criar a interface
         hourglass = ft.Row(
             controls=[
                 ft.Container(
@@ -2111,7 +2127,7 @@ def main(page: ft.Page):
                                 content=ft.Row(
                                     controls=[
                                         ft.Text("FALTAM", size=15, color="#858585"),
-                                        remaining_text2, # Coloca o texto estilizado no meio
+                                        remaining_text2,  # Coloca o texto estilizado no meio
                                         ft.Text("DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
                                     ],
                                     alignment=ft.MainAxisAlignment.CENTER,  # Alinha ao centro
@@ -2121,29 +2137,41 @@ def main(page: ft.Page):
                             ft.Container(
                                 width=399,
                                 height=30,
+                                bgcolor="purple",
                                 margin=0,
                                 border=ft.border.only(bottom=ft.border.BorderSide(2, ft.colors.BLACK)),
                                 content=ft.Row(
                                     controls=[
+                                        # Bandeira vermelha fixada à esquerda
                                         ft.Container(
+                                            bgcolor="red",
                                             content=ft.Image(
                                                 src="https://i.ibb.co/80MV450/flag.png",
                                             ),
                                         ),
+                                        # Carro verde com posição dinâmica baseada no total_gain
                                         ft.Container(
+                                            bgcolor="green",
                                             padding=ft.padding.only(top=9),
                                             content=ft.Image(
                                                 src="https://i.ibb.co/RQcfZVd/car.png",
                                             ),
+                                            alignment=ft.Alignment(0, 0),
+                                            margin=ft.Margin(left=car_position, top=0, right=0, bottom=0),
                                         ),
+                                        ft.Container(expand=True), 
+                                        # Linha de chegada preta fixada à direita
                                         ft.Container(
+                                            bgcolor="black",
                                             padding=3,
                                             content=ft.Image(
                                                 src="https://i.ibb.co/M5nXHpq/finish-line-5-stars.png",
                                             ),
+                                            alignment=ft.alignment.center_right
                                         ),
                                     ],
-                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                    alignment=ft.MainAxisAlignment.START,
+                                    expand=True,
                                 ),
                             ),
                             ft.Container(
@@ -2152,14 +2180,13 @@ def main(page: ft.Page):
                                 bgcolor="black",
                             ),
                         ],
-                        spacing=0,  # Remove o espaçamento entre os elementos do Controls
-                        horizontal_alignment="center",  # Centraliza horizontalmente
+                        spacing=0,
+                        horizontal_alignment="center",
                     ),
                 ),
             ],
         )
-
-        
+            
         def fetch_goal_from_db4(total_gain):
             with sqlite3.connect("db_tvde_content_internal.db") as conn:
                 cursor = conn.cursor()
