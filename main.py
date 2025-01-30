@@ -2091,13 +2091,32 @@ def main(page: ft.Page):
             size=24,
             weight=ft.FontWeight.BOLD
         )
-        # Exemplo de valor total_gain que varia de 0 a 100%
-        total_gain = 50  # Exemplo: 100% de progresso (carro no final)
+        # Buscar detalhes do objetivo
+        goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
+
+        # Buscar goal_gross e calcular a porcentagem de progresso
+        with sqlite3.connect("db_tvde_content_internal.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
+            result = cursor.fetchone()
+
+        # Garantir que há um resultado válido e fazer a conversão para float
+        if result and result[0]:
+            try:
+                goal_gross = float(result[0])  # Converte para float
+                if goal_gross > 0:  # Agora a comparação é feita com um número
+                    total_gain_car_position = (total_gain / goal_gross) * 100  # Regra de três para percentual
+                else:
+                    total_gain_car_position = 0  # Se goal_gross for 0 ou negativo
+            except ValueError:
+                total_gain_car_position = 0  # Caso não consiga converter para float
+        else:
+            total_gain_car_position = 0  # Se não houver dado
 
         # Largura total disponível dentro do container roxo
         container_width = 399  # Largura do container roxo
         flag_width = 0  # Largura da bandeira
-        car_width = 21  # Largura do carro (aproximada)
+        car_width = 18  # Largura do carro (aproximada)
         finish_width = 30  # Largura da linha de chegada
 
         # Definir os limites do espaço em que o carro pode se mover
@@ -2105,7 +2124,7 @@ def main(page: ft.Page):
         end_position = container_width - finish_width - car_width  # Para alinhar com a linha de chegada
 
         # Calcular a posição do carro baseado no progresso
-        car_position = start_position + (total_gain / 100) * (end_position - start_position)
+        car_position = start_position + (total_gain_car_position / 100) * (end_position - start_position)
 
         # Criar a interface
         hourglass = ft.Row(
@@ -2151,7 +2170,7 @@ def main(page: ft.Page):
                                         # Carro verde com posição dinâmica baseada no total_gain
                                         ft.Container(
                                             left=car_position,
-                                            padding=ft.padding.only(top=9, left=0, right=5, bottom=0),
+                                            padding=ft.padding.only(top=6, left=0, right=5, bottom=0),
                                             content=ft.Image(
                                                 src="https://i.ibb.co/27GrFHLV/car.png",
                                             ),
@@ -2181,6 +2200,7 @@ def main(page: ft.Page):
             ],
         )
 
+
             
         def fetch_goal_from_db4(total_gain):
             with sqlite3.connect("db_tvde_content_internal.db") as conn:
@@ -2197,6 +2217,12 @@ def main(page: ft.Page):
                 goal_end = datetime.strptime(result[2], "%d/%m/%Y")
                 day_off = int(result[3]) if result[3] else 0  # Garantir que day_off seja um número inteiro
 
+                # Calcular a porcentagem concluída do objetivo
+                if goal_gross > 0:
+                    total_gain_car_position = (total_gain / goal_gross) * 100
+                else:
+                    total_gain_car_position = 0  # Evita divisão por zero
+                
                 # Calcular os dias de trabalho
                 days_of_work = (goal_end - goal_start).days + 1  # Intervalo total
                 days_of_work -= day_off  # Subtrair os dias de folga
@@ -2206,18 +2232,22 @@ def main(page: ft.Page):
                     # Subtrair o valor total_gain de goal_gross antes de dividir
                     remaining_goal = goal_gross - total_gain
                     daily_value = remaining_goal / days_of_work
-                    return daily_value
+                    return daily_value, total_gain_car_position
                 else:
-                    return "Dias de trabalho inválidos (0 ou negativos)"
+                    return "Dias de trabalho inválidos (0 ou negativos)", total_gain_car_position
             else:
-                return "Erro ao recuperar os dados do banco de dados"
+                return "Erro ao recuperar os dados do banco de dados", 0
 
-                
+
         # Assumindo que `total_gain` é obtido da outra função
         goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
 
-        # Calcular daily_value_value com base no total_gain
-        daily_value_value = fetch_goal_from_db4(total_gain)
+        # Calcular daily_value_value e total_gain_car_position com base no total_gain
+        daily_value_value, total_gain_car_position = fetch_goal_from_db4(total_gain)
+
+        # Calcular a posição do carro baseado no progresso
+        car_position = start_position + (total_gain_car_position / 100) * (end_position - start_position)
+
 
 
         
