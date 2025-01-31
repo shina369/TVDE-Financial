@@ -28,7 +28,10 @@ CREATE TABLE IF NOT EXISTS goal (
     goal_end TEXT NOT NULL,
     day_off TEXT NOT NULL,
     fleet_discount TEXT NOT NULL,
-    tax_discount TEXT NOT NULL
+    tax_discount TEXT NOT NULL,
+    total_gain TEXT,
+    goal_successful TEXT DEFAULT 'negativo'
+
 );
 """
 create_table_query_bolt = """

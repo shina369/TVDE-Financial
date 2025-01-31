@@ -1923,11 +1923,6 @@ def main(page: ft.Page):
             def fetch_daily_values(cursor, table_name, start_date, end_date):
                 """
                 Consulta valores diários entre start_date e end_date.
-                Args:
-                    cursor: Cursor ativo para executar a consulta.
-                    table_name: Nome da tabela (string).
-                    start_date: Data de início no formato 'YYYY-MM-DD'.
-                    end_date: Data de fim no formato 'YYYY-MM-DD'.
                 """
                 query = f"""
                     SELECT daily_value
@@ -1989,8 +1984,24 @@ def main(page: ft.Page):
 
                 total_gain = uber_gain + bolt_gain
 
-                return goal_start, goal_end, expenses, total_gain, day_off
+                # Atualizar o valor total_gain na tabela 'goal'
+                cursor.execute("""
+                    UPDATE goal 
+                    SET total_gain = ? 
+                    WHERE goal_start = ? AND goal_end = ?
+                """, (total_gain, goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
+                
+                # Caso não exista um registro com essas datas, você pode usar um INSERT para garantir que o valor seja armazenado
+                if cursor.rowcount == 0:  # Se não encontrou o registro para atualizar
+                    cursor.execute("""
+                        INSERT INTO goal (goal_start, goal_end, total_gain)
+                        VALUES (?, ?, ?)
+                    """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y'), total_gain))
 
+                # Confirma as alterações
+                conn.commit()
+
+                return goal_start, goal_end, expenses, total_gain, day_off
 
         goal_start, goal_end, expenses, total_gain, day_off = fetch_goal_details_from_db()
 
