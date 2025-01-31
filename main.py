@@ -1956,9 +1956,9 @@ def main(page: ft.Page):
 
                 def fetch_expenses(start_date, end_date):
                     """Consulta as despesas entre start_date e end_date."""
-                    cursor.execute("""
-                        SELECT SUM(expense_value)
-                        FROM expense
+                    cursor.execute(""" 
+                        SELECT SUM(expense_value) 
+                        FROM expense 
                         WHERE date(substr(expense_date, 7, 4) || '-' || substr(expense_date, 4, 2) || '-' || substr(expense_date, 1, 2)) 
                         BETWEEN date(?) AND date(?)
                     """, (start_date, end_date))
@@ -1984,6 +1984,11 @@ def main(page: ft.Page):
 
                 total_gain = uber_gain + bolt_gain
 
+                # Recuperar o valor de 'goal_gross' da tabela 'goal' e garantir que seja um float
+                cursor.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
+                goal_gross_result = cursor.fetchone()
+                goal_gross = float(goal_gross_result[0]) if goal_gross_result and goal_gross_result[0] else 0.0
+
                 # Atualizar o valor total_gain na tabela 'goal'
                 cursor.execute("""
                     UPDATE goal 
@@ -1997,6 +2002,22 @@ def main(page: ft.Page):
                         INSERT INTO goal (goal_start, goal_end, total_gain)
                         VALUES (?, ?, ?)
                     """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y'), total_gain))
+
+                # Verificar se o total_gain é maior ou igual ao goal_gross
+                if total_gain >= goal_gross:
+                    # Se o total_gain for suficiente, atualizar para 'positivo'
+                    cursor.execute("""
+                        UPDATE goal 
+                        SET goal_successful = 'positivo' 
+                        WHERE goal_start = ? AND goal_end = ?
+                    """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
+                else:
+                    # Se o total_gain não for suficiente, atualizar para 'negativo'
+                    cursor.execute("""
+                        UPDATE goal 
+                        SET goal_successful = 'negativo' 
+                        WHERE goal_start = ? AND goal_end = ?
+                    """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
 
                 # Confirma as alterações
                 conn.commit()
