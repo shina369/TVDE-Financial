@@ -106,6 +106,20 @@ def main(page: ft.Page):
         page.update()
         time.sleep(3)
 
+    def page_message_screen2(msg):
+        page.views.clear()
+        page.views.append(
+            ft.View(
+                "/page_message_screen2",
+                controls=[
+                    ft.Container(
+                        content=ft.Text(msg, color=ft.colors.GREEN, size=21)
+                    )
+                ]  
+            )
+        )
+        time.sleep(3)
+
     def title_app(icon, title):
         return ft.Container(  # Retornando o Container corretamente
             content=ft.Row(  # Para alinhar o ícone e o título
@@ -1936,7 +1950,7 @@ def main(page: ft.Page):
                 return cursor.fetchall()
 
             with sqlite3.connect("db_tvde_content_internal.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
-                cursor = conn.cursor()
+                cursor = conn.cursor()  # Inicializando o cursor
 
                 # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
                 cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
@@ -1947,8 +1961,6 @@ def main(page: ft.Page):
                     goal_end = datetime.strptime(goal_result[1], '%d/%m/%Y')
                 else:
                     goal_start, goal_end = None, None
-
-                print(f"Goal Start: {goal_start}, Goal End: {goal_end}")
 
                 # Consultar o valor de "day_off" da tabela "goal"
                 cursor.execute("SELECT day_off FROM goal ORDER BY id DESC LIMIT 1")
@@ -1970,14 +1982,10 @@ def main(page: ft.Page):
                 expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
 
                 # Consultar Uber entre goal_start e goal_end
-                print(f"Consultando Uber entre {goal_start} e {goal_end}")
                 uber_data = fetch_daily_values(cursor, "uber", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
-                print(f"Uber Data: {uber_data}")
 
                 # Consultar Bolt entre goal_start e goal_end
-                print(f"Consultando Bolt entre {goal_start} e {goal_end}")
                 bolt_data = fetch_daily_values(cursor, "bolt", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
-                print(f"Bolt Data: {bolt_data}")
 
                 # Somar os valores diários
                 uber_gain = sum(float(row[0]) for row in uber_data if row[0])
@@ -2014,8 +2022,8 @@ def main(page: ft.Page):
                     """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
                     
                     # Exibir a mensagem de parabéns
-                    page.add(ft.Text("Parabéns, você alcançou sua meta! 🎉"))
-                    
+                    page_message_screen2("Parabéns, você alcançou sua meta! 🎉")
+
                     # Redirecionar para a página 'page_new_goal'
                     page.go("/page_new_goal")
                 else:
@@ -2029,7 +2037,6 @@ def main(page: ft.Page):
                 # Confirma as alterações
                 conn.commit()
 
-                # Retornar todos os valores necessários
                 return goal_start, goal_end, expenses, total_gain, day_off, goal_gross
 
         # Atualizando a chamada para refletir 6 valores
@@ -2734,6 +2741,8 @@ def main(page: ft.Page):
             page_settings()
         elif page.route == "/page_more_date":
             page_more_date()
+        elif page.route == "/page_message_screen2":
+            page_message_screen2()
         elif page.route.startswith("/page_daily"):
             # Captura o valor do parâmetro da URL
             param = page.route.split("?param=")[-1] if "?param=" in page.route else "Desconhecido"
