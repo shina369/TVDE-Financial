@@ -1817,7 +1817,6 @@ def main(page: ft.Page):
         page.update()
 
     def page_parcial(page):
-
         conn_sqlite = sqlite3.connect("db_tvde_content_internal.db")
         cursor_sqlite = conn_sqlite.cursor()
 
@@ -1841,7 +1840,10 @@ def main(page: ft.Page):
             if goal_successful == "negativo":
                 page.go("/page_parcial")
             elif goal_successful == "positivo":
-                page_message_screen("Parabéns, você bateu a meta!!!")
+                snack_bar = ft.SnackBar(content=ft.Text("Parabéns, você bateu o Objeito! Crie um novo"))
+                page.overlay.append(snack_bar)
+                snack_bar.open = True
+                page.update()
                 time.sleep(3)
                 page.go("/page_new_goal")
 
