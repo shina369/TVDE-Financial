@@ -462,18 +462,33 @@ def main(page: ft.Page):
                 stored_password = result[0]   
                 if hash_password_login == stored_password:
                     print("Login bem-sucedido!")
-                     # Conectar ao banco SQLite para verificar metas
+                # Conectar ao banco SQLite para verificar metas
                     conn_sqlite = sqlite3.connect("db_tvde_content_internal.db")
                     cursor_sqlite = conn_sqlite.cursor()
-                    
+
+                    # Executar uma consulta para buscar o valor de goal_successful
+                    cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
+                    goal_successful = cursor_sqlite.fetchone()
+
                     cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
                     meta_count = cursor_sqlite.fetchone()[0]
-                    
+
+                    # Verificar se o valor foi encontrado e retornar o resultado
+                    if goal_successful:
+                        goal_successful = goal_successful[0]  # Se encontrar o valor
+                    else:
+                        goal_successful = "default_value"  # Valor padrão se não encontrar nenhum
+
                     conn_sqlite.close()
-                    
+
                     # Redirecionar o usuário com base na existência de metas
-                    if meta_count > 0:
-                        page.go("/page_parcial")  # Página principal
+                    if meta_count > 0 and goal_successful == "negativo":
+                        page.go("/page_parcial")
+                    elif meta_count > 0 and goal_successful == "positivo":
+                        page_message_screen("Parabéns vc bateu a meta!!!")
+                        time.sleep(3)
+                        page.go("/page_new_goal")  # Página principal
+                        
                     else:
                         page.go("/page_new_goal")  # Página de nova meta
                 else:
@@ -1803,6 +1818,33 @@ def main(page: ft.Page):
 
     def page_parcial(page):
 
+        conn_sqlite = sqlite3.connect("db_tvde_content_internal.db")
+        cursor_sqlite = conn_sqlite.cursor()
+
+        # Executar uma consulta para buscar o valor de goal_successful
+        cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
+        goal_successful = cursor_sqlite.fetchone()
+
+        cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
+        meta_count = cursor_sqlite.fetchone()[0]
+
+        # Verificar se o valor foi encontrado e retornar o resultado
+        if goal_successful:
+            goal_successful = goal_successful[0]  # Se encontrar o valor
+        else:
+            goal_successful = "default_value"  # Valor padrão se não encontrar nenhum
+
+        conn_sqlite.close()
+
+        # Verificar o redirecionamento com base no resultado da meta
+        if meta_count > 0:
+            if goal_successful == "negativo":
+                page.go("/page_parcial")
+            elif goal_successful == "positivo":
+                page_message_screen("Parabéns, você bateu a meta!!!")
+                time.sleep(3)
+                page.go("/page_new_goal")
+
         def search_user_name(email_login):
             conn = mysql.connector.connect(
                 host="localhost",
@@ -2007,7 +2049,6 @@ def main(page: ft.Page):
                         WHERE goal_start = ? AND goal_end = ?
                     """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
 
-                    page_message_screen("Parabéns! Você bateu a meta!")
 
                 else:
                     # Se o total_gain não for suficiente, atualizar para 'negativo'
