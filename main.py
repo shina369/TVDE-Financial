@@ -106,20 +106,6 @@ def main(page: ft.Page):
         page.update()
         time.sleep(3)
 
-    def page_message_screen2(msg):
-        page.views.clear()
-        page.views.append(
-            ft.View(
-                "/page_message_screen2",
-                controls=[
-                    ft.Container(
-                        content=ft.Text(msg, color=ft.colors.GREEN, size=21)
-                    )
-                ]  
-            )
-        )
-        time.sleep(3)
-
     def title_app(icon, title):
         return ft.Container(  # Retornando o Container corretamente
             content=ft.Row(  # Para alinhar o ícone e o título
@@ -2020,12 +2006,9 @@ def main(page: ft.Page):
                         SET goal_successful = 'positivo' 
                         WHERE goal_start = ? AND goal_end = ?
                     """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
-                    
-                    # Exibir a mensagem de parabéns
-                    page_message_screen2("Parabéns, você alcançou sua meta! 🎉")
 
-                    # Redirecionar para a página 'page_new_goal'
-                    page.go("/page_new_goal")
+                    page_message_screen("Parabéns! Você bateu a meta!")
+
                 else:
                     # Se o total_gain não for suficiente, atualizar para 'negativo'
                     cursor.execute("""
@@ -2141,38 +2124,8 @@ def main(page: ft.Page):
             weight=ft.FontWeight.BOLD
         )
 
-        # Buscar detalhes do objetivo
-        goal_start, goal_end, expenses, total_gain, day_off, goal_gross = fetch_goal_details_from_db(page)
 
-                # Definir um valor padrão para total_gain, caso a consulta falhe
-            # Definir um valor padrão para total_gain e goal_gross, caso as consultas falhem
-        if total_gain is None:
-            total_gain = 0.0  # Atribuindo 0.0 caso total_gain não tenha sido calculado
-        
-        if goal_gross is None:
-            goal_gross = 0.0  # Atribuindo 0.0 caso goal_gross não tenha sido recuperado
-
-        # Verificar se o objetivo foi atingido
-        if total_gain >= goal_gross:
-            # Atualizar o campo 'goal_successful' para 'positivo'
-            cursor.execute("""
-                UPDATE goal 
-                SET goal_successful = 'positivo' 
-                WHERE goal_start = ? AND goal_end = ?
-            """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
-            
-            # Confirma as alterações no banco de dados
-            conn.commit()
-            
-            # Exibir a mensagem de parabéns
-            page.add(ft.Text("Parabéns, você alcançou sua meta! 🎉", color="green", size=20))
-            
-            # Redirecionar para a página de nova meta (page_new_goal)
-            page.go("page_new_goal")  # Substitua "page_new_goal" pelo nome correto da página
-        else:
-            # Caso o objetivo não tenha sido atingido, exibe uma mensagem informativa
-            page.add(ft.Text("A meta ainda não foi atingida. Continue trabalhando duro!"))
-
+                    # Definir um valor padrão para total_gain, caso a consulta falhe
         # Buscar goal_gross e calcular a porcentagem de progresso
         with sqlite3.connect("db_tvde_content_internal.db") as conn:
             cursor = conn.cursor()
@@ -2324,7 +2277,6 @@ def main(page: ft.Page):
 
 
         # Assumindo que `total_gain` é obtido da outra função
-        goal_start, goal_end, expenses, total_gain, day_off, goal_gross = fetch_goal_details_from_db(page)
 
         # Calcular daily_value_value e total_gain_car_position com base no total_gain
         daily_value_value, total_gain_car_position = fetch_goal_from_db4(total_gain)
@@ -2741,8 +2693,6 @@ def main(page: ft.Page):
             page_settings()
         elif page.route == "/page_more_date":
             page_more_date()
-        elif page.route == "/page_message_screen2":
-            page_message_screen2()
         elif page.route.startswith("/page_daily"):
             # Captura o valor do parâmetro da URL
             param = page.route.split("?param=")[-1] if "?param=" in page.route else "Desconhecido"
