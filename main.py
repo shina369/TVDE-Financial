@@ -306,10 +306,21 @@ def main(page: ft.Page):
                 )
             )
 
-        panel_reports = create_big_button(
-            ft.Icon(ft.icons.TODAY, size=36),
-            "Resumo Diário",
-            lambda e: page.go("/page_expense")
+        panel_reports = ft.Container(
+            width=381,  # Definindo a largura de 381 para panel_reports
+            height=231,
+            bgcolor="#EFEFEF",
+            border_radius=21,
+            margin=6,
+            on_click=lambda e: page.go("/page_expense"),
+            content=ft.Column(
+                controls=[
+                    ft.Icon(ft.icons.TODAY, size=36),
+                    ft.Text("Resumo Diário")
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+            )
         )
 
         primeira = ft.Container(
