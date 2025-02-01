@@ -322,7 +322,7 @@ def main(page: ft.Page):
                 ft.Row(
                     controls=[
                         ft.Icon(ft.icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
-                        ft.Text("Resumo diário do Objetivo", size=18),
+                        ft.Text("Resumo do Objetivo", size=18),
                     ],
                     alignment=ft.MainAxisAlignment.START
                 ),
@@ -341,9 +341,9 @@ def main(page: ft.Page):
                         ),
                         ft.Column(
                             controls=[
-                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
-                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
-                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("€ 750.00", size=12),
+                                ft.Text("€ 750.00", size=12),
+                                ft.Text("€ 750.00", size=12),
                             ],
                             alignment=ft.MainAxisAlignment.END
                         ),
@@ -364,9 +364,9 @@ def main(page: ft.Page):
                         ),
                         ft.Column(
                             controls=[
-                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
-                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
-                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("€ 750.00", size=12),
+                                ft.Text("€ 750.00", size=12),
+                                ft.Text("€ 750.00", size=12),
                             ],
                             alignment=ft.MainAxisAlignment.END
                         ),
