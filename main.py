@@ -40,7 +40,7 @@ def main(page: ft.Page):
                 ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
                 ft.PopupMenuItem(icon=ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, text="Lançamentos" , on_click=lambda _: page.go("/page_more_date")),
                 ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
-                ft.PopupMenuItem(icon=ft.icons.CALCULATE_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
+                ft.PopupMenuItem(icon=ft.icons.INSERT_CHART_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
                 ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
                 ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração", on_click=lambda _: page.go("/page_settings")),
                 ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="SEJA PREMIUM", on_click=lambda _: page.go("/page_premium")),
@@ -74,7 +74,7 @@ def main(page: ft.Page):
                 [
                     ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial")),
                     ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_more_date")),
-                    ft.IconButton(ft.icons.CALCULATE_OUTLINED, on_click=lambda _: page.go("/page_reports")),
+                    ft.IconButton(ft.icons.INSERT_CHART_OUTLINED, on_click=lambda _: page.go("/page_reports")),
                     ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/page_settings")),
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_AROUND,
@@ -309,55 +309,74 @@ def main(page: ft.Page):
             )
 
         panel_reports = ft.Container(
-            width=381,  # Definindo a largura de 381 para panel_reports
-            height=231,
-            bgcolor="#EFEFEF",
-            border_radius=21,
-            margin=6,
-            padding=12,
-            content=ft.Column(
+        width=381,
+        height=231,
+        bgcolor="#EFEFEF",
+        border_radius=21,
+        margin=6,
+        padding=12,
+        content=ft.Column(
+            spacing=5,  # Adiciona espaçamento entre os itens
             controls=[
-                ft.Row(  # Coloca o ícone e o texto lado a lado
+                # Cabeçalho com ícone
+                ft.Row(
                     controls=[
-                        ft.Icon(ft.icons.TRENDING_UP, size=20, color="blue"),  # Ícone de tendência
-                        ft.Text("Resumo diário do Objetivo", size=15, weight=ft.FontWeight.BOLD),
+                        ft.Icon(ft.icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
+                        ft.Text("Resumo diário do Objetivo", size=18),
                     ],
                     alignment=ft.MainAxisAlignment.START
                 ),
-                ft.Divider(),  # Adiciona uma linha divisória entre os elementos
+                ft.Divider(),  # Linha divisória para separar título do conteúdo
+
+                # Layout melhorado usando Colunas para alinhar os textos
                 ft.Row(
                     controls=[
-                        ft.Text("Objetivo Bruto: € 750.00", size=12, weight=ft.FontWeight.BOLD),
-                    ]
+                        ft.Column(
+                            controls=[
+                                ft.Text("Objetivo Líquido:", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("Gorjetas:", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("Valor Líquido + Gorjetas:", size=12, weight=ft.FontWeight.BOLD),
+                            ],
+                            alignment=ft.MainAxisAlignment.START
+                        ),
+                        ft.Column(
+                            controls=[
+                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
+                            ],
+                            alignment=ft.MainAxisAlignment.END
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                 ),
+                ft.Container(),
+
                 ft.Row(
                     controls=[
-                        ft.Text("Objetivo Líquido parcial: € 750.00", size=12, weight=ft.FontWeight.BOLD),
-                    ]
+                        ft.Column(
+                            controls=[
+                                ft.Text("Impostos:", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("Pago a frota:", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("Objetivo Bruto:", size=12, weight=ft.FontWeight.BOLD),
+                            ],
+                            alignment=ft.MainAxisAlignment.START
+                        ),
+                        ft.Column(
+                            controls=[
+                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("€ 750.00", size=12, weight=ft.FontWeight.BOLD),
+                            ],
+                            alignment=ft.MainAxisAlignment.END
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                 ),
-                ft.Row(
-                    controls=[
-                        ft.Text("Pago a frota: € 750.00", size=12, weight=ft.FontWeight.BOLD),
-                    ]
-                ),
-                ft.Row(
-                    controls=[
-                        ft.Text("Imposto: € 750.00", size=12, weight=ft.FontWeight.BOLD),
-                    ]
-                ),
-                ft.Row(
-                    controls=[
-                        ft.Text("Gorjetas: € 750.00", size=12, weight=ft.FontWeight.BOLD),
-                    ]
-                ),
-                ft.Row(
-                    controls=[
-                        ft.Text("Valor líquido a receber c/: € 750.00", size=12, weight=ft.FontWeight.BOLD),
-                        ]
-                    )
-                ]
-            )
+            ]
         )
+    )
+
 
 
         primeira = ft.Container(
@@ -402,7 +421,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.icons.CALCULATE_OUTLINED),
+                           icon = ft.Icon(ft.icons.INSERT_CHART_OUTLINED),
                            title = ft.Text("RELATÓRIOS", size=21),
                     ),
                 panel_reports,
@@ -1966,9 +1985,9 @@ def main(page: ft.Page):
         
         message_welcome = ft.Container(
             width=399,
-            height=42,
+            height=48,
             alignment=ft.Alignment(0, 0),
-            content=ft.Text(f"Olá {user_name}, boa sorte!", size=18, text_align=ft.TextAlign.CENTER),
+            content=ft.Text(f"🍀\n Olá {user_name}, boa sorte!", size=18, text_align=ft.TextAlign.CENTER),
         )
 
         def fetch_goal_from_db():
@@ -2327,7 +2346,7 @@ def main(page: ft.Page):
                                         # Carro verde com posição dinâmica baseada no total_gain
                                         ft.Container(
                                             left=car_position,
-                                            padding=ft.padding.only(top=6, left=0, right=5, bottom=0),
+                                            padding=ft.padding.only(top=7, left=0, right=5, bottom=0),
                                             content=ft.Image(
                                                 src="https://i.ibb.co/27GrFHLV/car.png",
                                             ),
