@@ -356,7 +356,7 @@ def main(page: ft.Page):
                     controls=[
                         ft.Column(
                             controls=[
-                                ft.Text("Impostos:", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("Despesas:", size=12, weight=ft.FontWeight.BOLD),
                                 ft.Text("Pago a frota:", size=12, weight=ft.FontWeight.BOLD),
                                 ft.Text("Objetivo Bruto:", size=12, weight=ft.FontWeight.BOLD),
                             ],
@@ -433,50 +433,118 @@ def main(page: ft.Page):
 
         page.update()
 
+
     def page_reports_expense():
         page.views.clear()
 
-        selected_month = ft.Text("Selecione um mês", size=24, weight=ft.FontWeight.BOLD)
-
-        def update_month(e):
-            selected_month.value = f"Resumo de {e.control.value}"
-            page.update()
-
-        month_dropdown = ft.Dropdown(
-            options=[
-                ft.dropdown.Option("Janeiro"),
-                ft.dropdown.Option("Fevereiro"),
-                ft.dropdown.Option("Março"),
-                ft.dropdown.Option("Abril"),
-                ft.dropdown.Option("Maio"),
-                ft.dropdown.Option("Junho"),
-                ft.dropdown.Option("Julho"),
-                ft.dropdown.Option("Agosto"),
-                ft.dropdown.Option("Setembro"),
-                ft.dropdown.Option("Outubro"),
-                ft.dropdown.Option("Novembro"),
-                ft.dropdown.Option("Dezembro"),
-            ],
-            on_change=update_month,
-            border_radius=15,
-            text_size=15,
-            width=282,
-            height=54
-        )
-
-        # Container que engloba month_dropdown e selected_month
-        month_container = ft.Container(
-            width=390,
-            alignment=ft.alignment.center,  # Correção aqui, use `ft.Alignment.center`
-            content=ft.Column(
-                controls=[
-                    month_dropdown,
-                    selected_month
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,  # Centraliza os itens dentro da coluna
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza na horizontal
+        selected_date_range = ft.Container(
+            width=390,  # Defina o tamanho do contêiner conforme necessário
+            alignment=ft.alignment.center,  # Centraliza o texto dentro do contêiner
+            content=ft.Text(
+                "Selecione um intervalo de datas:",
+                size=15,
+                weight=ft.FontWeight.BOLD,
             ),
         )
+
+        # Criando o DatePicker
+        date_picker = ft.DatePicker(on_change=None)  # on_change será atribuído dinamicamente
+
+        # Função para abrir o DatePicker ao clicar no ícone de calendário
+        def pick_date(e, field):
+            date_picker.on_change = lambda e: on_date_selected(e, field)
+            page.open(date_picker)
+
+        # Função para tratar a seleção da data
+        def on_date_selected(e, field):
+            if date_picker.value:
+                field.value = date_picker.value.strftime("%d/%m/%Y")
+                page.update()
+
+        # Campos para seleção de data com 'expand' ativado para torná-los expansíveis
+        start_date_field = ft.TextField(
+            label="Data de Início",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,          # Tamanho opcional
+            ),
+            on_change=None,  # A validação de data será feita dinamicamente
+            width=140,       # Ajustando a largura para se ajustarem lado a lado
+            border_radius=21,
+            text_size=18,
+            keyboard_type=ft.KeyboardType.DATETIME,
+            content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+            expand=True,  # Tornando o campo expansível
+            suffix=ft.IconButton(
+                icon=ft.icons.CALENDAR_MONTH,
+                on_click=lambda e: pick_date(e, start_date_field),
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
+                )
+            )
+        )
+
+        end_date_field = ft.TextField(
+            label="Data de Fim",
+            label_style=ft.TextStyle(
+                color="#AAAAAA",  # Cor do label
+                size=14,          # Tamanho opcional
+            ),
+            on_change=None,  # A validação de data será feita dinamicamente
+            width=140,       # Ajustando a largura para se ajustarem lado a lado
+            border_radius=21,
+            text_size=18,
+            keyboard_type=ft.KeyboardType.DATETIME,
+            content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+            expand=True,  # Tornando o campo expansível
+            suffix=ft.IconButton(
+                icon=ft.icons.CALENDAR_MONTH,
+                on_click=lambda e: pick_date(e, end_date_field),
+            )
+        )
+
+        # Container que engloba os campos de data lado a lado
+        date_range_container = ft.Container(
+            width=390,
+            alignment=ft.alignment.center,
+            content=ft.Column(
+                controls=[
+                    ft.Row(  # Usando Row para colocar os campos lado a lado
+                        controls=[
+                            start_date_field,
+                            end_date_field,
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER  # Ajustado para alinhar corretamente os campos
+                    ),
+                    # Centralizando o botão
+                    ft.Row(
+                        controls=[
+                            ft.ElevatedButton(
+                                text="Gerar Relatório",  # Texto do botão
+                                on_click=lambda e: generate_report(start_date_field, end_date_field),  # Função a ser chamada ao clicar
+                                width=200,  # Largura do botão
+                                style=ft.ButtonStyle(
+                                    shape=ft.RoundedRectangleBorder(radius=21)  # Botão com borda arredondada
+                                )
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER  # Alinhando o botão ao centro dentro do Row
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
+        )
+
+        # Variável para armazenar a mensagem do relatório
+        report_message = ft.Text("", size=12, text_align=ft.TextAlign.END )
+
+        # Função que será chamada ao clicar no botão "Gerar Relatório"
+        def generate_report(start_date_field, end_date_field):
+            start_date = start_date_field.value
+            end_date = end_date_field.value
+            message = f"Relatório de {start_date} a {end_date}"
+            report_message.value = message  # Exibe a mensagem ao lado do título "Despesas"
+            page.update()
 
         page.views.append(
             ft.View(
@@ -489,7 +557,10 @@ def main(page: ft.Page):
                     ),
                     ft.Column(
                         controls=[
-                            month_container,  # Container centralizado
+                            selected_date_range,
+                            ft.Container(),
+                            date_range_container,
+                            ft.Container(),  # Container centralizado
                         ],
                     ),
                     ft.Container(
@@ -500,11 +571,21 @@ def main(page: ft.Page):
                         padding=12,
                         content=ft.Column(
                             spacing=5,
-                            controls=[
+                            controls=[  
                                 ft.Row(
                                     controls=[
-                                        ft.Icon(ft.icons.RECEIPT_LONG, size=20, color="blue"),
-                                        ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
+                                        ft.Row(
+                                            controls=[
+                                                ft.Icon(ft.icons.RECEIPT_LONG, size=20, color="blue"),
+                                                ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
+                                            ],
+                                            alignment=ft.MainAxisAlignment.START,
+                                        ),
+                                        ft.Row(
+                                            controls=[report_message],
+                                            alignment=ft.MainAxisAlignment.END,  # Alinha o report_message à direita
+                                            expand=True,  # Garante que o espaço à direita será usado para alinhar à direita
+                                        ),
                                     ],
                                     alignment=ft.MainAxisAlignment.START,
                                 ),
@@ -522,8 +603,8 @@ def main(page: ft.Page):
                                                 ft.Text("Comissão do Operador(Frota):", size=12),
                                                 ft.Text("Portagem:", size=12),
                                                 ft.Text("Alimentação:", size=12),
-                                                ft.Text("Outros custos:", size=12),
                                                 ft.Text("Impostos:", size=12),
+                                                ft.Text("Outros custos:", size=12),
                                             ],
                                             alignment=ft.MainAxisAlignment.START
                                         ),
@@ -555,6 +636,8 @@ def main(page: ft.Page):
         )
 
         page.update()
+
+
 
 
     
