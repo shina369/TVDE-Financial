@@ -284,99 +284,69 @@ def main(page: ft.Page):
         )
 
         page.update()
-
     def page_reports():
         page.views.clear()
 
-        big_button_reports_daily_summary = ft.Container(
-                        width=180,
-                        height=135,
-                        bgcolor="#EFEFEF",
-                        border_radius=21,
-                        margin=6,
-                        on_click=lambda e: page.go("/page_expense"),
-                        content=
-                            ft.Column(  
-                                controls=[
-                                    ft.Icon(ft.icons.TODAY, size=36),
-                                    ft.Text("Resumo Diário")
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                            )
+        # Função para criar um botão grande
+        def create_big_button(icon, text, on_click_action):
+            return ft.Container(
+                width=180,
+                height=135,
+                bgcolor="#EFEFEF",
+                border_radius=21,
+                margin=6,
+                on_click=on_click_action,
+                content=ft.Column(
+                    controls=[
+                        icon,
+                        ft.Text(text)  # Aqui garantimos que text é envolvido em ft.Text
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                )
+            )
+
+        panel_reports = create_big_button(
+            ft.Icon(ft.icons.TODAY, size=36),
+            "Resumo Diário",
+            lambda e: page.go("/page_expense")
         )
 
-        big_button_reports_platform = ft.Container(
-                        width=180,
-                        height=135,
-                        bgcolor="#EFEFEF",
-                        border_radius=21,
-                        margin=6,
-                        on_click=lambda e: page.go("/page_expense"),
-                        content=
-                            ft.Column(  
-                                controls=[
-                                    ft.Icon(ft.icons.ADD_TO_HOME_SCREEN, size=36),
-                                    ft.Text("Relatório de Plataforma")
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                            )
+        primeira = ft.Container(
+            content=ft.Row(
+                controls=[
+                    create_big_button(
+                        ft.Icon(ft.icons.EURO, size=39),
+                        "Despesas",
+                        lambda e: page.go("/page_expense")
+                    ),
+                    create_big_button(
+                        ft.Icon(ft.icons.DIRECTIONS_CAR, size=36),
+                        "Lucro por Corrida",
+                        lambda e: page.go("/page_expense")
+                    )
+                ]
+            )
         )
 
-        big_button_reports_delailed_expenses = ft.Container(
-                        width=180,
-                        height=135,
-                        bgcolor="#EFEFEF",
-                        border_radius=21,
-                        margin=6,
-                        on_click=lambda e: page.go("/page_expense"),
-                        content=
-                            ft.Column(  
-                                controls=[
-                                    ft.Icon(ft.icons.EURO, size=39),
-                                    ft.Text("Despesas")
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                            )
+        segunda = ft.Container(
+            content=ft.Row(
+                controls=[
+                    create_big_button(
+                        ft.Icon(ft.icons.DIRECTIONS_CAR, size=36),
+                        "Lucro por Corrida",
+                        lambda e: page.go("/page_expense")
+                    ),
+                    create_big_button(
+                        ft.Icon(ft.icons.CALENDAR_MONTH, size=36), 
+                        "Relatório Mensal", 
+                        lambda e: page.go("/page_expense")
+                    )
+                ]
+            )
         )
 
-        big_button_reports_profit_by_race = ft.Container(
-                        width=180,
-                        height=135,
-                        bgcolor="#EFEFEF",
-                        border_radius=21,
-                        margin=6,
-                        on_click=lambda e: page.go("/page_expense"),
-                        content=
-                            ft.Column(  
-                                controls=[
-                                    ft.Icon(ft.icons.DIRECTIONS_CAR, size=36),
-                                    ft.Text("Lucro por Corrida")
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                            )
-        )
 
-        big_button_reports_monthly = ft.Container(
-                        width=180,
-                        height=135,
-                        bgcolor="#EFEFEF",
-                        border_radius=21,
-                        margin=6,
-                        on_click=lambda e: page.go("/page_expense"),
-                        content=
-                            ft.Column(  
-                                controls=[
-                                    ft.Icon(ft.icons.CALENDAR_MONTH, size=36    ),
-                                    ft.Text("Relatório Mensal")
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                            )
-        )
 
         page.views.append(
             ft.View(
@@ -387,16 +357,10 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.CALCULATE_OUTLINED),
                            title = ft.Text("RELATÓRIOS", size=21),
                     ),
-                    ft.Row(
-                        controls=[big_button_reports_daily_summary,
-                            big_button_reports_platform,]
-                    ),
-                    ft.Row(
-                        controls=[big_button_reports_delailed_expenses,
-                        big_button_reports_profit_by_race]
-                    ),
-                    big_button_reports_monthly,
-                    bottom_menu
+                panel_reports,
+                primeira,
+                segunda,
+                bottom_menu
                 ]
             )
         )
