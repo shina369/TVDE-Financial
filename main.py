@@ -2324,12 +2324,21 @@ def main(page: ft.Page):
                     bolt_entries = cursor.fetchone()[0]  
                     bolt_entries = int(bolt_entries) if bolt_entries else 0  # Garantir que seja inteiro
 
+                    # **Encontrar as datas comuns entre as tabelas `uber` e `bolt`**
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM uber
+                        WHERE daily_date IN (SELECT daily_date FROM bolt WHERE daily_date BETWEEN ? AND ?)
+                    """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
+                    common_entries = cursor.fetchone()[0]
+                    common_entries = int(common_entries) if common_entries else 0  # Garantir que seja inteiro
+
                 # Log para depuração
                 print(f"🚗 Registros no Uber: {uber_entries}")
                 print(f"⚡ Registros no Bolt: {bolt_entries}")
+                print(f"🔄 Datas Comuns: {common_entries}")
 
-                # **Agora somamos corretamente os registros**
-                insertions_count = uber_entries + bolt_entries  # Somar todas as inserções das duas tabelas
+                # **Agora somamos corretamente os registros, subtraindo as datas comuns**
+                insertions_count = uber_entries + bolt_entries - common_entries  # Subtrai as entradas duplicadas
 
                 # Subtrair os dias de trabalho já registrados
                 days_of_work -= insertions_count
