@@ -284,6 +284,7 @@ def main(page: ft.Page):
         )
 
         page.update()
+        
     def page_reports():
         page.views.clear()
 
@@ -312,16 +313,51 @@ def main(page: ft.Page):
             bgcolor="#EFEFEF",
             border_radius=21,
             margin=6,
-            on_click=lambda e: page.go("/page_expense"),
+            padding=12,
             content=ft.Column(
-                controls=[
-                    ft.Icon(ft.icons.TODAY, size=36),
-                    ft.Text("Resumo Diário")
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+            controls=[
+                ft.Row(  # Coloca o ícone e o texto lado a lado
+                    controls=[
+                        ft.Icon(ft.icons.TRENDING_UP, size=20, color="blue"),  # Ícone de tendência
+                        ft.Text("Resumo diário do Objetivo", size=15, weight=ft.FontWeight.BOLD),
+                    ],
+                    alignment=ft.MainAxisAlignment.START
+                ),
+                ft.Divider(),  # Adiciona uma linha divisória entre os elementos
+                ft.Row(
+                    controls=[
+                        ft.Text("Objetivo Bruto: € 750.00", size=12, weight=ft.FontWeight.BOLD),
+                    ]
+                ),
+                ft.Row(
+                    controls=[
+                        ft.Text("Objetivo Líquido parcial: € 750.00", size=12, weight=ft.FontWeight.BOLD),
+                    ]
+                ),
+                ft.Row(
+                    controls=[
+                        ft.Text("Pago a frota: € 750.00", size=12, weight=ft.FontWeight.BOLD),
+                    ]
+                ),
+                ft.Row(
+                    controls=[
+                        ft.Text("Imposto: € 750.00", size=12, weight=ft.FontWeight.BOLD),
+                    ]
+                ),
+                ft.Row(
+                    controls=[
+                        ft.Text("Gorjetas: € 750.00", size=12, weight=ft.FontWeight.BOLD),
+                    ]
+                ),
+                ft.Row(
+                    controls=[
+                        ft.Text("Valor líquido a receber c/: € 750.00", size=12, weight=ft.FontWeight.BOLD),
+                        ]
+                    )
+                ]
             )
         )
+
 
         primeira = ft.Container(
             content=ft.Row(
@@ -332,8 +368,8 @@ def main(page: ft.Page):
                         lambda e: page.go("/page_expense")
                     ),
                     create_big_button(
-                        ft.Icon(ft.icons.DIRECTIONS_CAR, size=36),
-                        "Lucro por Corrida",
+                        ft.Icon(ft.icons.ADD_TO_HOME_SCREEN, size=36),
+                        "Relatório de Plataforma",
                         lambda e: page.go("/page_expense")
                     )
                 ]
