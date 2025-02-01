@@ -815,57 +815,92 @@ def main(page: ft.Page):
 
         
         def save_goal(e):
-                global day_off
-                global goal_start
-                # Coletar os valores dos campos
-                goal = float(goal_field.value.replace('.', '').replace(',', '.'))
-                goal_start = goal_start_field.value
-                goal_end = goal_end_field.value
-                day_off = int(day_off_field.value)
-                fleet_discount = float(fleet_discount_field.value)
-                tax_discount = float(tax_discount_field.value)
-                   # Verifica se o campo de desconto de imposto não está vazio antes de converter
-                tax_discount_value = tax_discount_field.value.strip()  # Remove espaços em branco
-                if tax_discount_value:  # Verifica se não está vazio
-                    tax_discount = float(tax_discount_value)
-                else:
-                    tax_discount = 0.0  # Atribui um valor padrão (0.0) se estiver vazio
-                
+            global day_off
+            global goal_start
+            # Coletar os valores dos campos
+            goal = float(goal_field.value.replace('.', '').replace(',', '.'))
+            goal_start = goal_start_field.value
+            goal_end = goal_end_field.value
+            day_off = int(day_off_field.value)
+            fleet_discount = float(fleet_discount_field.value)
+            tax_discount = float(tax_discount_field.value)
+
+            # Verifica se o campo de desconto de imposto não está vazio antes de converter
+            tax_discount_value = tax_discount_field.value.strip()  # Remove espaços em branco
+            if tax_discount_value:  # Verifica se não está vazio
+                tax_discount = float(tax_discount_value)
+            else:
+                tax_discount = 0.0  # Atribui um valor padrão (0.0) se estiver vazio
+            
+            # Conectar ao banco para verificar se as datas já existem
+            conn = sqlite3.connect("db_tvde_content_internal.db")
+            cursor = conn.cursor()
+
+            try:
+                # Verificar se já existe um objetivo com as mesmas datas de início e fim
+                cursor.execute("""
+                    SELECT 1 FROM goal WHERE goal_start = ? AND goal_end = ?
+                """, (goal_start, goal_end))
+
+                # Se encontrar um resultado, significa que já existe
+                if cursor.fetchone():
+                    snack_bar = ft.SnackBar(
+                        content=ft.Container(
+                            content=ft.Text(f"Já existe um objetivo nestas datas {goal_start} , {goal_end}  \n Tente outra data!", weight=ft.FontWeight.BOLD),
+                            alignment=ft.alignment.center,  # Alinha o conteúdo (texto) dentro do Container
+                        ),
+                        bgcolor="red"  # Cor de fundo vermelha
+                    )
+                    page.overlay.append(snack_bar)
+                    snack_bar.open = True
+                    page.go("/page_new_goal")
+                    conn.close()
+                    return
+
                 # Calcular o valor bruto (goal_gross)
                 total_discount = fleet_discount + tax_discount
                 goal_gross = goal / (1 - (total_discount / 100))
 
-                # Conectar ao banco e inserir os dados
-                conn = sqlite3.connect("db_tvde_content_internal.db")
-                cursor = conn.cursor()
-
+                # Inserir os dados no banco
                 cursor.execute("""
-                INSERT INTO goal (goal, goal_gross, goal_start, goal_end, day_off, fleet_discount, tax_discount)
-                VALUES (?,?,?,?,?,?,?)
-                """, (goal, goal_gross, goal_start, goal_end, day_off, fleet_discount, tax_discount)
-                )
+                    INSERT INTO goal (goal, goal_gross, goal_start, goal_end, day_off, fleet_discount, tax_discount)
+                    VALUES (?,?,?,?,?,?,?)
+                """, (goal, goal_gross, goal_start, goal_end, day_off, fleet_discount, tax_discount))
                 
                 conn.commit()
-                conn.close()
-
-                # Feedback e limpeza
+                
+                # Verifica se a inserção foi bem-sucedida
                 if cursor.rowcount > 0:
                     page_message_screen("Meta cadastrada com sucesso!!!")
                     page.go("/page_parcial")
                 else:
-                    page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
+                    page_message_screen("Houve algum erro. Tente novamente mais tarde!!!")
                     page.go("/page_new_goal")
 
+            except sqlite3.IntegrityError as e:
+                snack_bar = ft.SnackBar(
+                    content=ft.Container(
+                        content=ft.Text(f"Já existe um objetivo nestas datas {goal_start} , {goal_end}  \n Tente outra data!", weight=ft.FontWeight.BOLD),
+                        alignment=ft.alignment.center,  # Alinha o conteúdo (texto) dentro do Container
+                    ),
+                    bgcolor="red"  # Cor de fundo vermelha
+                )
+                page.overlay.append(snack_bar)
+                snack_bar.open = True
+                page.go("/page_new_goal")
+            
+            finally:
+                conn.close()
 
-        # Exibe o SnackBar de sucesso
+            # Limpa os campos
+            goal_field.value = ""
+            goal_start_field.value = ""
+            goal_end_field.value = ""
+            day_off_field.value = ""
+            fleet_discount_field.value = ""
+            tax_discount_field.value = ""
+            page.update()
 
-                goal_field.value = ""
-                goal_start_field.value = ""
-                goal_end_field.value = ""
-                day_off_field.value = ""
-                fleet_discount_field.value = ""
-                tax_discount_field.value = ""
-                page.update()
 
         button_salve = ft.ElevatedButton(
         text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", on_click=save_goal)
