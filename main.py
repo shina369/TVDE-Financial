@@ -603,6 +603,7 @@ def main(page: ft.Page):
                                                 ft.Text("Comissão do Operador(Frota):", size=12),
                                                 ft.Text("Portagem:", size=12),
                                                 ft.Text("Alimentação:", size=12),
+                                                ft.Text("Seguro:", size=12),
                                                 ft.Text("Impostos:", size=12),
                                                 ft.Text("Outros custos:", size=12),
                                             ],
@@ -610,6 +611,7 @@ def main(page: ft.Page):
                                         ),
                                         ft.Column(
                                             controls=[
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
                                                 ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
                                                 ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
                                                 ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
