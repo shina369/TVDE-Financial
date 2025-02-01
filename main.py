@@ -1853,12 +1853,30 @@ def main(page: ft.Page):
             if goal_successful == "negativo":
                 page.go("/page_parcial")
             elif goal_successful == "positivo":
-                snack_bar = ft.SnackBar(content=ft.Text("Parabéns, você bateu o Objeito! Crie um novo"))
-                page.overlay.append(snack_bar)
-                snack_bar.open = True
-                page.update()
-                time.sleep(3)
-                page.go("/page_new_goal")
+             snack_bar = ft.SnackBar(
+                content=ft.Container(
+                    content=ft.Row(
+                        controls=[
+                            ft.Text(f"Parabéns!!! Você alcançou o último Objetivo. \n Crie um NOVO OBJETIVO!", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Icon(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, size=30)  # Ícone após o texto
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,  # Alinha o conteúdo no centro
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,  # Alinha verticalmente no centro
+                    ),
+                    alignment=ft.alignment.center,  # Alinha o conteúdo dentro do Container
+                ),
+                bgcolor="green",
+                padding=ft.Padding(top=36, bottom=36, left=0, right=6),
+            )
+    
+        page.overlay.append(snack_bar)
+        snack_bar.open = True
+        page.update()
+        
+        time.sleep(9)
+
+        # Navegar para a próxima página ou executar outro código
+        page.go("/next_page")
 
         def search_user_name(email_login):
             conn = mysql.connector.connect(
