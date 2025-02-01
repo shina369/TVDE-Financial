@@ -378,14 +378,13 @@ def main(page: ft.Page):
     )
 
 
-
         primeira = ft.Container(
             content=ft.Row(
                 controls=[
                     create_big_button(
                         ft.Icon(ft.icons.EURO, size=39),
                         "Despesas",
-                        lambda e: page.go("/page_expense")
+                        lambda e: page.go("/page_reports_expense")
                     ),
                     create_big_button(
                         ft.Icon(ft.icons.ADD_TO_HOME_SCREEN, size=36),
@@ -424,15 +423,140 @@ def main(page: ft.Page):
                            icon = ft.Icon(ft.icons.INSERT_CHART_OUTLINED),
                            title = ft.Text("RELATÓRIOS", size=21),
                     ),
-                panel_reports,
-                primeira,
-                segunda,
-                bottom_menu
+                    panel_reports,
+                    primeira,
+                    segunda,
+                    bottom_menu
                 ]
             )
         )
 
         page.update()
+
+    def page_reports_expense():
+        page.views.clear()
+
+        selected_month = ft.Text("Selecione um mês", size=24, weight=ft.FontWeight.BOLD)
+
+        def update_month(e):
+            selected_month.value = f"Resumo de {e.control.value}"
+            page.update()
+
+        month_dropdown = ft.Dropdown(
+            options=[
+                ft.dropdown.Option("Janeiro"),
+                ft.dropdown.Option("Fevereiro"),
+                ft.dropdown.Option("Março"),
+                ft.dropdown.Option("Abril"),
+                ft.dropdown.Option("Maio"),
+                ft.dropdown.Option("Junho"),
+                ft.dropdown.Option("Julho"),
+                ft.dropdown.Option("Agosto"),
+                ft.dropdown.Option("Setembro"),
+                ft.dropdown.Option("Outubro"),
+                ft.dropdown.Option("Novembro"),
+                ft.dropdown.Option("Dezembro"),
+            ],
+            on_change=update_month,
+            border_radius=15,
+            text_size=15,
+            width=282,
+            height=54
+        )
+
+        # Container que engloba month_dropdown e selected_month
+        month_container = ft.Container(
+            width=390,
+            alignment=ft.alignment.center,  # Correção aqui, use `ft.Alignment.center`
+            content=ft.Column(
+                controls=[
+                    month_dropdown,
+                    selected_month
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,  # Centraliza os itens dentro da coluna
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza na horizontal
+            ),
+        )
+
+        page.views.append(
+            ft.View(
+                "/page_reports",
+                controls=[
+                    header,
+                    title_app(
+                        icon=ft.Icon(ft.icons.EURO),
+                        title=ft.Text("RELATÓRIO DE DESPESAS", size=21),
+                    ),
+                    ft.Column(
+                        controls=[
+                            month_container,  # Container centralizado
+                        ],
+                    ),
+                    ft.Container(
+                        width=390,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        margin=6,
+                        padding=12,
+                        content=ft.Column(
+                            spacing=5,
+                            controls=[
+                                ft.Row(
+                                    controls=[
+                                        ft.Icon(ft.icons.RECEIPT_LONG, size=20, color="blue"),
+                                        ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
+                                    ],
+                                    alignment=ft.MainAxisAlignment.START,
+                                ),
+                                ft.Divider(),
+                                ft.Row(
+                                    controls=[
+                                        ft.Column(
+                                            controls=[
+                                                ft.Text("Combustível:", size=12),
+                                                ft.Text("Gás Natural:", size=12),
+                                                ft.Text("Carga Energia:", size=12),
+                                                ft.Text("Manutenção:", size=12),
+                                                ft.Text("Comissões Uber:", size=12),
+                                                ft.Text("Comissões Bolt:", size=12),
+                                                ft.Text("Comissão do Operador(Frota):", size=12),
+                                                ft.Text("Portagem:", size=12),
+                                                ft.Text("Alimentação:", size=12),
+                                                ft.Text("Outros custos:", size=12),
+                                                ft.Text("Impostos:", size=12),
+                                            ],
+                                            alignment=ft.MainAxisAlignment.START
+                                        ),
+                                        ft.Column(
+                                            controls=[
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                            ],
+                                            alignment=ft.MainAxisAlignment.END
+                                        ),
+                                    ],
+                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                                ),
+                            ]
+                        )
+                    ),
+                    bottom_menu
+                ]
+            )
+        )
+
+        page.update()
+
+
     
     def page_settings():
         page.views.clear()
@@ -2864,6 +2988,8 @@ def main(page: ft.Page):
             page_my_account()
         elif page.route == "/page_reports":
             page_reports()
+        elif page.route == "/page_reports_expense":
+            page_reports_expense()
         elif page.route == "/page_settings":
             page_settings()
         elif page.route == "/page_more_date":
