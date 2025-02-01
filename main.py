@@ -1737,7 +1737,20 @@ def main(page: ft.Page):
                 else:
                     page_message_screen("Houve algum erro. Tente novamente mais tarde!")
             except sqlite3.Error as e:
-                page_message_screen(f"Já existe uma diária nesta data {daily_date}")
+                snack_bar = ft.SnackBar(
+                    content=ft.Container(
+                        content=ft.Text(f"Já existe uma diária nesta data {daily_date} \n Tente outra data!", weight=ft.FontWeight.BOLD),
+                        alignment=ft.alignment.center,  # Alinha o conteúdo (texto) dentro do Container
+                    ),
+                    bgcolor="red"  # Cor de fundo vermelha
+                )
+                page.overlay.append(snack_bar)
+                snack_bar.open = True
+                
+                page.update()
+                time.sleep(3)
+                
+                
             finally:
                 conn.close()
 
