@@ -59,8 +59,9 @@ def main(page: ft.Page):
                     height=66,
                     content=ft.Row(
                         controls=[
-                            ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png", width=154, height=51),
-                            pb
+                            pb,
+                            ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png", width=154, height=51)
+                            
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN, 
                     ),
@@ -284,7 +285,7 @@ def main(page: ft.Page):
         )
 
         page.update()
-        
+
     def page_reports():
         page.views.clear()
 
