@@ -2286,30 +2286,58 @@ def main(page: ft.Page):
             with sqlite3.connect("db_tvde_content_internal.db") as conn:
                 cursor = conn.cursor()
 
-                # Executar a consulta para obter o valor do objetivo bruto e datas
+                # Obter os dados da meta mais recente
                 cursor.execute("SELECT goal_gross, goal_start, goal_end, day_off FROM goal ORDER BY id DESC LIMIT 1")
                 result = cursor.fetchone()
 
             if result:
-                # Extrair os valores do resultado da consulta
-                goal_gross = float(result[0])  # Garantir que goal_gross seja do tipo float
+                # Extrair valores da meta
+                goal_gross = float(result[0])  # Garantir que seja float
                 goal_start = datetime.strptime(result[1], "%d/%m/%Y")
                 goal_end = datetime.strptime(result[2], "%d/%m/%Y")
-                day_off = int(result[3]) if result[3] else 0  # Garantir que day_off seja um número inteiro
+                day_off = int(result[3]) if result[3] else 0  # Garantir que day_off seja int
 
                 # Calcular a porcentagem concluída do objetivo
-                if goal_gross > 0:
-                    total_gain_car_position = (total_gain / goal_gross) * 100
-                else:
-                    total_gain_car_position = 0  # Evita divisão por zero
-                
-                # Calcular os dias de trabalho
-                days_of_work = (goal_end - goal_start).days + 1  # Intervalo total
-                days_of_work -= day_off  # Subtrair os dias de folga
+                total_gain_car_position = (total_gain / goal_gross) * 100 if goal_gross > 0 else 0
 
-                # Verificar se há dias válidos para evitar divisão por zero
+                # Calcular os dias de trabalho totais
+                days_of_work = (goal_end - goal_start).days + 1  # Intervalo total
+                days_of_work -= day_off  # Remover dias de folga
+
+                # **Contar quantos dias têm registros nas tabelas `uber` e `bolt`**
+                with sqlite3.connect("db_tvde_content_internal.db") as conn:
+                    cursor = conn.cursor()
+
+                    # Contar registros na tabela Uber
+                    cursor.execute("""
+                        SELECT COUNT(DISTINCT daily_date) FROM uber 
+                        WHERE daily_date BETWEEN ? AND ?
+                    """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
+                    uber_days = cursor.fetchone()[0]  
+                    uber_days = int(uber_days) if uber_days else 0  # Garantir que seja inteiro
+
+                    # Contar registros na tabela Bolt
+                    cursor.execute("""
+                        SELECT COUNT(DISTINCT daily_date) FROM bolt 
+                        WHERE daily_date BETWEEN ? AND ?
+                    """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
+                    bolt_days = cursor.fetchone()[0]  
+                    bolt_days = int(bolt_days) if bolt_days else 0  # Garantir que seja inteiro
+
+                # Log para depuração
+                print(f"🚗 Dias registrados no Uber: {uber_days}")
+                print(f"⚡ Dias registrados no Bolt: {bolt_days}")
+
+                # **Agora somamos as duas variáveis corretamente**
+                insertions_count = uber_days + bolt_days  # Somar os dias registrados nas duas tabelas
+
+                # Subtrair os dias de trabalho já registrados
+                days_of_work -= insertions_count
+
+                print(f"⚡⚡⚡: {insertions_count}")
+
+                # Evitar valores inválidos para days_of_work
                 if days_of_work > 0:
-                    # Subtrair o valor total_gain de goal_gross antes de dividir
                     remaining_goal = goal_gross - total_gain
                     daily_value = remaining_goal / days_of_work
                     return daily_value, total_gain_car_position
@@ -2318,15 +2346,13 @@ def main(page: ft.Page):
             else:
                 return "Erro ao recuperar os dados do banco de dados", 0
 
-
-        # Assumindo que `total_gain` é obtido da outra função
+        # Assumindo que `total_gain` é obtido de outra função
 
         # Calcular daily_value_value e total_gain_car_position com base no total_gain
         daily_value_value, total_gain_car_position = fetch_goal_from_db4(total_gain)
 
         # Calcular a posição do carro baseado no progresso
         car_position = start_position + (total_gain_car_position / 100) * (end_position - start_position)
-
 
 
         
