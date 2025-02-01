@@ -1737,7 +1737,7 @@ def main(page: ft.Page):
                 else:
                     page_message_screen("Houve algum erro. Tente novamente mais tarde!")
             except sqlite3.Error as e:
-                page_message_screen(f"Erro ao salvar os dados: {e}")
+                page_message_screen(f"Já existe uma diária nesta data {daily_date}")
             finally:
                 conn.close()
 
@@ -2304,37 +2304,37 @@ def main(page: ft.Page):
                 days_of_work = (goal_end - goal_start).days + 1  # Intervalo total
                 days_of_work -= day_off  # Remover dias de folga
 
-                # **Contar quantos dias têm registros nas tabelas `uber` e `bolt`**
+                # **Contar quantos registros existem nas tabelas `uber` e `bolt`**
                 with sqlite3.connect("db_tvde_content_internal.db") as conn:
                     cursor = conn.cursor()
 
-                    # Contar registros na tabela Uber
+                    # Contar **todas** as inserções na tabela Uber
                     cursor.execute("""
-                        SELECT COUNT(DISTINCT daily_date) FROM uber 
+                        SELECT COUNT(*) FROM uber 
                         WHERE daily_date BETWEEN ? AND ?
                     """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
-                    uber_days = cursor.fetchone()[0]  
-                    uber_days = int(uber_days) if uber_days else 0  # Garantir que seja inteiro
+                    uber_entries = cursor.fetchone()[0]  
+                    uber_entries = int(uber_entries) if uber_entries else 0  # Garantir que seja inteiro
 
-                    # Contar registros na tabela Bolt
+                    # Contar **todas** as inserções na tabela Bolt
                     cursor.execute("""
-                        SELECT COUNT(DISTINCT daily_date) FROM bolt 
+                        SELECT COUNT(*) FROM bolt 
                         WHERE daily_date BETWEEN ? AND ?
                     """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
-                    bolt_days = cursor.fetchone()[0]  
-                    bolt_days = int(bolt_days) if bolt_days else 0  # Garantir que seja inteiro
+                    bolt_entries = cursor.fetchone()[0]  
+                    bolt_entries = int(bolt_entries) if bolt_entries else 0  # Garantir que seja inteiro
 
                 # Log para depuração
-                print(f"🚗 Dias registrados no Uber: {uber_days}")
-                print(f"⚡ Dias registrados no Bolt: {bolt_days}")
+                print(f"🚗 Registros no Uber: {uber_entries}")
+                print(f"⚡ Registros no Bolt: {bolt_entries}")
 
-                # **Agora somamos as duas variáveis corretamente**
-                insertions_count = uber_days + bolt_days  # Somar os dias registrados nas duas tabelas
+                # **Agora somamos corretamente os registros**
+                insertions_count = uber_entries + bolt_entries  # Somar todas as inserções das duas tabelas
 
                 # Subtrair os dias de trabalho já registrados
                 days_of_work -= insertions_count
 
-                print(f"⚡⚡⚡: {insertions_count}")
+                print(f"⚡⚡⚡ Total de Inserções Contadas: {insertions_count}")
 
                 # Evitar valores inválidos para days_of_work
                 if days_of_work > 0:
