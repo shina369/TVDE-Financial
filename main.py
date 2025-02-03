@@ -293,9 +293,7 @@ def main(page: ft.Page):
         with sqlite3.connect("db_tvde_content_internal.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
             cursor = conn.cursor()  # Inicializando o cursor
 
-                # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
-            cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
-
+            # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
             cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
             goal_result = cursor.fetchone()
 
@@ -315,7 +313,40 @@ def main(page: ft.Page):
                 """, (start_date, end_date))
                 result = cursor.fetchone()
                 return result[0] if result else 0.0
+            
+            def fetch_goal_from_db():
+                # Executar a consulta para obter o valor do objetivo, fleet_discount e tax_discount
+                cursor.execute("SELECT goal, fleet_discount, tax_discount FROM goal ORDER BY id DESC LIMIT 1")  # Ajuste conforme necessário
+                result = cursor.fetchone()
 
+                if result:
+                    # Garantir que goal_value, fleet_discount e tax_discount sejam do tipo float
+                    try:
+                        goal_value = float(result[0])  # Convertendo para float
+                        # Formatar o valor final para exibição
+                        return f"{goal_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                    except ValueError:
+                        return "Erro ao converter os valores"
+                else:
+                    return "€ 0.00"
+                
+            def fetch_goal_gross():
+                cursor.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
+                goal_gross_result = cursor.fetchone()
+                
+                if goal_gross_result and goal_gross_result[0] is not None:
+                    return float(goal_gross_result[0])
+                return 0.0
+            
+            def fetch_goal_sum_tip():
+                cursor.execute("""
+                SELECT 
+                    (SELECT COALESCE(SUM(daily_value_tips), 0) FROM uber) +
+                    (SELECT COALESCE(SUM(daily_value_tips), 0) FROM bolt)
+                """)
+                
+                total_tips = cursor.fetchone()[0]  # Pega o resultado da soma
+                return float(total_tips) if total_tips is not None else 0.0
         # Função para criar um botão grande
         def create_big_button(icon, text, on_click_action):
             return ft.Container(
@@ -334,6 +365,11 @@ def main(page: ft.Page):
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
                 )
             )
+        goal_value2 = fetch_goal_from_db()
+
+        goal_gross2 = fetch_goal_gross()
+
+        goal_sum_tips = fetch_goal_sum_tip()
 
         expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
 
@@ -370,9 +406,9 @@ def main(page: ft.Page):
                         ),
                         ft.Column(
                             controls=[
-                                ft.Text("€ 750.00", size=12),
-                                ft.Text("€ 750.00", size=12),
-                                ft.Text("€ 750.00", size=12),
+                                ft.Text(f"€ {goal_value2}", size=12),
+                                ft.Text(f"€ {goal_sum_tips}", size=12),
+                                ft.Text("€ 6000", size=12),
                             ],
                             alignment=ft.MainAxisAlignment.END
                         ),
@@ -395,7 +431,7 @@ def main(page: ft.Page):
                             controls=[
                                 ft.Text(f"€ {expenses:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                                 ft.Text("€ 750.00", size=12),
-                                ft.Text("€ 750.00", size=12),
+                                ft.Text(f"€ {goal_gross2:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                             ],
                             alignment=ft.MainAxisAlignment.END
                         ),
@@ -1129,6 +1165,7 @@ def main(page: ft.Page):
 
                 # Calcular o valor bruto (goal_gross)
                 total_discount = fleet_discount + tax_discount
+                global goal_gross
                 goal_gross = goal / (1 - (total_discount / 100))
 
                 # Inserir os dados no banco
@@ -2237,6 +2274,7 @@ def main(page: ft.Page):
             cursor.execute("SELECT goal, fleet_discount, tax_discount FROM goal ORDER BY id DESC LIMIT 1")  # Ajuste conforme necessário
             result = cursor.fetchone()
 
+            cursor.close()
             conn.close()
 
             if result:
@@ -2249,7 +2287,7 @@ def main(page: ft.Page):
                     return "Erro ao converter os valores"
             else:
                 return "€ 0.00"
-
+        global goal_value
         # Exemplo de como chamar a função
         goal_value = fetch_goal_from_db()
 
