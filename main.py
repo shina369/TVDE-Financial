@@ -68,21 +68,22 @@ def main(page: ft.Page):
                 )
             ]
         )
+    def on_change(e):
+        destinos = ["/page_parcial", "/page_more_date", "/page_reports", "/page_settings"]
+        page.go(destinos[e.control.selected_index])
 
     bottom_menu = ft.BottomAppBar(
-            content=ft.Row(
-                [
-                    ft.IconButton(ft.icons.HOME_OUTLINED, on_click=lambda _: page.go("/page_parcial")),
-                    ft.IconButton(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, on_click=lambda _: page.go("/page_more_date")),
-                    ft.IconButton(ft.icons.INSERT_CHART_OUTLINED, on_click=lambda _: page.go("/page_reports")),
-                    ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/page_settings")),
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_AROUND,
-            ),
-            bgcolor="#EEEEEE",
-            padding=10,
-            height=60
-        )
+        content=ft.NavigationBar(
+            destinations=[
+                ft.NavigationBarDestination(icon=ft.icons.HOME_OUTLINED, label="Início"),
+                ft.NavigationBarDestination(icon=ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, label="Novo dado"),
+                ft.NavigationBarDestination(icon=ft.icons.INSERT_CHART_OUTLINED, label="Relatórios"),
+                ft.NavigationBarDestination(icon=ft.icons.SETTINGS, label="Config"),
+            ],
+            on_change=on_change,
+        ),
+        bgcolor="#EEEEEE",
+    )
 
     button_edit = ft.ElevatedButton(
         text="Editar perfil", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
@@ -289,14 +290,40 @@ def main(page: ft.Page):
     def page_reports():
         page.views.clear()
 
+        with sqlite3.connect("db_tvde_content_internal.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
+            cursor = conn.cursor()  # Inicializando o cursor
+
+                # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
+            cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+
+            cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+            goal_result = cursor.fetchone()
+
+            if goal_result:
+                goal_start = datetime.strptime(goal_result[0], '%d/%m/%Y')  # Convertendo string para datetime
+                goal_end = datetime.strptime(goal_result[1], '%d/%m/%Y')
+            else:
+                goal_start, goal_end = None, None
+
+            def fetch_expenses(start_date, end_date):
+                """Consulta as despesas entre start_date e end_date."""
+                cursor.execute(""" 
+                    SELECT SUM(expense_value) 
+                    FROM expense 
+                    WHERE date(substr(expense_date, 7, 4) || '-' || substr(expense_date, 4, 2) || '-' || substr(expense_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?)
+                """, (start_date, end_date))
+                result = cursor.fetchone()
+                return result[0] if result else 0.0
+
         # Função para criar um botão grande
         def create_big_button(icon, text, on_click_action):
             return ft.Container(
-                width=180,
-                height=135,
+                width=165,
+                height=121,
                 bgcolor="#EFEFEF",
                 border_radius=21,
-                margin=6,
+                margin=ft.Margin(top=6, bottom=6, left=15, right=6),
                 on_click=on_click_action,
                 content=ft.Column(
                     controls=[
@@ -308,9 +335,11 @@ def main(page: ft.Page):
                 )
             )
 
+        expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+
         panel_reports = ft.Container(
         width=381,
-        height=231,
+        height=234,
         bgcolor="#EFEFEF",
         border_radius=21,
         margin=6,
@@ -322,7 +351,7 @@ def main(page: ft.Page):
                 ft.Row(
                     controls=[
                         ft.Icon(ft.icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
-                        ft.Text("Resumo do Objetivo", size=18),
+                        ft.Text("Resumo do Objetivo", size=15),
                     ],
                     alignment=ft.MainAxisAlignment.START
                 ),
@@ -364,7 +393,7 @@ def main(page: ft.Page):
                         ),
                         ft.Column(
                             controls=[
-                                ft.Text("€ 750.00", size=12),
+                                ft.Text(f"€ {expenses:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                                 ft.Text("€ 750.00", size=12),
                                 ft.Text("€ 750.00", size=12),
                             ],
@@ -388,7 +417,7 @@ def main(page: ft.Page):
                     ),
                     create_big_button(
                         ft.Icon(ft.icons.ADD_TO_HOME_SCREEN, size=36),
-                        "Relatório de Plataforma",
+                        "Plataforma",
                         lambda e: page.go("/page_expense")
                     )
                 ]
@@ -400,12 +429,12 @@ def main(page: ft.Page):
                 controls=[
                     create_big_button(
                         ft.Icon(ft.icons.DIRECTIONS_CAR, size=36),
-                        "Lucro por Corrida",
+                        "Lucros",
                         lambda e: page.go("/page_expense")
                     ),
                     create_big_button(
                         ft.Icon(ft.icons.CALENDAR_MONTH, size=36), 
-                        "Relatório Mensal", 
+                        "Mensal", 
                         lambda e: page.go("/page_expense")
                     )
                 ]
@@ -1057,6 +1086,7 @@ def main(page: ft.Page):
         def save_goal(e):
             global day_off
             global goal_start
+            global goal_end
             # Coletar os valores dos campos
             goal = float(goal_field.value.replace('.', '').replace(',', '.'))
             goal_start = goal_start_field.value
@@ -2516,7 +2546,7 @@ def main(page: ft.Page):
             controls=[
                 ft.Container(
                     width=399,
-                    height=99,
+                    height=81,
                     padding=0,
                     margin=0,
                     content=ft.Column(
@@ -2524,7 +2554,7 @@ def main(page: ft.Page):
                             ft.Image(
                                 src="https://i.ibb.co/93ps7s5/hourglass.png",
                                 height=27,
-                                width=27,
+                                width=27
                             ),
                             ft.Container(
                                 padding=ft.Padding(top=0, bottom=12, left=0, right=0),   
@@ -2574,13 +2604,14 @@ def main(page: ft.Page):
                             ),
 
                             ft.Container(
-                                width=2,
-                                height=15,
+                                width=3,
+                                height=6,
                                 bgcolor="black",
                             ),
                         ],
                         spacing=0,
                         horizontal_alignment="center",
+                        
                     ),
                 ),
             ],
