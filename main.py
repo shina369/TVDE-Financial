@@ -2779,12 +2779,18 @@ def main(page: ft.Page):
                     height=123,
                     padding=0,
                     margin=0,
-                    bgcolor="#EEEEEE",
                     border_radius=25,
                     content=ft.Column(
                         controls=[
                             ft.Text("OBJETIVO DIÁRIO", size=15, color=ft.colors.BLACK),
-                            ft.Text(f"€ {daily_value_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=39, color="#15CD74", weight=ft.FontWeight.BOLD),
+                            ft.Container(
+                                content=ft.Text(f"€ {daily_value_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), 
+                                    size=42, 
+                                    color="#15CD74", 
+                                    weight=ft.FontWeight.BOLD
+                                ),
+                                shadow=ft.BoxShadow(color="#15CD74", blur_radius=180)  # Sombra
+                            ),
                             ft.Text("valores brutos", size=12, color="#B0B0B0"),
                             ],
                             spacing=0, 
