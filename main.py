@@ -391,7 +391,7 @@ def main(page: ft.Page):
         goal_sum_tips_float = float(goal_sum_tips.replace(",", ".")) if isinstance(goal_sum_tips, str) else float(goal_sum_tips)
 
         # Soma os valores já convertidos
-        total_value = goal_value2_float + goal_sum_tips_float
+        total_value = total_gain + goal_sum_tips_float
 
         fleet_discount = fetch_last_fleet_discount()
 
@@ -431,16 +431,16 @@ def main(page: ft.Page):
                             controls=[
                                 ft.Text("Objetivo Líquido:", size=12, weight=ft.FontWeight.BOLD),
                                 ft.Text("Gorjetas:", size=12, weight=ft.FontWeight.BOLD),
-                                ft.Text("Valor Líquido + Gorjetas:", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("Ganhos até agora + Gorjetas:", size=12, weight=ft.FontWeight.BOLD),
                             ],
                             alignment=ft.MainAxisAlignment.START
                         ),
                         
                         ft.Column(
                             controls=[
-                                 ft.Text(f"€ {goal_value2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
-                            ft.Text(f"€ {goal_sum_tips_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
-                            ft.Text(f"€ {total_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
+                                ft.Text(f"€ {goal_value2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
+                                ft.Text(f"€ {goal_sum_tips_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
+                                ft.Text(f"€ {total_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                             ],
                             alignment=ft.MainAxisAlignment.END
                         ),
@@ -2469,7 +2469,8 @@ def main(page: ft.Page):
                 conn.commit()
 
                 return goal_start, goal_end, expenses, total_gain, day_off, goal_gross
-
+            
+        global total_gain
         # Atualizando a chamada para refletir 6 valores
         goal_start, goal_end, expenses, total_gain, day_off, goal_gross = fetch_goal_details_from_db(page)
 
@@ -2513,7 +2514,7 @@ def main(page: ft.Page):
                             ft.Text(goal_end.strftime("%d/%m/%Y") if goal_end else "Data não encontrada", size=15),
                             ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text(str(day_off), size=15),  # Folgas: valor de day_off
-                            ft.Text("Ganhos até o momento", size=15, weight=ft.FontWeight.BOLD),
+                            ft.Text("Ganhos até agora", size=15, weight=ft.FontWeight.BOLD),
                             ft.Text(f"€ {total_gain:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=15)  # Formatação dos ganhos
                         ],
                         spacing=0, 
