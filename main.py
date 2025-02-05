@@ -1866,7 +1866,7 @@ def main(page: ft.Page):
             btn_uber.update()
             configure_buttons(param)
             
-            daily_value_field.on_change = lambda e: validate_fields()
+            daily_value_field.on_change = lambda e: (validate_fields(), format_number_accounting(e))
             trips_made_field.on_change = lambda e: validate_fields()
             daily_date_field.on_change = lambda e: validate_fields()
 
