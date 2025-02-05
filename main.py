@@ -691,12 +691,11 @@ def main(page: ft.Page):
                                     controls=[
                                         ft.Column(
                                             controls=[
-                                                ft.Text("Combustível:", size=12),
+                                                ft.Text("Gasolina:", size=12),
+                                                ft.Text("Gasóleo:", size=12),
                                                 ft.Text("Gás Natural:", size=12),
                                                 ft.Text("Carga Energia:", size=12),
                                                 ft.Text("Manutenção:", size=12),
-                                                ft.Text("Comissões Uber:", size=12),
-                                                ft.Text("Comissões Bolt:", size=12),
                                                 ft.Text("Comissão do Operador(Frota):", size=12),
                                                 ft.Text("Portagem:", size=12),
                                                 ft.Text("Alimentação:", size=12),
@@ -708,7 +707,6 @@ def main(page: ft.Page):
                                         ),
                                         ft.Column(
                                             controls=[
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
                                                 ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
                                                 ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
                                                 ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
