@@ -74,6 +74,7 @@ def main(page: ft.Page):
 
     bottom_menu = ft.BottomAppBar(
         content=ft.NavigationBar(
+            indicator_color="#19D278",
             destinations=[
                 ft.NavigationBarDestination(icon=ft.icons.HOME_OUTLINED, label="Início"),
                 ft.NavigationBarDestination(icon=ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, label="Novo dado"),
@@ -347,7 +348,20 @@ def main(page: ft.Page):
                 
                 total_tips = cursor.fetchone()[0]  # Pega o resultado da soma
                 return float(total_tips) if total_tips is not None else 0.0
-        # Função para criar um botão grande
+            
+            def fetch_last_fleet_discount():
+                # Consulta SQL para pegar o último valor da coluna "fleet_discount"
+                query = "SELECT fleet_discount FROM goal ORDER BY id DESC LIMIT 1"  # Altere 'sua_tabela' para o nome da tabela correta
+                
+                cursor.execute(query)
+                result = cursor.fetchone()
+                
+                # Se encontrou algum valor, retorna ele
+                if result:
+                    return result[0]  # O valor de "fleet_discount" estará na primeira posição
+                else:
+                    return None  # Se não encontrar nenhum valor, retorna None
+                # Função para criar um botão grande
         def create_big_button(icon, text, on_click_action):
             return ft.Container(
                 width=165,
@@ -372,6 +386,23 @@ def main(page: ft.Page):
         goal_sum_tips = fetch_goal_sum_tip()
 
         expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+
+        goal_value2_float = float(goal_value2.replace(",", ".")) if isinstance(goal_value2, str) else float(goal_value2)
+        goal_sum_tips_float = float(goal_sum_tips.replace(",", ".")) if isinstance(goal_sum_tips, str) else float(goal_sum_tips)
+
+        # Soma os valores já convertidos
+        total_value = goal_value2_float + goal_sum_tips_float
+
+        fleet_discount = fetch_last_fleet_discount()
+
+        if fleet_discount is None:
+            fleet_discount_float = 0.0  # Se não houver desconto, assume 0%
+        else:
+            # Garantir que o valor está no formato correto
+            fleet_discount_float = float(fleet_discount.replace(",", ".")) if isinstance(fleet_discount, str) else float(fleet_discount)
+
+        fleet_discount_value = goal_gross2 * (fleet_discount_float / 100)
+
 
         panel_reports = ft.Container(
         width=381,
@@ -404,11 +435,12 @@ def main(page: ft.Page):
                             ],
                             alignment=ft.MainAxisAlignment.START
                         ),
+                        
                         ft.Column(
                             controls=[
-                                ft.Text(f"€ {goal_value2}", size=12),
-                                ft.Text(f"€ {goal_sum_tips}", size=12),
-                                ft.Text("€ 6000", size=12),
+                                 ft.Text(f"€ {goal_value2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
+                            ft.Text(f"€ {goal_sum_tips_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
+                            ft.Text(f"€ {total_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                             ],
                             alignment=ft.MainAxisAlignment.END
                         ),
@@ -430,7 +462,7 @@ def main(page: ft.Page):
                         ft.Column(
                             controls=[
                                 ft.Text(f"€ {expenses:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
-                                ft.Text("€ 750.00", size=12),
+                                ft.Text(f"€ {fleet_discount_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                                 ft.Text(f"€ {goal_gross2:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                             ],
                             alignment=ft.MainAxisAlignment.END
@@ -1123,6 +1155,7 @@ def main(page: ft.Page):
             global day_off
             global goal_start
             global goal_end
+            global fleet_discount
             # Coletar os valores dos campos
             goal = float(goal_field.value.replace('.', '').replace(',', '.'))
             goal_start = goal_start_field.value
