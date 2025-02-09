@@ -339,15 +339,20 @@ def main(page: ft.Page):
                     return float(goal_gross_result[0])
                 return 0.0
             
-            def fetch_goal_sum_tip():
+            def fetch_goal_sum_tip(goal_start, goal_end):
                 cursor.execute("""
-                SELECT 
-                    (SELECT COALESCE(SUM(daily_value_tips), 0) FROM uber) +
-                    (SELECT COALESCE(SUM(daily_value_tips), 0) FROM bolt)
-                """)
+                    SELECT 
+                        (SELECT COALESCE(SUM(daily_value_tips), 0) 
+                        FROM uber 
+                        WHERE daily_date >= ? AND daily_date <= ?) +
+                        (SELECT COALESCE(SUM(daily_value_tips), 0) 
+                        FROM bolt 
+                        WHERE daily_date >= ? AND daily_date <= ?)
+                """, (goal_start, goal_end, goal_start, goal_end))
                 
                 total_tips = cursor.fetchone()[0]  # Pega o resultado da soma
                 return float(total_tips) if total_tips is not None else 0.0
+
             
             def fetch_last_fleet_discount():
                 # Consulta SQL para pegar o último valor da coluna "fleet_discount"
@@ -383,7 +388,7 @@ def main(page: ft.Page):
 
         goal_gross2 = fetch_goal_gross()
 
-        goal_sum_tips = fetch_goal_sum_tip()
+        goal_sum_tips = fetch_goal_sum_tip(goal_start, goal_end)
 
         expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
 
@@ -401,7 +406,7 @@ def main(page: ft.Page):
             # Garantir que o valor está no formato correto
             fleet_discount_float = float(fleet_discount.replace(",", ".")) if isinstance(fleet_discount, str) else float(fleet_discount)
 
-        fleet_discount_value = goal_gross2 * (fleet_discount_float / 100)
+        fleet_discount_value = total_gain * (fleet_discount_float / 100)
 
 
         panel_reports = ft.Container(
@@ -461,7 +466,7 @@ def main(page: ft.Page):
                         ),
                         ft.Column(
                             controls=[
-                                ft.Text(f"€ {expenses:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
+                                ft.Text(f"€ {expenses if expenses is not None else 0.0:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                                 ft.Text(f"€ {fleet_discount_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                                 ft.Text(f"€ {goal_gross2:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
                             ],
@@ -2758,7 +2763,7 @@ def main(page: ft.Page):
                     daily_value = remaining_goal / days_of_work
                     return daily_value, total_gain_car_position
                 else:
-                    return "Dias de trabalho inválidos (0 ou negativos)", total_gain_car_position
+                    return 0, total_gain_car_position  # Retorna 0 para evitar erro
             else:
                 return "Erro ao recuperar os dados do banco de dados", 0
 
