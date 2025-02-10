@@ -863,7 +863,7 @@ def main(page: ft.Page):
         )
 
         # Variável para armazenar a mensagem do relatório
-        report_message = ft.Column([ft.Text("Aguarde...")])  # Inicializa com um texto placeholder
+        report_message = ft.Column([ft.Text("Entre com as dadas...")])  # Inicializa com um texto placeholder
 
         # Adicionando a tela ao "views" com o botão e o resultado do relatório
         page.views.append(
