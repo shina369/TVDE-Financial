@@ -639,15 +639,79 @@ def main(page: ft.Page):
 
         # Variável para armazenar a mensagem do relatório
         report_message = ft.Text("", size=12, text_align=ft.TextAlign.END )
+        # Certifique-se de que os valores são float
+        total_liters = 0
+        total_energy = 0
+        total_cubic_meters = 0
+        total_expense = 0
 
-        # Função que será chamada ao clicar no botão "Gerar Relatório"
         def generate_report(start_date_field, end_date_field):
             start_date = start_date_field.value
             end_date = end_date_field.value
             message = f"Relatório de {start_date} a {end_date}"
             report_message.value = message  # Exibe a mensagem ao lado do título "Despesas"
+            
+            # Inicializa as variáveis com 0 antes de fazer a consulta
+      
+            # Verifica se as datas estão preenchidas
+            if not start_date or not end_date:
+                report_message.value = "Preencha ambas as datas."
+                page.update()
+                return
+
+            try:
+                print("Conectando ao banco de dados...")  # Depuração
+                conn = sqlite3.connect("db_tvde_content_internal.db")
+                cursor = conn.cursor()
+
+                print("Executando consulta SQL...")  # Depuração
+                query = """
+                SELECT 
+                    COALESCE(SUM(expense_amount_liters), 0) AS total_liters,
+                    COALESCE(SUM(expense_amount_energy), 0) AS total_energy,
+                    COALESCE(SUM(expense_amount_cubic_meters), 0) AS total_cubic_meters,
+                    COALESCE(SUM(expense_value), 0) AS total_expense
+                FROM expense
+                WHERE expense_date BETWEEN ? AND ?
+                """
+                cursor.execute(query, (start_date, end_date))
+                result = cursor.fetchone()
+                print("Resultado da consulta:", result)  # Depuração
+
+                # Atribui os resultados se existirem, caso contrário mantém 0
+                if result:
+                    total_liters, total_energy, total_cubic_meters, total_expense = result
+                else:
+                    total_liters, total_energy, total_cubic_meters, total_expense = 0
+                conn.close()
+
+            except Exception as e:
+                print(f"Erro: {str(e)}")  # Depuração
+                report_message.value = f"Erro ao gerar o relatório: {str(e)}"
+                page.update()
+                return
+            
+            total_liters = float(total_liters)
+            total_energy = float(total_energy)
+            total_cubic_meters = float(total_cubic_meters)
+            total_expense = float(total_expense)
+
+            # Atualiza a interface com os resultados
+            report_message.value = (
+                f"🔹 Gasolina Litros: € {total_liters:.2f}\n"
+                f"🔹 Energia: €{total_energy:.2f}\n"
+                f"🔹 Gás Natural: €{total_cubic_meters:.2f}\n"
+                f"🔹 Total de Despesas: €{total_expense:.2f}"
+            )
             page.update()
 
+        # Criação do botão para gerar relatório
+        generate_report_button = ft.ElevatedButton(
+            "Gerar Relatório", 
+            on_click=lambda e: generate_report(start_date_field, end_date_field)
+        )
+
+        # Adicionando a tela ao "views" com o botão e o resultado do relatório
         page.views.append(
             ft.View(
                 "/page_reports",
@@ -673,7 +737,7 @@ def main(page: ft.Page):
                         padding=12,
                         content=ft.Column(
                             spacing=5,
-                            controls=[  
+                            controls=[
                                 ft.Row(
                                     controls=[
                                         ft.Row(
@@ -712,23 +776,17 @@ def main(page: ft.Page):
                                         ),
                                         ft.Column(
                                             controls=[
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
-                                                ft.Text("€ 0.00", size=12, weight=ft.FontWeight.BOLD),
+                                                ft.Text(f"€ {total_liters:.2f}", size=12),
+                                                ft.Text(f"€ {total_energy:.2f}", size=12),
+                                                ft.Text(f"€ {total_cubic_meters:.2f}", size=12),
+                                                ft.Text(f"€ {total_expense:.2f}", size=12),
                                             ],
                                             alignment=ft.MainAxisAlignment.END
                                         ),
                                     ],
                                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                                 ),
+                                generate_report_button,  # Botão para gerar o relatório
                             ]
                         )
                     ),
@@ -738,7 +796,6 @@ def main(page: ft.Page):
         )
 
         page.update()
-
 
 
 
@@ -1296,28 +1353,23 @@ def main(page: ft.Page):
         result_label = ft.Text(value="", color="black")
 
         def format_number_33(e):
-           # Filtra e mantém apenas os dígitos numéricos
-            raw_value = ''.join(filter(str.isdigit, e.control.value))
+            try:
+                # Filtra e mantém apenas os dígitos numéricos e o ponto decimal
+                raw_value = ''.join(filter(lambda x: x.isdigit() or x == '.', e.control.value))
 
-            if raw_value:
-                # Adiciona vírgula para centavos, separando os dois últimos dígitos
-                if len(raw_value) > 2:
-                    raw_value = raw_value[:-2] + ',' + raw_value[-2:]
-                else:
-                    raw_value = '00,' + raw_value
+                if raw_value:
+                    # Converte para float, garantindo que o valor seja tratado corretamente
+                    float_value = float(raw_value)
 
-                # Converte para inteiro e formata com separador de milhar (ponto)
-                integer_part = raw_value.split(',')[0]
-                decimal_part = raw_value.split(',')[1]
+                    # Formata o número para duas casas decimais
+                    formatted_value = f"{float_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-                # Formata a parte inteira com ponto como separador de milhar
-                formatted_integer = f"{int(integer_part):,}".replace(',', '.')
-
-                # Junta a parte inteira formatada com a parte decimal
-                formatted_value = f"{formatted_integer},{decimal_part}"
-
-                # Atualiza o campo com o valor formatado, sem o símbolo de euro
-                e.control.value = formatted_value
+                    # Atualiza o campo com o valor formatado
+                    e.control.value = formatted_value
+                    e.control.update()
+            except ValueError:
+                # Se ocorrer algum erro de conversão, limpar o valor
+                e.control.value = ""
                 e.control.update()
     
         def on_date_selected(e):
@@ -1329,8 +1381,7 @@ def main(page: ft.Page):
 
         def format_number(e):
             # Filtra e mantém apenas os dígitos numéricos
-            raw_value = ''.join(filter(str.isdigit, e.control.value))
-
+            raw_value = ''.join(filter(str.isdigit, e.control.value)).replace(",", ".")
             if raw_value:
                 # Adiciona vírgula para centavos, separando os dois últimos dígitos
                 if len(raw_value) > 2:
@@ -1470,7 +1521,7 @@ def main(page: ft.Page):
             label="Despesas:",  # Texto de rótulo do dropdown
             options=[
                 ft.dropdown.Option("Manutenção"),
-                ft.dropdown.Option("Gasolína"),
+                ft.dropdown.Option("Gasolina"),
                 ft.dropdown.Option("Gasóleo"),
                 ft.dropdown.Option("GNV"),
                 ft.dropdown.Option("Recarga Bateria"),
@@ -1484,9 +1535,9 @@ def main(page: ft.Page):
         )
 
         global expense_amount_cubic_meters, expense_amount_energy, expense_amount_liters
-        expense_amount_liters = ft.TextField(label="Litros", visible=False, border_radius=21, on_change=lambda e: (format_number_33(e), validate_all_fields()))
-        expense_amount_cubic_meters = ft.TextField(label="Metros Cúbicos (m³)", visible=False, border_radius=21, on_change=lambda e: (format_number_33(e), validate_all_fields()))
-        expense_amount_energy = ft.TextField(label="Energia (kWh)", visible=False, border_radius=21, on_change=lambda e: (format_number_33(e), validate_all_fields()))
+        expense_amount_liters = ft.TextField(label="Litros", visible=False, border_radius=21, on_change=lambda e: (format_number(e), validate_all_fields()))
+        expense_amount_cubic_meters = ft.TextField(label="Metros Cúbicos (m³)", visible=False, border_radius=21, on_change=lambda e: (format_number(e), validate_all_fields()))
+        expense_amount_energy = ft.TextField(label="Energia (kWh)", visible=False, border_radius=21, on_change=lambda e: (format_number(e), validate_all_fields()))
 
         def on_option_selected(e):
             expense_amount_liters.visible = False
@@ -1496,7 +1547,7 @@ def main(page: ft.Page):
             if e.control.value == "Manutenção":
                 expense_name.bgcolor = "#E0E0E0"  # Cor de fundo quando "Opção 1" é selecionada
                 expense_name.style = ft.TextStyle(color="#FF5722")  # Cor do texto para "Opção 1"
-            elif e.control.value == "Gasolína":
+            elif e.control.value == "Gasolina":
                 expense_amount_liters.visible = True
                 expense_name.bgcolor = "#FFEB3B"  # Cor de fundo quando "Opção 2" é selecionada
                 expense_name.style = ft.TextStyle(color="#000000")  # Cor do texto para "Opção 2"
@@ -1534,7 +1585,7 @@ def main(page: ft.Page):
             error_messages = []
 
             # Verificar campos obrigatórios
-    # Verificar o campo `expense_value`
+            # Verificar o campo `expense_value`
             try:
                 # Converte o valor para float removendo os símbolos (€ e separadores)
                 expense_value_text = expense_value.value.replace("€", "").replace(".", "").replace(",", ".").strip()
@@ -1565,7 +1616,7 @@ def main(page: ft.Page):
                 expense_name.border_color = None
 
             # Verificar os campos de quantidade obrigatórios
-            if not expense_amount_liters.value and (expense_name.value == "Gasolína" or expense_name.value == "Gasóleo"):
+            if not expense_amount_liters.value and (expense_name.value == "Gasolina" or expense_name.value == "Gasóleo"):
                 expense_amount_liters.border_color = "red"
                 error_messages.append(("A quantidade de litros é obrigatória.", expense_amount_liters))
                 page.update()
@@ -1615,6 +1666,10 @@ def main(page: ft.Page):
                 expense_amount_cubic_meters_value = expense_amount_cubic_meters.value
             elif expense_name_text == "Recarga Bateria":
                 expense_amount_energy_value = expense_amount_energy.value
+
+            
+            expense_amount_liters_value = expense_value.value.replace("€", "").replace(".", "").replace(",", ".").strip()
+            expense_amount_liters_value = float(expense_amount_liters_value)
 
             # Conectar ao banco de dados SQLite
             conn = sqlite3.connect("db_tvde_content_internal.db")
