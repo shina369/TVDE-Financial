@@ -605,6 +605,78 @@ def main(page: ft.Page):
             )
         )
 
+        def generate_report(start_date, end_date, report_message, page):
+            # Verifica se as datas são válidas
+            if not start_date or not end_date:
+                report_message.content = ft.Text("Preencha ambas as datas.", color="red")
+                report_message.update()
+                page.update()
+                return
+            
+            # Verifica se a data de fim não é menor que a data de início
+            if end_date < start_date:
+                report_message.content = ft.Text("A data de fim não pode ser menor que a data de início.", color="red")
+                report_message.update()
+                page.update()
+                return
+
+            try:
+                conn = sqlite3.connect("db_tvde_content_internal.db")
+                cursor = conn.cursor()
+
+                # Obtém todas as categorias dinâmicas de despesas
+                cursor.execute("SELECT DISTINCT expense_name FROM expense")
+                expense_names = [row[0] for row in cursor.fetchall()]
+                print("Despesas encontradas:", expense_names)  # Depuração
+
+                # Monta a consulta dinâmica
+                query = """
+                SELECT expense_name, COALESCE(SUM(expense_value), 0) AS total_expense
+                FROM expense
+                WHERE expense_date BETWEEN ? AND ?
+                GROUP BY expense_name
+                """
+                cursor.execute(query, (start_date, end_date))
+                expenses = dict(cursor.fetchall())
+                print("Valores das despesas:", expenses)  # Depuração
+
+                conn.close()
+
+            except Exception as e:
+                report_message.content = ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")
+                report_message.update()
+                page.update()
+                return
+
+            # Se report_message for um Text, manipule diretamente o texto
+            if isinstance(report_message, ft.Text):
+                report_message.content = ft.Text("Relatório gerado com sucesso!", color="green")
+                report_message.update()
+
+            # Se report_message for um Column, adicione as linhas ao conteúdo
+            elif isinstance(report_message.content, ft.Column):
+                # Lista para armazenar as linhas do relatório
+                report_rows = []
+                for expense_name in expense_names:
+                    total = expenses.get(expense_name, 0.0)
+                    report_rows.append(
+                        ft.Row(
+                            controls=[
+                                ft.Text(f"{expense_name}:", size=12),
+                                ft.Text(f"€ {total:.2f}", size=12),
+                            ],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        )
+                    )
+                # Substitui o conteúdo por novas linhas
+                report_message.content.controls = report_rows
+                report_message.content.update()
+
+            # Atualiza a página
+            page.update()
+
+
+
         # Container que engloba os campos de data lado a lado
         date_range_container = ft.Container(
             width=390,
@@ -623,7 +695,7 @@ def main(page: ft.Page):
                         controls=[
                             ft.ElevatedButton(
                                 text="Gerar Relatório",  # Texto do botão
-                                on_click=lambda e: generate_report(start_date_field, end_date_field),  # Função a ser chamada ao clicar
+                                on_click=lambda e: generate_report(start_date_field.value, end_date_field.value, report_message, page),  # Passando os valores das datas corretamente
                                 width=200,  # Largura do botão
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=21)  # Botão com borda arredondada
@@ -637,6 +709,7 @@ def main(page: ft.Page):
             ),
         )
 
+
         # Variável para armazenar a mensagem do relatório
         report_message = ft.Text("", size=12, text_align=ft.TextAlign.END )
         # Certifique-se de que os valores são float
@@ -645,71 +718,8 @@ def main(page: ft.Page):
         total_cubic_meters = 0
         total_expense = 0
 
-        def generate_report(start_date_field, end_date_field):
-            start_date = start_date_field.value
-            end_date = end_date_field.value
-            message = f"Relatório de {start_date} a {end_date}"
-            report_message.value = message  # Exibe a mensagem ao lado do título "Despesas"
-            
-            # Inicializa as variáveis com 0 antes de fazer a consulta
-      
-            # Verifica se as datas estão preenchidas
-            if not start_date or not end_date:
-                report_message.value = "Preencha ambas as datas."
-                page.update()
-                return
-
-            try:
-                print("Conectando ao banco de dados...")  # Depuração
-                conn = sqlite3.connect("db_tvde_content_internal.db")
-                cursor = conn.cursor()
-
-                print("Executando consulta SQL...")  # Depuração
-                query = """
-                SELECT 
-                    COALESCE(SUM(expense_amount_liters), 0) AS total_liters,
-                    COALESCE(SUM(expense_amount_energy), 0) AS total_energy,
-                    COALESCE(SUM(expense_amount_cubic_meters), 0) AS total_cubic_meters,
-                    COALESCE(SUM(expense_value), 0) AS total_expense
-                FROM expense
-                WHERE expense_date BETWEEN ? AND ?
-                """
-                cursor.execute(query, (start_date, end_date))
-                result = cursor.fetchone()
-                print("Resultado da consulta:", result)  # Depuração
-
-                # Atribui os resultados se existirem, caso contrário mantém 0
-                if result:
-                    total_liters, total_energy, total_cubic_meters, total_expense = result
-                else:
-                    total_liters, total_energy, total_cubic_meters, total_expense = 0
-                conn.close()
-
-            except Exception as e:
-                print(f"Erro: {str(e)}")  # Depuração
-                report_message.value = f"Erro ao gerar o relatório: {str(e)}"
-                page.update()
-                return
-            
-            total_liters = float(total_liters)
-            total_energy = float(total_energy)
-            total_cubic_meters = float(total_cubic_meters)
-            total_expense = float(total_expense)
-
-            # Atualiza a interface com os resultados
-            report_message.value = (
-                f"🔹 Gasolina Litros: € {total_liters:.2f}\n"
-                f"🔹 Energia: €{total_energy:.2f}\n"
-                f"🔹 Gás Natural: €{total_cubic_meters:.2f}\n"
-                f"🔹 Total de Despesas: €{total_expense:.2f}"
-            )
-            page.update()
 
         # Criação do botão para gerar relatório
-        generate_report_button = ft.ElevatedButton(
-            "Gerar Relatório", 
-            on_click=lambda e: generate_report(start_date_field, end_date_field)
-        )
 
         # Adicionando a tela ao "views" com o botão e o resultado do relatório
         page.views.append(
@@ -747,46 +757,154 @@ def main(page: ft.Page):
                                             ],
                                             alignment=ft.MainAxisAlignment.START,
                                         ),
-                                        ft.Row(
-                                            controls=[report_message],
-                                            alignment=ft.MainAxisAlignment.END,  # Alinha o report_message à direita
-                                            expand=True,  # Garante que o espaço à direita será usado para alinhar à direita
-                                        ),
                                     ],
-                                    alignment=ft.MainAxisAlignment.START,
+
                                 ),
                                 ft.Divider(),
+                                report_message
+                            ]
+                        )
+                    ),
+                    bottom_menu
+                ]
+            )
+        )
+
+        page.update()
+        
+        def generate_report(start_date, end_date, report_message, page):
+            # Verifica se as datas são válidas
+            if not start_date or not end_date:
+                report_message.controls = [ft.Text("Preencha ambas as datas.", color="red")]
+                report_message.update()
+                page.update()
+                return
+
+            try:
+                conn = sqlite3.connect("db_tvde_content_internal.db")
+                cursor = conn.cursor()
+
+                # Obtém todas as categorias dinâmicas de despesas
+                cursor.execute("SELECT DISTINCT expense_name FROM expense")
+                expense_names = [row[0] for row in cursor.fetchall()]
+                print("Despesas encontradas:", expense_names)  # Depuração
+
+                # Monta a consulta dinâmica
+                query = """
+                SELECT expense_name, COALESCE(SUM(expense_value), 0) AS total_expense
+                FROM expense
+                WHERE expense_date BETWEEN ? AND ?
+                GROUP BY expense_name
+                """
+                cursor.execute(query, (start_date, end_date))
+                expenses = dict(cursor.fetchall())
+                print("Valores das despesas:", expenses)  # Depuração
+
+                conn.close()
+
+            except Exception as e:
+                report_message.controls = [ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")]
+                report_message.update()
+                page.update()
+                return
+
+            # Se report_message for um Column, adicione as linhas ao conteúdo
+            if isinstance(report_message, ft.Column):
+                # Lista para armazenar as linhas do relatório
+                report_rows = []
+                for expense_name in expense_names:
+                    total = expenses.get(expense_name, 0.0)
+                    report_rows.append(
+                        ft.Row(
+                            controls=[
+                                ft.Text(f"{expense_name}:", size=12),
+                                ft.Text(f"€ {total:.2f}", size=12),
+                            ],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        )
+                    )
+                # Substitui o conteúdo por novas linhas
+                report_message.controls = report_rows  # Atualiza o 'controls' do Column
+                report_message.update()
+
+            # Atualiza a página
+            page.update()
+
+        # Container que engloba os campos de data lado a lado
+        date_range_container = ft.Container(
+            width=390,
+            alignment=ft.alignment.center,
+            content=ft.Column(
+                controls=[
+                    ft.Row(  # Usando Row para colocar os campos lado a lado
+                        controls=[
+                            start_date_field,
+                            end_date_field,
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER  # Ajustado para alinhar corretamente os campos
+                    ),
+                    # Centralizando o botão
+                    ft.Row(
+                        controls=[
+                            ft.ElevatedButton(
+                                text="Gerar Relatório",  # Texto do botão
+                                on_click=lambda e: generate_report(start_date_field.value, end_date_field.value, report_message, page),  # Passando os valores das datas corretamente
+                                width=200,  # Largura do botão
+                                style=ft.ButtonStyle(
+                                    shape=ft.RoundedRectangleBorder(radius=21)  # Botão com borda arredondada
+                                )
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER  # Alinhando o botão ao centro dentro do Row
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
+        )
+
+        # Variável para armazenar a mensagem do relatório
+        report_message = ft.Column([ft.Text("Aguarde...")])  # Inicializa com um texto placeholder
+
+        # Adicionando a tela ao "views" com o botão e o resultado do relatório
+        page.views.append(
+            ft.View(
+                "/page_reports",
+                controls=[
+                    header,
+                    title_app(
+                        icon=ft.Icon(ft.icons.EURO),
+                        title=ft.Text("RELATÓRIO DE DESPESAS", size=21),
+                    ),
+                    ft.Column(
+                        controls=[
+                            selected_date_range,
+                            ft.Container(),
+                            date_range_container,
+                            ft.Container(),  # Container centralizado
+                        ],
+                    ),
+                    ft.Container(
+                        width=390,
+                        bgcolor="#EFEFEF",
+                        border_radius=21,
+                        margin=6,
+                        padding=12,
+                        content=ft.Column(
+                            spacing=5,
+                            controls=[
                                 ft.Row(
                                     controls=[
-                                        ft.Column(
+                                        ft.Row(
                                             controls=[
-                                                ft.Text("Gasolina:", size=12),
-                                                ft.Text("Gasóleo:", size=12),
-                                                ft.Text("Gás Natural:", size=12),
-                                                ft.Text("Carga Energia:", size=12),
-                                                ft.Text("Manutenção:", size=12),
-                                                ft.Text("Comissão do Operador(Frota):", size=12),
-                                                ft.Text("Portagem:", size=12),
-                                                ft.Text("Alimentação:", size=12),
-                                                ft.Text("Seguro:", size=12),
-                                                ft.Text("Impostos:", size=12),
-                                                ft.Text("Outros custos:", size=12),
+                                                ft.Icon(ft.icons.RECEIPT_LONG, size=20, color="blue"),
+                                                ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
                                             ],
-                                            alignment=ft.MainAxisAlignment.START
-                                        ),
-                                        ft.Column(
-                                            controls=[
-                                                ft.Text(f"€ {total_liters:.2f}", size=12),
-                                                ft.Text(f"€ {total_energy:.2f}", size=12),
-                                                ft.Text(f"€ {total_cubic_meters:.2f}", size=12),
-                                                ft.Text(f"€ {total_expense:.2f}", size=12),
-                                            ],
-                                            alignment=ft.MainAxisAlignment.END
+                                            alignment=ft.MainAxisAlignment.START,
                                         ),
                                     ],
-                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                                 ),
-                                generate_report_button,  # Botão para gerar o relatório
+                                ft.Divider(),
+                                report_message,  # A mensagem será exibida aqui
                             ]
                         )
                     ),
@@ -798,8 +916,6 @@ def main(page: ft.Page):
         page.update()
 
 
-
-    
     def page_settings():
         page.views.clear()
 
@@ -1668,8 +1784,11 @@ def main(page: ft.Page):
                 expense_amount_energy_value = expense_amount_energy.value
 
             
-            expense_amount_liters_value = expense_value.value.replace("€", "").replace(".", "").replace(",", ".").strip()
-            expense_amount_liters_value = float(expense_amount_liters_value)
+            expense_amount_liters_value = expense_amount_liters.value.replace("€", "").replace(".", "").replace(",", ".").strip()
+            expense_amount_cubic_meters_value = expense_amount_cubic_meters.value.replace("€", "").replace(".", "").replace(",", ".").strip()
+            expense_amount_energy_value = expense_amount_energy.value.replace("€", "").replace(".", "").replace(",", ".").strip()
+            
+        
 
             # Conectar ao banco de dados SQLite
             conn = sqlite3.connect("db_tvde_content_internal.db")
