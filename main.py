@@ -91,7 +91,7 @@ def main(page: ft.Page):
         )
     
     button_premium = ft.ElevatedButton(
-        text="CONTINUAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
+        text="Quero ser PREMIUM", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
         )
 
     def page_message_screen(msg):
@@ -260,7 +260,7 @@ def main(page: ft.Page):
                                     content=ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED, size=18), 
                                     padding=ft.padding.all(9),  # Adicione o padding desejado
                                 ),
-                                ft.Text(f"Tipo de Conta:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{account_type}", size=15)
+                                ft.Text(f"Tipo de Conta:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{account_type}", size=15), button_premium
                             ]
                         ),
                     ),
@@ -374,7 +374,7 @@ def main(page: ft.Page):
                 height=121,
                 bgcolor="#EFEFEF",
                 border_radius=21,
-                margin=ft.Margin(top=6, bottom=6, left=15, right=6),
+                margin=ft.Margin(top=6, bottom=6, left=18, right=9),
                 on_click=on_click_action,
                 content=ft.Column(
                     controls=[
@@ -1034,8 +1034,8 @@ def main(page: ft.Page):
                     ),
                     ft.Text("Idioma do APP"),
                     ft.Text("Tema: Claro / Escuro"),
-                    ft.Text("Apagar dados"),
-                    ft.Text("Personalizar graficos"),
+                    ft.Text("Editar dados"),
+                    ft.Text("Apagar todos dados"),
                     bottom_menu
                 ]
             )
