@@ -230,7 +230,8 @@ def main(page: ft.Page):
                                     content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=18), 
                                     padding=ft.padding.all(9),  # Adicione o padding desejado
                                 ),
-                                ft.Text(f"Nome: {user_name} {surname}", size=15)
+                                ft.Text(f"Nome:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{user_name} {surname}", size=15)
+
                             ]
                         ),
                     ),
@@ -245,7 +246,7 @@ def main(page: ft.Page):
                                     content=ft.Icon(ft.icons.EMAIL_OUTLINED, size=18),
                                     padding=ft.padding.all(9),  # Adicione o padding desejado
                                 ),
-                                ft.Text(f"Email: {email_login.value}", size=15)
+                                ft.Text(f"Email:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{email_login.value}", size=15)
                             ]
                         ),
                     ),
@@ -259,7 +260,7 @@ def main(page: ft.Page):
                                     content=ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED, size=18), 
                                     padding=ft.padding.all(9),  # Adicione o padding desejado
                                 ),
-                                ft.Text(f"Tipo de Conta: {account_type}", size=15)
+                                ft.Text(f"Tipo de Conta:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{account_type}", size=15)
                             ]
                         ),
                     ),
@@ -273,7 +274,7 @@ def main(page: ft.Page):
                                     content=ft.Icon(ft.icons.DATE_RANGE, size=18,),  
                                     padding=ft.padding.all(9),  # Adicione o padding desejado
                                 ),
-                                ft.Text(f"Data da conta: {date_start}" , size=15)
+                                ft.Text(f"Data da conta: ", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{formatted_date}", size=15)
                             ]
                         ),
                     ),
@@ -410,8 +411,8 @@ def main(page: ft.Page):
 
 
         panel_reports = ft.Container(
-        width=381,
-        height=234,
+        width=385,
+        height=246,
         bgcolor="#EFEFEF",
         border_radius=21,
         margin=6,
@@ -423,7 +424,7 @@ def main(page: ft.Page):
                 ft.Row(
                     controls=[
                         ft.Icon(ft.icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
-                        ft.Text("Resumo do Objetivo", size=15),
+                        ft.Text("Resumo do Objetivo", size=15, weight=ft.FontWeight.BOLD),
                     ],
                     alignment=ft.MainAxisAlignment.START
                 ),
@@ -434,18 +435,18 @@ def main(page: ft.Page):
                     controls=[
                         ft.Column(
                             controls=[
-                                ft.Text("Objetivo Líquido:", size=12, weight=ft.FontWeight.BOLD),
-                                ft.Text("Gorjetas:", size=12, weight=ft.FontWeight.BOLD),
-                                ft.Text("Ganhos até agora + Gorjetas:", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("Objetivo Líquido:", size=14),
+                                ft.Text("Gorjetas:", size=14),
+                                ft.Text("Ganhos até agora + Gorjetas:", size=14),
                             ],
                             alignment=ft.MainAxisAlignment.START
                         ),
                         
                         ft.Column(
                             controls=[
-                                ft.Text(f"€ {goal_value2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
-                                ft.Text(f"€ {goal_sum_tips_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
-                                ft.Text(f"€ {total_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
+                                ft.Text(f"€ {goal_value2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                ft.Text(f"€ {goal_sum_tips_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                ft.Text(f"€ {total_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
                             ],
                             alignment=ft.MainAxisAlignment.END
                         ),
@@ -458,17 +459,17 @@ def main(page: ft.Page):
                     controls=[
                         ft.Column(
                             controls=[
-                                ft.Text("Despesas:", size=12, weight=ft.FontWeight.BOLD),
-                                ft.Text("Pago a frota:", size=12, weight=ft.FontWeight.BOLD),
-                                ft.Text("Objetivo Bruto:", size=12, weight=ft.FontWeight.BOLD),
+                                ft.Text("Despesas:", size=14),
+                                ft.Text("Pago a frota:", size=14),
+                                ft.Text("Objetivo Bruto:", size=14),
                             ],
                             alignment=ft.MainAxisAlignment.START
                         ),
                         ft.Column(
                             controls=[
-                                ft.Text(f"€ {expenses if expenses is not None else 0.0:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
-                                ft.Text(f"€ {fleet_discount_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
-                                ft.Text(f"€ {goal_gross2:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=12),
+                                ft.Text(f"€ {expenses if expenses is not None else 0.0:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                ft.Text(f"€ {fleet_discount_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                ft.Text(f"€ {goal_gross2:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
                             ],
                             alignment=ft.MainAxisAlignment.END
                         ),
@@ -924,7 +925,7 @@ def main(page: ft.Page):
                     ft.Divider(),
                     ft.Row(
                         controls=[
-                            ft.Text("Rendimento Total:"),
+                            ft.Text("Rendimento Bruto Total:"),
                             ft.Text(f"€ {data['total_rendimento']:.2f}", weight=ft.FontWeight.BOLD),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -2564,6 +2565,7 @@ def main(page: ft.Page):
         global account_type
         global date_start
         global surname
+        global formatted_date
 
         user_details = search_user_name(email_login.value)
 
@@ -2571,6 +2573,10 @@ def main(page: ft.Page):
         surname = user_details["surname"]
         account_type = user_details["account_type"]
         date_start = user_details["date_start"]
+
+        date_obj = datetime.strptime(date_start, "%Y-%m-%d")
+        formatted_date = date_obj.strftime("%d-%m-%Y")
+        
         
         message_welcome = ft.Container(
             width=399,
