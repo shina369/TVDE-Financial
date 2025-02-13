@@ -2217,25 +2217,31 @@ def main(page: ft.Page):
 
         daily_value_field = ft.TextField(label=f"Valor líquido da {param}.", prefix_text="€ ",
             border_radius=21, 
-            text_size=18,
             on_change=format_number_accounting, 
-            label_style=ft.TextStyle(
-                color="#AAAAAA",  # Cor do label
-                size=15,               # Tamanho opcional
-            ),
             helper_text=f"* Valor líquido da {param} com impostos.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
         )
 
         daily_value_tips_field = ft.TextField(label=f"Valor gorjetas da {param}", prefix_text="€ ",
             border_radius=21, 
-            text_size=18,
+            expand=True,
             on_change=format_number_accounting,
-            label_style=ft.TextStyle(
-                color="#AAAAAA",  # Cor do label
-                size=15,               # Tamanho opcional
-            ),
             content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
+        )
+
+        daily_reimbursement_field = ft.TextField(
+        label=f"Reembolso (Portagem) da {param}", 
+        prefix_text="€ ",
+        border_radius=21,
+        expand=True,
+        on_change=format_number_accounting,
+        content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
+    )
+
+        tips_reimbursement_row = ft.Container(
+            ft.Row(
+                controls=[daily_value_tips_field, daily_reimbursement_field]
+            )
         )
         
         date_picker = ft.DatePicker(on_change=None)  # on_change definido depois dinamicamente
@@ -2252,13 +2258,8 @@ def main(page: ft.Page):
         
         daily_date_field = ft.TextField(
             label=f"Data da diária da {param}",
-            label_style=ft.TextStyle(
-                color="#AAAAAA",  # Cor do label
-                size=15,          # Tamanho opcional
-            ),
             on_change=validate_date,
             border_radius=21,
-            text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
             helper_text="* Data da diária",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
@@ -2327,7 +2328,7 @@ def main(page: ft.Page):
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
             expand=True,
-            on_change=format_number_only999
+            on_change=format_number_accounting
         )
 
         contatenate_textfield_field = ft.Container(
@@ -2346,12 +2347,7 @@ def main(page: ft.Page):
 
         observation_field = ft.TextField(
             label="Observação",
-            label_style=ft.TextStyle(
-                color="#AAAAAA",  # Cor do label
-                size=15,          # Tamanho opcional
-            ),
             border_radius=21,
-            text_size=18,
         )
 
         def save_daily_bolt_uber(param):
@@ -2364,9 +2360,10 @@ def main(page: ft.Page):
             try:
                 daily_value = float(daily_value_field.value.replace('.', '').replace(',', '.')) if daily_value_field.value else 0.0
                 daily_value_tips = float(daily_value_tips_field.value.replace('.', '').replace(',', '.')) if daily_value_tips_field.value else 0.0
+                daily_reimbursement = float(daily_reimbursement_field.value.replace('.', '').replace(',', '.')) if daily_reimbursement_field.value else 0.0
                 daily_date = daily_date_field.value if daily_date_field.value else None
                 working_hours = working_hours_field.value if working_hours_field.value else "00:00"
-                distance_traveled = float(distance_traveled_field.value) if distance_traveled_field.value else 0.0
+                distance_traveled = float(distance_traveled_field.value.replace('.', '').replace(',', '.')) if distance_traveled_field.value else 0.0
                 trips_made = int(trips_made_field.value) if trips_made_field.value else 0
                 observation = observation_field.value if observation_field.value else ""
             except ValueError as e:
@@ -2382,9 +2379,9 @@ def main(page: ft.Page):
                 cursor = conn.cursor()
                 cursor.execute(f"""
                 INSERT INTO {table_name} 
-                (daily_value, daily_value_tips, daily_date, working_hours, distance_traveled, trips_made, observation)
-                VALUES (?,?,?,?,?,?,?)
-                """, (daily_value, daily_value_tips, daily_date, working_hours, distance_traveled, trips_made, observation))
+                (daily_value, daily_value_tips, daily_reimbursement, daily_date, working_hours, distance_traveled, trips_made, observation)
+                VALUES (?,?,?,?,?,?,?,?)
+                """, (daily_value, daily_value_tips, daily_reimbursement, daily_date, working_hours, distance_traveled, trips_made, observation))
                 
                 conn.commit()
 
@@ -2472,7 +2469,7 @@ def main(page: ft.Page):
                     ft.Container(height=0.9),
                     daily_date_field,
                     ft.Container(height=0.9),
-                    daily_value_tips_field,
+                    tips_reimbursement_row,
                     ft.Container(height=0.9),
                     contatenate_textfield_field,
                     ft.Container(height=0.9),

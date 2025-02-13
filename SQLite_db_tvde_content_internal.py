@@ -43,7 +43,8 @@ CREATE TABLE IF NOT EXISTS bolt (
     working_hours TEXT,
     distance_traveled TEXT,
     trips_made TEXT,
-    observation TEXT
+    observation TEXT,
+    daily_reimbursement TEXT
 );
 """
 
@@ -53,10 +54,11 @@ CREATE TABLE IF NOT EXISTS uber (
     daily_value TEXT NOT NULL,
     daily_value_tips TEXT NOT NULL,
     daily_date TEXT NOT NULL UNIQUE,
-    working_hours TEXT NOT NULL,
-    distance_traveled TEXT NOT NULL,
-    trips_made TEXT NOT NULL,
-    observation TEXT NOT NULL
+    working_hours TEXT,
+    distance_traveled TEXT,
+    trips_made TEXT,
+    observation TEXT,
+    daily_reimbursement TEXT
 );
 """
 create_table_query_expense = """
