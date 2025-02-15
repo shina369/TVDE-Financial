@@ -1072,7 +1072,6 @@ def main(page: ft.Page):
                 # Retorna apenas os dados principais
                 return {
                     "total_rendimento": total_rendimento,
-                    "lucro_liquido": lucro_liquido,
                     "total_reembolso": total_reembolso,
                     "total_gorjetas": total_gorjetas,
                     "total_km": total_km,
@@ -1115,14 +1114,6 @@ def main(page: ft.Page):
                         controls=[
                             ft.Text("Rendimento Total:"),
                             ft.Text(f"€ {data.get('total_rendimento', 0):.2f}", weight=ft.FontWeight.BOLD),
-                        ],
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    ),
-                    # Lucro Líquido
-                    ft.Row(
-                        controls=[
-                            ft.Text("Lucro Líquido:"),
-                            ft.Text(f"€ {data.get('lucro_liquido', 0):.2f}", weight=ft.FontWeight.BOLD),
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     ),
