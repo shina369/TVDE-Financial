@@ -342,19 +342,20 @@ def main(page: ft.Page):
             
             def fetch_goal_sum_tip(goal_start, goal_end):
                 cursor.execute("""
-                    SELECT 
-                        (SELECT COALESCE(SUM(daily_value_tips), 0) 
-                        FROM uber 
-                        WHERE daily_date >= ? AND daily_date <= ?) +
-                        (SELECT COALESCE(SUM(daily_value_tips), 0) 
-                        FROM bolt 
-                        WHERE daily_date >= ? AND daily_date <= ?)
+                  SELECT 
+                    (SELECT COALESCE(SUM(daily_value_tips), 0) 
+                    FROM uber 
+                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?)) +
+                    (SELECT COALESCE(SUM(daily_value_tips), 0) 
+                    FROM bolt 
+                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?))
                 """, (goal_start, goal_end, goal_start, goal_end))
                 
                 total_tips = cursor.fetchone()[0]  # Pega o resultado da soma
                 return float(total_tips) if total_tips is not None else 0.0
 
-            
             def fetch_last_fleet_discount():
                 # Consulta SQL para pegar o último valor da coluna "fleet_discount"
                 query = "SELECT fleet_discount FROM goal ORDER BY id DESC LIMIT 1"  # Altere 'sua_tabela' para o nome da tabela correta
@@ -368,6 +369,25 @@ def main(page: ft.Page):
                 else:
                     return None  # Se não encontrar nenhum valor, retorna None
                 # Função para criar um botão grande
+
+            def fetch_total_reimbursement(goal_start, goal_end):
+                cursor.execute("""
+                    SELECT 
+                    (SELECT COALESCE(SUM(daily_reimbursement), 0) 
+                    FROM uber 
+                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?)) +
+                    (SELECT COALESCE(SUM(daily_reimbursement), 0) 
+                    FROM bolt 
+                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?))
+
+                """, (goal_start, goal_end, goal_start, goal_end))
+
+                total_reimbursement = cursor.fetchone()[0]  # Pega o resultado da soma
+                return float(total_reimbursement) if total_reimbursement is not None else 0.0
+
+        
         def create_big_button(icon, text, on_click_action):
             return ft.Container(
                 width=165,
@@ -397,7 +417,6 @@ def main(page: ft.Page):
         goal_sum_tips_float = float(goal_sum_tips.replace(",", ".")) if isinstance(goal_sum_tips, str) else float(goal_sum_tips)
 
         # Soma os valores já convertidos
-        total_value = total_gain + goal_sum_tips_float
 
         fleet_discount = fetch_last_fleet_discount()
 
@@ -409,10 +428,18 @@ def main(page: ft.Page):
 
         fleet_discount_value = total_gain * (fleet_discount_float / 100)
 
+        total_reimbursement = fetch_total_reimbursement(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+
+        total_value = total_gain + goal_sum_tips_float + total_reimbursement
+
+        print("Data de Início:", goal_start)
+        print("Data de Fim:", goal_end)
+        print("Total Gorjetas:", goal_sum_tips)
+        print("Total Reembolso/Portagem:", total_reimbursement)
 
         panel_reports = ft.Container(
         width=385,
-        height=246,
+        height=264,
         bgcolor="#EFEFEF",
         border_radius=21,
         margin=6,
@@ -437,7 +464,8 @@ def main(page: ft.Page):
                             controls=[
                                 ft.Text("Objetivo Líquido:", size=14),
                                 ft.Text("Gorjetas:", size=14),
-                                ft.Text("Ganhos até agora + Gorjetas:", size=14),
+                                ft.Text("Reembolso/Portagem:", size=14),
+                                ft.Text("Ganhos até agora + Gorjetas + Reembolso:", size=14),
                             ],
                             alignment=ft.MainAxisAlignment.START
                         ),
@@ -446,6 +474,7 @@ def main(page: ft.Page):
                             controls=[
                                 ft.Text(f"€ {goal_value2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
                                 ft.Text(f"€ {goal_sum_tips_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                ft.Text(f"€ {total_reimbursement:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
                                 ft.Text(f"€ {total_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
                             ],
                             alignment=ft.MainAxisAlignment.END
