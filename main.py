@@ -391,10 +391,10 @@ def main(page: ft.Page):
         def create_big_button(icon, text, on_click_action):
             return ft.Container(
                 width=165,
-                height=121,
+                height=111,
                 bgcolor="#EFEFEF",
                 border_radius=21,
-                margin=ft.Margin(top=6, bottom=6, left=18, right=9),
+                margin=ft.Margin(top=3, bottom=3, left=18, right=9),
                 on_click=on_click_action,
                 content=ft.Column(
                     controls=[
@@ -432,14 +432,9 @@ def main(page: ft.Page):
 
         total_value = total_gain + goal_sum_tips_float + total_reimbursement
 
-        print("Data de Início:", goal_start)
-        print("Data de Fim:", goal_end)
-        print("Total Gorjetas:", goal_sum_tips)
-        print("Total Reembolso/Portagem:", total_reimbursement)
-
         panel_reports = ft.Container(
         width=385,
-        height=264,
+        height=273,
         bgcolor="#EFEFEF",
         border_radius=21,
         margin=6,
@@ -532,13 +527,13 @@ def main(page: ft.Page):
                 controls=[
                     create_big_button(
                         ft.Icon(ft.icons.DIRECTIONS_CAR, size=36),
-                        "Lucros",
-                        lambda e: page.go("/page_expense")
+                        "Geral",
+                        lambda e: page.go("/page_reports_general")
                     ),
                     create_big_button(
                         ft.Icon(ft.icons.CALENDAR_MONTH, size=36), 
                         "Mensal", 
-                        lambda e: page.go("/page_expense")
+                        lambda e: page.go("/page_reports_monthly")
                     )
                 ]
             )
@@ -1045,6 +1040,187 @@ def main(page: ft.Page):
             )
         )
 
+        page.update()
+
+
+
+    def fetch_fleet_data2(table_name):
+        try:
+            conn = sqlite3.connect("db_tvde_content_internal.db")  # Nome do banco de dados
+            cursor = conn.cursor()
+
+            cursor.execute(f"""
+                SELECT 
+                    COALESCE(SUM(daily_value), 0) AS total_rendimento, 
+                    COALESCE(SUM(daily_value_tips), 0) AS total_gorjetas,
+                    COALESCE(SUM(daily_reimbursement), 0) AS total_reembolso,
+                    COALESCE(SUM(distance_traveled), 0) AS total_km,
+                    COALESCE(SUM(trips_made), 0) AS total_viagens
+                FROM {table_name}
+                """)
+            data = cursor.fetchone()
+
+            # Verificando os dados retornados
+            print(f"Dados recuperados da tabela {table_name}: {data}")  # Depuração
+
+            if data:
+                total_rendimento, total_gorjetas, total_reembolso, total_km, total_viagens, = data
+
+                # Lucro Líquido
+                lucro_liquido = total_rendimento
+
+                # Retorna apenas os dados principais
+                return {
+                    "total_rendimento": total_rendimento,
+                    "lucro_liquido": lucro_liquido,
+                    "total_reembolso": total_reembolso,
+                    "total_gorjetas": total_gorjetas,
+                    "total_km": total_km,
+                    "total_viagens": total_viagens,
+                }
+            else:
+                print(f"Nenhum dado encontrado na tabela {table_name}")
+                return None
+
+        except Exception as e:
+            print(f"Erro ao buscar dados da tabela {table_name}:", e)
+            return None
+        finally:
+            conn.close()
+
+
+
+
+    # Layout de métricas por plataforma
+    def metrics_container2(title, color, data):
+        return ft.Container(
+            width=390,
+            bgcolor="#EFEFEF",
+            border_radius=21,
+            margin=6,
+            padding=12,
+            content=ft.Column(
+                spacing=5,
+                controls=[
+                    ft.Row(
+                        controls=[
+                            ft.Icon(ft.icons.BAR_CHART, size=20, color=color),
+                            ft.Text(title, size=15, weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.START,
+                    ),
+                    ft.Divider(),
+                    # Rendimento Total
+                    ft.Row(
+                        controls=[
+                            ft.Text("Rendimento Total:"),
+                            ft.Text(f"€ {data.get('total_rendimento', 0):.2f}", weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                    # Lucro Líquido
+                    ft.Row(
+                        controls=[
+                            ft.Text("Lucro Líquido:"),
+                            ft.Text(f"€ {data.get('lucro_liquido', 0):.2f}", weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                    # Total de Reembolso/Portagem
+                    ft.Row(
+                        controls=[
+                            ft.Text("Total de Reembolso/Portagem:"),
+                            ft.Text(f"€ {data.get('total_reembolso', 0):.2f}", weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                    # Total de Gorjetas
+                    ft.Row(
+                        controls=[
+                            ft.Text("Total de Gorjetas:"),
+                            ft.Text(f"€ {data.get('total_gorjetas', 0):.2f}", weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                    # Total KMs percorridos
+                    ft.Row(
+                        controls=[
+                            ft.Text("Total de KMs Percorridos:"),
+                            ft.Text(f"{data.get('total_km', 0):.2f} km", weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                    # Total de Viagens
+                    ft.Row(
+                        controls=[
+                            ft.Text("Total de Viagens:"),
+                            ft.Text(f"{data.get('total_viagens', 0):.2f}", weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                ],
+            ),
+        )
+
+
+
+    def page_reports_general():
+        page.views.clear()
+
+        # Recuperar dados para Uber e Bolt
+        uber_data = fetch_fleet_data2("uber")
+        bolt_data = fetch_fleet_data2("bolt")
+
+        # Verificar dados recebidos
+        print(f"Uber Data: {uber_data}")
+        print(f"Bolt Data: {bolt_data}")
+
+        # Verificar se os dados foram recuperados corretamente
+        if uber_data is None:
+            uber_data = {"total_rendimento": 0, "total_gorjetas": 0, "total_reembolso": 0, "total_km": 0, "total_viagens": 0}
+        if bolt_data is None:
+            bolt_data = {"total_rendimento": 0, "total_gorjetas": 0, "total_reembolso": 0, "total_km": 0, "total_viagens": 0}
+
+        page.views.append(
+            ft.View(
+                "/page_reports_general",
+                controls=[
+                    header,
+                    title_app(
+                        icon=ft.Icon(ft.icons.DIRECTIONS_CAR),
+                        title=ft.Text("RELATÓRIO GERAL", size=21),
+                    ),
+                    ft.Column(
+                        controls=[
+                            metrics_container2("Uber", ft.colors.BLUE, uber_data),
+                            metrics_container2("Bolt", ft.colors.GREEN, bolt_data),
+                        ]
+                    ),
+                    bottom_menu,
+                ],
+            )
+        )
+
+        page.update()
+
+    
+    def page_reports_monthly():
+        page.views.clear()
+            
+        page.views.append(
+            ft.View(
+                "/page_reports_monthly",
+                controls=[
+                    header,
+                    title_app(
+                        icon=ft.Icon(ft.icons.CALENDAR_MONTH),
+                        title=ft.Text("RELATÓRIO MENSAL", size=21),
+                    ),
+                    bottom_menu,
+                ],
+            )
+        )
+            
         page.update()
 
 
@@ -3498,6 +3674,10 @@ def main(page: ft.Page):
             page_reports_expense()
         elif page.route == "/page_reports_fleet":
             page_reports_fleet()
+        elif page.route == "/page_reports_general":
+            page_reports_general()
+        elif page.route == "/page_reports_monthly":
+            page_reports_monthly()
         elif page.route == "/page_settings":
             page_settings()
         elif page.route == "/page_more_date":
