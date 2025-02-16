@@ -1278,6 +1278,7 @@ def main(page: ft.Page):
             label="Selecione o mês inicial",
             options=[ft.dropdown.Option(month) for month in months],
             width=180,
+            text_size=21,
             border_radius=21  # Corrigido: define borda arredondada com um valor numérico
         )
 
@@ -1285,6 +1286,7 @@ def main(page: ft.Page):
             label="Selecione o mês final",
             options=[ft.dropdown.Option(month) for month in months],
             width=180,
+            text_size=21,
             border_radius=21  # Corrigido: define borda arredondada com um valor numérico
         )
 
@@ -1293,7 +1295,10 @@ def main(page: ft.Page):
         def calculate_totals(e):
             if dropdown1.value and dropdown2.value:
                 total_income, total_expenses = fetch_total_values(dropdown1.value, dropdown2.value)
-                result_label.value = f"Total Receita: € {total_income:.2f} | Total Gastos: € {total_expenses:.2f}"
+                result_label.value = f"📈 Total de Receita (Uber + Bolt): € {total_income:.2f} \n \n  📉Total de Gastos: € {total_expenses:.2f}"
+                result_label.color = "green"  # Ajusta a cor do texto para destacar
+                result_label.size = 18  # Aumenta o tamanho do texto
+                result_label.text_align = "center"  # Centraliza o texto
                 page.update()
 
         calculate_button = ft.ElevatedButton(
@@ -1304,7 +1309,14 @@ def main(page: ft.Page):
         # Envolvendo o botão em um Container para centralização
         centered_button = ft.Container(
             content=calculate_button,
-            alignment=ft.alignment.center  # Centraliza o botão horizontalmente
+            alignment=ft.alignment.center,
+            padding=ft.padding.only(top=15) 
+        )
+
+        centered_result = ft.Container(
+            content=result_label,
+            alignment=ft.alignment.center,  # Centraliza o texto de resultado
+            padding=ft.padding.symmetric(vertical=20)  # Espaçamento vertical
         )
 
         page.views.clear()
@@ -1317,13 +1329,22 @@ def main(page: ft.Page):
                         icon=ft.Icon(ft.icons.INSERT_CHART_OUTLINED),
                         title=ft.Text("RELATÓRIO MENSAL", size=21),
                     ),
-                    ft.Row(  # Organiza os dropdowns lado a lado
+                    # Texto explicativo com espaçamento adequado
+                    ft.Container(
+                        content=ft.Text("Selecione as datas para buscar", size=21),
+                        padding=ft.padding.only(bottom=9),  # Espaçamento no topo do container
+                        alignment=ft.alignment.center  # Centraliza o texto
+                    ),
+                    # Linha para os dropdowns com espaçamento
+                    ft.Row(  
                         controls=[dropdown1, dropdown2],
-                        alignment="spaceBetween",  # Espaça bem os dropdowns
+                        alignment="center",  # Centraliza os dropdowns
                         spacing=20  # Espaço entre os dropdowns
                     ),
+                    # Botão centralizado
                     centered_button,
-                    result_label,
+                    # Resultado centralizado
+                    centered_result,
                     bottom_menu
                 ]
             )
