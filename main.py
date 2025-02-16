@@ -1194,27 +1194,131 @@ def main(page: ft.Page):
 
         page.update()
 
-    
+    def fetch_total_values(month_start, month_end):
+        # Mapeamento dos meses em português para números
+        month_mapping = {
+            "Janeiro": 1, "Fevereiro": 2, "Março": 3, "Abril": 4,
+            "Maio": 5, "Junho": 6, "Julho": 7, "Agosto": 8,
+            "Setembro": 9, "Outubro": 10, "Novembro": 11, "Dezembro": 12
+        }
+
+        # Converte os meses para os números correspondentes
+        month_start_num = month_mapping.get(month_start)
+        month_end_num = month_mapping.get(month_end)
+
+        if not month_start_num or not month_end_num:
+            return 0, 0  # Retorna 0 em caso de mês inválido
+
+        # Conecta ao banco de dados
+        conn = sqlite3.connect("db_tvde_content_internal.db")  # Substitua pelo caminho correto
+        cursor = conn.cursor()
+
+        # Debug: Verificar datas reais no banco
+        cursor.execute("SELECT DISTINCT daily_date FROM uber LIMIT 5")  # Pegue algumas datas de exemplo
+        print("Datas em uber:", cursor.fetchall())
+
+        cursor.execute("SELECT DISTINCT expense_date FROM expense LIMIT 5")  # Pegue algumas datas de exemplo
+        print("Datas em expense:", cursor.fetchall())
+
+        # Ajuste na consulta para tratar o formato da data (DD/MM/YYYY)
+        query = """
+            SELECT daily_date, SUM(daily_value) FROM uber
+            WHERE substr(daily_date, 4, 2) BETWEEN ? AND ?
+            GROUP BY substr(daily_date, 4, 2)
+        """
+        print(f"Consulta Uber: {query} | Meses: {month_start_num:02} - {month_end_num:02}")
+        cursor.execute(query, (f"{month_start_num:02}", f"{month_end_num:02}"))
+        uber_data = cursor.fetchall()
+        print(f"Resultado Uber: {uber_data}")  # Verifique os dados retornados
+
+        uber_total = sum([item[1] for item in uber_data]) if uber_data else 0
+        print(f"Total Uber calculado: {uber_total}")
+
+        # Consulta Bolt
+        query = """
+            SELECT daily_date, SUM(daily_value) FROM bolt
+            WHERE substr(daily_date, 4, 2) BETWEEN ? AND ?
+            GROUP BY substr(daily_date, 4, 2)
+        """
+        print(f"Consulta Bolt: {query} | Meses: {month_start_num:02} - {month_end_num:02}")
+        cursor.execute(query, (f"{month_start_num:02}", f"{month_end_num:02}"))
+        bolt_data = cursor.fetchall()
+        print(f"Resultado Bolt: {bolt_data}")  # Verifique os dados retornados
+
+        bolt_total = sum([item[1] for item in bolt_data]) if bolt_data else 0
+        print(f"Total Bolt calculado: {bolt_total}")
+
+        # Consulta Expenses
+        query = """
+            SELECT expense_date, SUM(expense_value) FROM expense
+            WHERE substr(expense_date, 4, 2) BETWEEN ? AND ?
+            GROUP BY substr(expense_date, 4, 2)
+        """
+        print(f"Consulta Expenses: {query} | Meses: {month_start_num:02} - {month_end_num:02}")
+        cursor.execute(query, (f"{month_start_num:02}", f"{month_end_num:02}"))
+        expense_data = cursor.fetchall()
+        print(f"Resultado Expenses: {expense_data}")  # Verifique os dados retornados
+
+        expense_total = sum([item[1] for item in expense_data]) if expense_data else 0
+        print(f"Total Expenses calculado: {expense_total}")
+
+        conn.close()
+
+        # Calcula os totais
+        total_income = uber_total + bolt_total
+        return total_income, expense_total
+
     def page_reports_monthly():
+        months = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ]
+
+        dropdown1 = ft.Dropdown(
+            label="Selecione o mês inicial",
+            options=[ft.dropdown.Option(month) for month in months],
+            width=200
+        )
+
+        dropdown2 = ft.Dropdown(
+            label="Selecione o mês final",
+            options=[ft.dropdown.Option(month) for month in months],
+            width=200
+        )
+
+        result_label = ft.Text("")
+
+        def calculate_totals(e):
+            if dropdown1.value and dropdown2.value:
+                total_income, total_expenses = fetch_total_values(dropdown1.value, dropdown2.value)
+                print(f"Total Receita: {total_income}, Total Gastos: {total_expenses}")  # Verifique os valores antes de exibir
+                result_label.value = f"Total: € {total_income:.2f} | Gastos: € {total_expenses:.2f}"
+                page.update()
+
+        calculate_button = ft.ElevatedButton(
+            text="Calcular Totais",
+            on_click=calculate_totals
+        )
+
         page.views.clear()
-            
         page.views.append(
             ft.View(
                 "/page_reports_monthly",
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.CALENDAR_MONTH),
+                        icon=ft.Icon(ft.icons.INSERT_CHART_OUTLINED),
                         title=ft.Text("RELATÓRIO MENSAL", size=21),
                     ),
-                    bottom_menu,
-                ],
+                    dropdown1,
+                    dropdown2,
+                    calculate_button,
+                    result_label,
+                    bottom_menu
+                ]
             )
         )
-            
         page.update()
-
-
 
     def page_settings():
         page.views.clear()
