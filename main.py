@@ -1291,8 +1291,7 @@ def main(page: ft.Page):
         def calculate_totals(e):
             if dropdown1.value and dropdown2.value:
                 total_income, total_expenses = fetch_total_values(dropdown1.value, dropdown2.value)
-                print(f"Total Receita: {total_income}, Total Gastos: {total_expenses}")  # Verifique os valores antes de exibir
-                result_label.value = f"Total: € {total_income:.2f} | Gastos: € {total_expenses:.2f}"
+                result_label.value = f"Total Receita: € {total_income:.2f} | Total Gastos: € {total_expenses:.2f}"
                 page.update()
 
         calculate_button = ft.ElevatedButton(
