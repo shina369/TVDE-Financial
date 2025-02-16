@@ -8,6 +8,8 @@ import smtplib
 import random
 import string
 import sqlite3
+import json
+import os
 import MYSQL_db_tvde_users_external
 import SQLite_db_tvde_content_internal
 
