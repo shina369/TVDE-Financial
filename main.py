@@ -1277,13 +1277,15 @@ def main(page: ft.Page):
         dropdown1 = ft.Dropdown(
             label="Selecione o mês inicial",
             options=[ft.dropdown.Option(month) for month in months],
-            width=200
+            width=180,
+            border_radius=21  # Corrigido: define borda arredondada com um valor numérico
         )
 
         dropdown2 = ft.Dropdown(
             label="Selecione o mês final",
             options=[ft.dropdown.Option(month) for month in months],
-            width=200
+            width=180,
+            border_radius=21  # Corrigido: define borda arredondada com um valor numérico
         )
 
         result_label = ft.Text("")
@@ -1299,6 +1301,12 @@ def main(page: ft.Page):
             on_click=calculate_totals
         )
 
+        # Envolvendo o botão em um Container para centralização
+        centered_button = ft.Container(
+            content=calculate_button,
+            alignment=ft.alignment.center  # Centraliza o botão horizontalmente
+        )
+
         page.views.clear()
         page.views.append(
             ft.View(
@@ -1309,9 +1317,12 @@ def main(page: ft.Page):
                         icon=ft.Icon(ft.icons.INSERT_CHART_OUTLINED),
                         title=ft.Text("RELATÓRIO MENSAL", size=21),
                     ),
-                    dropdown1,
-                    dropdown2,
-                    calculate_button,
+                    ft.Row(  # Organiza os dropdowns lado a lado
+                        controls=[dropdown1, dropdown2],
+                        alignment="spaceBetween",  # Espaça bem os dropdowns
+                        spacing=20  # Espaço entre os dropdowns
+                    ),
+                    centered_button,
                     result_label,
                     bottom_menu
                 ]
