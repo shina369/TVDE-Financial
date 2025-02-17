@@ -215,42 +215,35 @@ def main(page: ft.Page):
 
         page.update()
 
-    def page_my_account():
+    def page_my_account(page, current_translations):
         page.views.clear()
 
+        # Carregar os textos traduzidos para a página de "Minha Conta"
+        user_name_label = current_translations.get("name", "Nome")
+        email_label = current_translations.get("email", "Email")
+        account_type_label = current_translations.get("account_type", "Tipo de Conta")
+        account_creation_date_label = current_translations.get("account_creation_date", "Data da conta")
+        my_account_title = current_translations.get("my_account", "MINHA CONTA")
+
+        # Atualizar os controles da página com os textos traduzidos
         page.views.append(
             ft.View(
                 "/page_my_account",
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.icons.ACCOUNT_CIRCLE_OUTLINED),
-                           title = ft.Text("MINHA CONTA", size=21),
+                        icon=ft.Icon(ft.icons.ACCOUNT_CIRCLE_OUTLINED),
+                        title=ft.Text(my_account_title, size=21),
                     ),
-                    ft.Container(
-                        ft.Row(
-                            controls=[
-                                 ft.Container(
-                                    content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=18), 
-                                    padding=ft.padding.all(9),  # Adicione o padding desejado
-                                ),
-                                ft.Text(f"Nome:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{user_name} {surname}", size=15)
-
-                            ]
-                        ),
-                    ),
-                    ft.Container(
-                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
-                    ),
-
                     ft.Container(
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.icons.EMAIL_OUTLINED, size=18),
-                                    padding=ft.padding.all(9),  # Adicione o padding desejado
+                                    content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=18),
+                                    padding=ft.padding.all(9),
                                 ),
-                                ft.Text(f"Email:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{email_login.value}", size=15)
+                                ft.Text(f"{user_name_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
+                                ft.Text(f"{user_name} {surname}", size=15),
                             ]
                         ),
                     ),
@@ -261,24 +254,42 @@ def main(page: ft.Page):
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED, size=18), 
-                                    padding=ft.padding.all(9),  # Adicione o padding desejado
+                                    content=ft.Icon(ft.icons.EMAIL_OUTLINED, size=18),
+                                    padding=ft.padding.all(9),
                                 ),
-                                ft.Text(f"Tipo de Conta:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{account_type}", size=15), button_premium
+                                ft.Text(f"{email_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
+                                ft.Text(f"{email_login.value}", size=15),
                             ]
                         ),
                     ),
                     ft.Container(
                         border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
                     ),
-                      ft.Container(
+                    ft.Container(
                         ft.Row(
                             controls=[
-                                 ft.Container(
-                                    content=ft.Icon(ft.icons.DATE_RANGE, size=18,),  
-                                    padding=ft.padding.all(9),  # Adicione o padding desejado
+                                ft.Container(
+                                    content=ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED, size=18),
+                                    padding=ft.padding.all(9),
                                 ),
-                                ft.Text(f"Data da conta: ", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)), ft.Text(f"{formatted_date}", size=15)
+                                ft.Text(f"{account_type_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
+                                ft.Text(f"{account_type}", size=15), 
+                                button_premium,
+                            ]
+                        ),
+                    ),
+                    ft.Container(
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
+                    ),
+                    ft.Container(
+                        ft.Row(
+                            controls=[
+                                ft.Container(
+                                    content=ft.Icon(ft.icons.DATE_RANGE, size=18),
+                                    padding=ft.padding.all(9),
+                                ),
+                                ft.Text(f"{account_creation_date_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
+                                ft.Text(f"{formatted_date}", size=15),
                             ]
                         ),
                     ),
@@ -3904,7 +3915,7 @@ def main(page: ft.Page):
         elif page.route == "/page_premium":
             page_premium()
         elif page.route == "/page_my_account":
-            page_my_account()
+            page_my_account(page, current_translations)
         elif page.route == "/page_reports":
             page_reports()
         elif page.route == "/page_reports_expense":

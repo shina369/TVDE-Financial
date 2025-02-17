@@ -27,5 +27,10 @@
     "home_label": "Início",
     "new_data_label": "Novo dado",
     "reports_label": "Relatórios",
-    "settings_label": "Config"
+    "settings_label": "Config",
+    "my_account": "MINHA CONTA",
+    "name": "Nome",
+    "email": "Email",
+    "account_type": "Tipo de Conta",
+    "account_creation_date": "Data da conta"
   }

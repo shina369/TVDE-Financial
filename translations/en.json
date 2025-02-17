@@ -27,6 +27,11 @@
     "home_label": "Home",
     "new_data_label": "New data",
     "reports_label": "Reports",
-    "settings_label": "Settings"
+    "settings_label": "Settings",
+    "my_account": "MY ACCOUNT",
+    "name": "Name",
+    "email": "Email",
+    "account_type": "Account Type",
+    "account_creation_date": "Account Creation Date"
   }
   
