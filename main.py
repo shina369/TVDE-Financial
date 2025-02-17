@@ -14,6 +14,7 @@ import MYSQL_db_tvde_users_external
 import SQLite_db_tvde_content_internal
 
 def main(page: ft.Page):
+
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
     page.window.width = 435  # Largura típica de um smartphone
@@ -27,7 +28,7 @@ def main(page: ft.Page):
             background="red",
         )
     )
-
+    
     def check_item_clicked(e):
         e.control.checked = not e.control.checked
         page.update()
@@ -73,6 +74,7 @@ def main(page: ft.Page):
     def on_change(e):
         destinos = ["/page_parcial", "/page_more_date", "/page_reports", "/page_settings"]
         page.go(destinos[e.control.selected_index])
+
 
     bottom_menu = ft.BottomAppBar(
         content=ft.NavigationBar(
@@ -1353,28 +1355,130 @@ def main(page: ft.Page):
         )
         page.update()
 
-    def page_settings():
+
+    # Função para carregar os textos conforme o idioma selecionado
+    def load_translations(language):
+        # Carrega as traduções do arquivo JSON com base no idioma
+        if language == "pt":
+            with open("translations/pt.json", "r", encoding="utf-8") as f:
+                return json.load(f)
+        else:
+            with open("translations/en.json", "r", encoding="utf-8") as f:
+                return json.load(f)
+        
+    global current_translations, current_language
+    current_translations = load_translations("pt")
+    current_language = "pt"  # Variável global para armazenar o idioma selecionado
+
+    # Função para alterar o idioma e atualizar a página
+    def change_language(e, page, language_dropdown):
+        global current_translations, current_language
+
+        # Muda o idioma com base na seleção
+        selected_language = e.control.value
+        current_language = selected_language
+        current_translations = load_translations(selected_language)
+
+        # Atualiza o valor do dropdown e os textos da interface
+        language_dropdown.value = selected_language
+        language_dropdown.label = current_translations.get("language", "Idioma")
+
+        # Atualiza diretamente os textos na interface sem recriar a página
+        update_interface(page, language_dropdown)
+
+    # Função para atualizar a interface com os textos traduzidos
+    def update_interface(page, language_dropdown):
+        global current_language, current_translations
+
+        # Atualiza o conteúdo da página
         page.views.clear()
 
+        # Cria o dropdown para seleção do idioma
+        language_dropdown = ft.Dropdown(
+            options=[
+                ft.dropdown.Option("pt", "Português"),
+                ft.dropdown.Option("en", "Inglês"),
+            ],
+            value=current_language,  # Mantém o idioma selecionado
+            label=current_translations.get("language", "Idioma"),
+            width=200,
+            on_change=lambda e: change_language(e, page, language_dropdown)
+        )
+
+        # Adiciona todos os controles na página com os textos traduzidos
         page.views.append(
             ft.View(
                 "/page_settings",
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
-                           title = ft.Text("CONFIGURAÇÃO", size=21),
+                        icon=ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
+                        title=ft.Text(current_translations.get("settings", "Configurações"), size=21),
                     ),
-                    ft.Text("Idioma do APP"),
-                    ft.Text("Tema: Claro / Escuro"),
-                    ft.Text("Editar dados"),
-                    ft.Text("Apagar todos dados"),
+                    ft.Row(
+                        controls=[
+                            ft.Text(current_translations.get("language", "Idioma"), size=16),
+                            language_dropdown
+                        ],
+                        alignment="start",
+                        spacing=10
+                    ),
+                    ft.Text(current_translations.get("theme", "Tema")),
+                    ft.Text(current_translations.get("edit_data", "Editar dados")),
+                    ft.Text(current_translations.get("delete_all_data", "Apagar todos os dados")),
                     bottom_menu
                 ]
             )
         )
 
+        # Atualiza a página para refletir as alterações
         page.update()
+
+    # Função inicial que carrega a página com o idioma padrão
+    def page_settings(page):
+        global current_language, current_translations
+
+        # Cria o dropdown para seleção do idioma
+        language_dropdown = ft.Dropdown(
+            options=[
+                ft.dropdown.Option("pt", "Português"),
+                ft.dropdown.Option("en", "Inglês"),
+            ],
+            value=current_language,  # Mantém o idioma selecionado
+            label=current_translations.get("language", "Idioma"),
+            width=200,
+            on_change=lambda e: change_language(e, page, language_dropdown)
+        )
+
+        # Adiciona todos os controles na página com os textos traduzidos
+        page.views.append(
+            ft.View(
+                "/page_settings",
+                controls=[
+                    header,
+                    title_app(
+                        icon=ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
+                        title=ft.Text(current_translations.get("settings", "Configurações"), size=21),
+                    ),
+                    ft.Row(
+                        controls=[
+                            ft.Text(current_translations.get("language", "Idioma"), size=16),
+                            language_dropdown
+                        ],
+                        alignment="start",
+                        spacing=10
+                    ),
+                    ft.Text(current_translations.get("theme", "Tema")),
+                    ft.Text(current_translations.get("edit_data", "Editar dados")),
+                    ft.Text(current_translations.get("delete_all_data", "Apagar todos os dados")),
+                    bottom_menu
+                ]
+            )
+        )
+
+        # Atualiza a página para refletir as alterações
+        page.update()
+
 
     def page_login():
         page.views.clear()
@@ -1383,7 +1487,7 @@ def main(page: ft.Page):
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value):
                 email_login.error_text = None
             else:
-                email_login.error_text = "O email digitado não é válido."
+                email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
         def valid_email_password(email_login, password_login):
@@ -1406,13 +1510,13 @@ def main(page: ft.Page):
             result = cursor.fetchone()
             
             if result is None:
-                email_login.error_text = "Email não encontrado"
+                email_login.error_text = current_translations.get("email_not_found", "Email não encontrado")
                 email_login.update() 
             else:
                 stored_password = result[0]   
                 if hash_password_login == stored_password:
-                    print("Login bem-sucedido!")
-                # Conectar ao banco SQLite para verificar metas
+                    print(current_translations.get("login_successful", "Login bem-sucedido!"))
+                    # Conectar ao banco SQLite para verificar metas
                     conn_sqlite = sqlite3.connect("db_tvde_content_internal.db")
                     cursor_sqlite = conn_sqlite.cursor()
 
@@ -1435,24 +1539,24 @@ def main(page: ft.Page):
                     if meta_count > 0 and goal_successful == "negativo":
                         page.go("/page_parcial")
                     elif meta_count > 0 and goal_successful == "positivo":
-                        page_message_screen("Parabéns vc bateu a meta!!!")
+                        page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
                         time.sleep(3)
                         page.go("/page_new_goal")  # Página principal
                         
                     else:
                         page.go("/page_new_goal")  # Página de nova meta
                 else:
-                    password_login.error_text = "Senha incorreta"
+                    password_login.error_text = current_translations.get("password_incorrect", "Senha incorreta")
                     password_login.update()
 
             cursor.close()  
             conn.close()
 
         global email_login
-        email_login = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
-        password_login = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
+        email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email)
+        password_login = ft.TextField(label=current_translations.get("password_label", "Password"), password=True, can_reveal_password=True, border_radius=21)
         button_login = ft.ElevatedButton(
-            text="LOGIN", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white",
+            text=current_translations.get("login_button", "LOGIN"), bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white",
             on_click=lambda e: valid_email_password(email_login, password_login)
         )
         
@@ -1477,11 +1581,11 @@ def main(page: ft.Page):
                                 ft.Container(
                                     content=ft.Row(
                                         controls=[
-                                            ft.Container(ft.Text("New User", size=18),
-                                                         on_click=lambda e: page.go("/register")),
+                                            ft.Container(ft.Text(current_translations.get("new_user", "New User"), size=18),
+                                                        on_click=lambda e: page.go("/register")),
                                             ft.Container(ft.Text("|")),
-                                            ft.Container(ft.Text("Forget Password", size=18),
-                                                         on_click=lambda e: page.go("/forget_password")),
+                                            ft.Container(ft.Text(current_translations.get("forget_password", "Forget Password"), size=18),
+                                                        on_click=lambda e: page.go("/forget_password")),
                                         ],
                                         alignment=ft.MainAxisAlignment.CENTER
                                     )
@@ -1493,6 +1597,7 @@ def main(page: ft.Page):
             )
         )
         page.update()
+
 
     def page_new_goal():
         page.views.clear()
@@ -3684,7 +3789,7 @@ def main(page: ft.Page):
             hash_new_password = sha256(new_password.encode()).hexdigest()
             if field_code == codigo_temporario:
                 try:
-                # Conectar ao banco de dados
+                    # Conectar ao banco de dados
                     conn = mysql.connector.connect(
                         host="localhost",
                         user="root",
@@ -3701,15 +3806,15 @@ def main(page: ft.Page):
 
                     # Verifica se alguma linha foi atualizada
                     if cursor.rowcount > 0:
-                        page_message_screen("Seu password foi alterado com sucesso!")
+                        page_message_screen(current_translations.get("password_changed_successfully", "Seu password foi alterado com sucesso!"))
                         page.go("/")
                     else:
-                        page_message_screen("Não foi possível alterar o password. Usuário não encontrado.")
+                        page_message_screen(current_translations.get("password_change_failed", "Não foi possível alterar o password. Usuário não encontrado."))
                         page.go("/page_new_password")
             
                 except mysql.connector.Error as err:
                     print(f"Erro ao conectar ou executar a consulta: {err}")
-                    page_message_screen("Ocorreu um erro ao alterar a senha. Tente novamente mais tarde.")
+                    page_message_screen(current_translations.get("password_change_error", "Ocorreu um erro ao alterar a senha. Tente novamente mais tarde."))
                     page.go("/page_new_password")
 
                 finally:
@@ -3717,23 +3822,22 @@ def main(page: ft.Page):
                     cursor.close()
                     conn.close()
             else:
-                page_message_screen("Código incorreto. Tente novamente!")
+                page_message_screen(current_translations.get("incorrect_code", "Código incorreto. Tente novamente!"))
                 page.go("/")
-            
+
         def validate_password(e):
             if new_password.value == confirm_new_password.value:
                 confirm_new_password.error_text = None
             else:
-                confirm_new_password.error_text = "As senhas não coincidem."
+                confirm_new_password.error_text = current_translations.get("password_mismatch", "As senhas não coincidem.")
             confirm_new_password.update()
             validate_form()
 
         def validate_field_code(e):
-            codigo_temporario
             if field_code.value == codigo_temporario:
                 field_code.error_text = None
             else:
-                field_code.error_text = "Código Errado!"
+                field_code.error_text = current_translations.get("incorrect_code", "Código Errado!")
             field_code.update()
             validate_form()
 
@@ -3746,13 +3850,18 @@ def main(page: ft.Page):
 
         codigo_temporario
         field_email
-        title = ft.Text("Criar novo password")
-        field_code = ft.TextField(label="Code", border_radius=21, on_change=validate_field_code)
-        new_password = ft.TextField(label="Novo password", border_radius=21, password=True, can_reveal_password=True)
-        confirm_new_password = ft.TextField(label="Confirme o novo password", border_radius=21, password=True, can_reveal_password=True, on_change=validate_password)
-        button_updated_password = ft.ElevatedButton(text="Alterar Passoword", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True , on_click=lambda e:verify_code_email(field_code.value, new_password.value, field_email.value, codigo_temporario))
+        title = ft.Text(current_translations.get("create_new_password", "Criar novo password"))
+        field_code = ft.TextField(label=current_translations.get("code_label", "Code"), border_radius=21, on_change=validate_field_code)
+        new_password = ft.TextField(label=current_translations.get("new_password_label", "Novo password"), border_radius=21, password=True, can_reveal_password=True)
+        confirm_new_password = ft.TextField(label=current_translations.get("confirm_new_password_label", "Confirme o novo password"), border_radius=21, password=True, can_reveal_password=True, on_change=validate_password)
+        button_updated_password = ft.ElevatedButton(
+            text=current_translations.get("update_password_button", "Alterar Passoword"), 
+            bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, 
+            color="white", 
+            disabled=True, 
+            on_click=lambda e: verify_code_email(field_code.value, new_password.value, field_email.value, codigo_temporario)
+        )
         page.views.append(
-              
             ft.View(
                 "/page_new_password",
                 controls=[
@@ -3765,11 +3874,11 @@ def main(page: ft.Page):
                     new_password,
                     confirm_new_password,
                     button_updated_password
-                  
                 ]
             )
         )
         page.update()
+
 
     def route_change(route):
         if page.route == "/":
@@ -3807,7 +3916,7 @@ def main(page: ft.Page):
         elif page.route == "/page_reports_monthly":
             page_reports_monthly()
         elif page.route == "/page_settings":
-            page_settings()
+            page_settings(page)
         elif page.route == "/page_more_date":
             page_more_date()
         elif page.route.startswith("/page_daily"):

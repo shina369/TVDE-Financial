@@ -1,6 +1,32 @@
 {
-    "welcome": "Welcome",
-    "register": "Register",
-    "email": "Email",
-    "password": "Password"
-}
+    "settings": "SETTINGS",
+    "language": "App Language",
+    "theme": "Theme: Light / Dark",
+    "edit_data": "Edit Data",
+    "delete_all_data": "Delete All Data",
+    "email_label": "Email",
+    "password_label": "Password",
+    "login_button": "LOGIN",
+    "email_invalid": "The entered email is not valid.",
+    "email_not_found": "Email not found",
+    "password_incorrect": "Incorrect password",
+    "new_user": "New User",
+    "forget_password": "Forget Password",
+    "logo_alt": "Company Logo",
+    "welcome_message": "Welcome back!",
+    "password_changed_successfully": "Your password has been successfully changed!",
+    "password_change_failed": "Unable to change the password. User not found.",
+    "password_change_error": "An error occurred while changing the password. Please try again later.",
+    "incorrect_code": "Incorrect code. Please try again!",
+    "password_mismatch": "Passwords do not match.",
+    "create_new_password": "Create new password",
+    "code_label": "Code",
+    "new_password_label": "New password",
+    "confirm_new_password_label": "Confirm new password",
+    "update_password_button": "Update Password",
+    "home_label": "Home",
+    "new_data_label": "New data",
+    "reports_label": "Reports",
+    "settings_label": "Settings"
+  }
+  
