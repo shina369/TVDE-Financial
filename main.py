@@ -10,8 +10,11 @@ import string
 import sqlite3
 import json
 import os
+from dotenv import load_dotenv
 import MYSQL_db_tvde_users_external
 import SQLite_db_tvde_content_internal
+
+load_dotenv()
 
 def main(page: ft.Page):
 
@@ -1506,10 +1509,10 @@ def main(page: ft.Page):
             
             # Conectar ao banco de dados    
             conn = mysql.connector.connect(
-                host="localhost",                    
-                user="root",                    
-                password="",                    
-                database="db_tvde_users_external"       
+                host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
+                user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
+                password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
+                database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
             )
                 
             cursor = conn.cursor()
@@ -2982,10 +2985,10 @@ def main(page: ft.Page):
 
         def search_user_name(email_login):
             conn = mysql.connector.connect(
-                host="localhost",
-                user="root",
-                password="",
-                database="db_tvde_users_external"
+                host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
+                user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
+                password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
+                database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
             )
             cursor = conn.cursor()
 
@@ -3610,12 +3613,11 @@ def main(page: ft.Page):
             global email_exist
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
                 try:
-                # Conectar ao banco de dados
                     conn = mysql.connector.connect(
-                        host="localhost",
-                        user="root",
-                        password="",
-                        database="db_tvde_users_external"  # Certifique-se de que este nome está correto
+                        host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
+                        user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
+                        password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
+                        database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
                     )
                     cursor = conn.cursor()
 
@@ -3662,10 +3664,10 @@ def main(page: ft.Page):
             
             # Conectar ao banco de dados
             conn = mysql.connector.connect(
-                host="localhost",
-                user="root",
-                password="",
-                database="db_tvde_users_external"
+                    host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
+                    user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
+                    password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
+                    database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
             )
             cursor = conn.cursor()
 
@@ -3726,10 +3728,10 @@ def main(page: ft.Page):
 
             #Connect the db database="db_tvde_users_external"
             conn = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "",
-                database = "db_tvde_users_external"
+                host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
+                user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
+                password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
+                database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
             )
             
             cursor = conn.cursor()
@@ -3802,10 +3804,10 @@ def main(page: ft.Page):
                 try:
                     # Conectar ao banco de dados
                     conn = mysql.connector.connect(
-                        host="localhost",
-                        user="root",
-                        password="",
-                        database="db_tvde_users_external"
+                        host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
+                        user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
+                        password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
+                        database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
                     )
                     cursor = conn.cursor()
 
