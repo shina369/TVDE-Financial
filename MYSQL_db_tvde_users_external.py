@@ -7,10 +7,11 @@ load_dotenv()
 def connect():
     global connection, cursor
     connection = mysql.connector.connect(
-        host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
-        user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
-        password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
-        database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME"),
+        port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
     )
 
     cursor = connection.cursor()

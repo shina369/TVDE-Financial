@@ -1509,10 +1509,11 @@ def main(page: ft.Page):
             
             # Conectar ao banco de dados    
             conn = mysql.connector.connect(
-                host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
-                user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
-                password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
-                database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
+                host=os.getenv("DB_HOST"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD"),
+                database=os.getenv("DB_NAME"),
+                port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
             )
                 
             cursor = conn.cursor()
@@ -2984,11 +2985,13 @@ def main(page: ft.Page):
         page.go("/next_page")
 
         def search_user_name(email_login):
+            # Conectar ao banco de dados    
             conn = mysql.connector.connect(
-                host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
-                user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
-                password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
-                database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
+                host=os.getenv("DB_HOST"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD"),
+                database=os.getenv("DB_NAME"),
+                port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
             )
             cursor = conn.cursor()
 
@@ -3613,11 +3616,13 @@ def main(page: ft.Page):
             global email_exist
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
                 try:
+                    # Conectar ao banco de dados    
                     conn = mysql.connector.connect(
-                        host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
-                        user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
-                        password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
-                        database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
+                        host=os.getenv("DB_HOST"),
+                        user=os.getenv("DB_USER"),
+                        password=os.getenv("DB_PASSWORD"),
+                        database=os.getenv("DB_NAME"),
+                        port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
                     )
                     cursor = conn.cursor()
 
@@ -3662,12 +3667,13 @@ def main(page: ft.Page):
             # Concatenar prefixo e sufixo do telefone
             hash_password = sha256(password.encode()).hexdigest()
             
-            # Conectar ao banco de dados
+            # Conectar ao banco de dados    
             conn = mysql.connector.connect(
-                    host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
-                    user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
-                    password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
-                    database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
+                host=os.getenv("DB_HOST"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD"),
+                database=os.getenv("DB_NAME"),
+                port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
             )
             cursor = conn.cursor()
 
@@ -3726,12 +3732,12 @@ def main(page: ft.Page):
 
         def verify_email_exist(field_email):
 
-            #Connect the db database="db_tvde_users_external"
             conn = mysql.connector.connect(
-                host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
-                user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
-                password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
-                database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
+                host=os.getenv("DB_HOST"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD"),
+                database=os.getenv("DB_NAME"),
+                port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
             )
             
             cursor = conn.cursor()
@@ -3804,10 +3810,11 @@ def main(page: ft.Page):
                 try:
                     # Conectar ao banco de dados
                     conn = mysql.connector.connect(
-                        host=os.getenv("MYSQL_HOST"),      # Use a variável de ambiente MYSQL_HOST
-                        user=os.getenv("MYSQL_USER"),      # Use a variável de ambiente MYSQL_USER
-                        password=os.getenv("MYSQL_PASSWORD"),  # Use a variável de ambiente MYSQL_PASSWORD
-                        database=os.getenv("MYSQL_DATABASE")  # Use a variável de ambiente MYSQL_DATABASE
+                        host=os.getenv("DB_HOST"),
+                        user=os.getenv("DB_USER"),
+                        password=os.getenv("DB_PASSWORD"),
+                        database=os.getenv("DB_NAME"),
+                        port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
                     )
                     cursor = conn.cursor()
 
