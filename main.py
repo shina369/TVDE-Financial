@@ -11,8 +11,6 @@ import sqlite3
 import json
 import os
 from dotenv import load_dotenv
-import MYSQL_db_tvde_users_external
-import SQLite_db_tvde_content_internal
 from MYSQL_db_tvde_users_external import connect
 
 load_dotenv()
