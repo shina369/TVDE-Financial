@@ -13,9 +13,10 @@ import os
 from dotenv import load_dotenv
 import MYSQL_db_tvde_users_external
 import SQLite_db_tvde_content_internal
+from MYSQL_db_tvde_users_external import connect
 
 load_dotenv()
-MYSQL_db_tvde_users_external()
+connect()
 
 def main(page: ft.Page):
 
