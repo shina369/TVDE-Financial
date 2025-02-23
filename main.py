@@ -15,6 +15,7 @@ import MYSQL_db_tvde_users_external
 import SQLite_db_tvde_content_internal
 
 load_dotenv()
+MYSQL_db_tvde_users_external()
 
 def main(page: ft.Page):
 
