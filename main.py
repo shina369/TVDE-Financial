@@ -13,10 +13,11 @@ import os
 from dotenv import load_dotenv
 from MYSQL_db_tvde_users_external import connect
 
-load_dotenv()
-connect()
 
 def main(page: ft.Page):
+    
+    load_dotenv()
+    connect()
 
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
