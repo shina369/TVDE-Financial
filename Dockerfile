@@ -3,15 +3,12 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Instalar as dependências do sistema
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-dev \
     pkg-config \
     gcc \
     libmysqlclient-dev && \
-    rm -rf /var/lib/apt/lists/* && \
-    sync && \
-    echo 3 > /proc/sys/vm/drop_caches
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copiar os arquivos do projeto
 COPY . .
