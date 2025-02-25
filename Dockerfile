@@ -1,29 +1,32 @@
+# Usar uma imagem base menor para reduzir consumo de recursos
 FROM python:3.12-slim
 
 WORKDIR /app
 
-# Instalar dependências do sistema
+# Instalar apenas as dependências essenciais
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential python3-dev pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+    python3-dev \
+    pkg-config \
+    gcc \
+    libmysqlclient-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && sync && echo 3 > /proc/sys/vm/drop_caches
 
-# Copiar apenas o requirements.txt primeiro
+# Copiar apenas requirements.txt primeiro para otimizar o cache
 COPY requirements.txt .
 
-# Instalar pacotes do Python
+# Instalar dependências do Python
 RUN python -m pip install --no-cache-dir -r requirements.txt
 
-# Copiar os arquivos do projeto
+# Copiar o restante dos arquivos
 COPY . .
 
-# Copiar o script de entrada
+# Copiar e garantir que o script de entrada seja executável
 COPY docker-entrypoint.sh /usr/local/bin/
-
-# Garantir que o script seja executável
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Definir o script de entrada corretamente
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/usr/local/bin/docker-entrypoint.sh"]
 
 # Comando padrão para rodar o app
 CMD ["python", "main.py"]
