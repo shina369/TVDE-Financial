@@ -5,13 +5,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
-# Adicionar repositórios do MariaDB (alternativa ao MySQL)
+# Instalar dependências do sistema e MySQL
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-dev \
     pkg-config \
     gcc \
     default-libmysqlclient-dev \
-    mariadb-server \
+    mysql-server \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copiar o script para o local correto
@@ -19,6 +19,10 @@ COPY docker-entrypoint.sh /usr/local/bin/
 
 # Garantir permissões de execução
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Ajustar permissões para o diretório de dados do MySQL
+RUN chown -R mysql:mysql /var/lib/mysql && chmod -R 755 /var/lib/mysql
+
 
 # Definir o script como entrypoint
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
