@@ -5,13 +5,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
-# Instalar dependências do sistema e MySQL
+# Adicionar repositórios do MariaDB (alternativa ao MySQL)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-dev \
     pkg-config \
     gcc \
     default-libmysqlclient-dev \
-    mysql-server \
+    mariadb-server \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copiar o script para o local correto
