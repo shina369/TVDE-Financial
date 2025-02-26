@@ -1,9 +1,5 @@
-#!/bin/sh
-set -e
+#!/bin/bash
+# Script de entrada para iniciar o MySQL com as permissões corretas
 
-# Executar migrações do banco, se necessário (exemplo)
-# python manage.py migrate
-
-# Iniciar a aplicação
-exec mysqld
-exec "$@"
+# Iniciar o servidor MySQL com a configuração padrão
+exec /usr/sbin/mysqld --user=mysql
