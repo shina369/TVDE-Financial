@@ -16,9 +16,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copiar os arquivos do projeto
 COPY . .
 
-# Dar permissão ao script de entrada
+# Copiar e dar permissão ao script de entrada
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
 
-# Definir o script de entrada e o comando padrão para rodar o app
+# Definir o script de entrada
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["python", "main.py"]
