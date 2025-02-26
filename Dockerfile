@@ -16,8 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copiar os arquivos do projeto
 COPY . .
 
-# Instalar as dependências do Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Dar permissão ao script de entrada
+RUN chmod +x /app/docker-entrypoint.sh
 
-# Definir o comando padrão para rodar o app
+# Definir o script de entrada e o comando padrão para rodar o app
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["python", "main.py"]
