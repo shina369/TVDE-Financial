@@ -14,11 +14,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 
-# Copiar e dar permissão ao script de entrada
+# Copiar o script para o local correto
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /app/docker-entrypoint.sh
 
-# Definir o script de entrada
+# Garantir permissões de execução
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Definir o script como entrypoint
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 CMD ["python", "main.py"]
