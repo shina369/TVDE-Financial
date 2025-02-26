@@ -1,4 +1,5 @@
 FROM python:3.12-slim
+FROM mysql:8.0
 
 WORKDIR /app
 

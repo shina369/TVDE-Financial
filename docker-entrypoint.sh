@@ -5,4 +5,5 @@ set -e
 # python manage.py migrate
 
 # Iniciar a aplicação
+exec mysqld
 exec "$@"
