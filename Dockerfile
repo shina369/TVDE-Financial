@@ -1,12 +1,11 @@
 FROM python:3.12-slim
-FROM mysql:8.0
-
-WORKDIR /app
 
 # Definir o ambiente para não interagir manualmente com o apt-get
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instalar as dependências do sistema
+WORKDIR /app
+
+# Instalar dependências do sistema e MySQL
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-dev \
     pkg-config \
@@ -24,4 +23,5 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 # Definir o script como entrypoint
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
+# Definir o comando padrão a ser executado
 CMD ["python", "main.py"]
