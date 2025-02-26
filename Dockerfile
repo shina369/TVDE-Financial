@@ -19,9 +19,5 @@ COPY . .
 # Instalar as dependências do Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Garantir que o script seja executável (se necessário)
-# Removido porque docker-entrypoint.sh não existe
-# RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-
 # Definir o comando padrão para rodar o app
 CMD ["python", "main.py"]
