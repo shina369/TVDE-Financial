@@ -13,6 +13,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     default-libmysqlclient-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+    # Instalar o MySQL Server
+RUN apt-get update && apt-get install -y --no-install-recommends \
+mysql-server \
+&& apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 # Copiar o script para o local correto
 COPY docker-entrypoint.sh /usr/local/bin/
