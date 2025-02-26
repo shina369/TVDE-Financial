@@ -13,11 +13,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     default-libmysqlclient-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copiar os arquivos do projeto
-COPY . .
 
 # Copiar e dar permissão ao script de entrada
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /app/docker-entrypoint.sh
 
 # Definir o script de entrada
