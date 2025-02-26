@@ -10,14 +10,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libmysqlclient-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+
 # Copiar os arquivos do projeto
 COPY . .
 
 # Instalar as dependências do Python
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copiar o script de entrada
-COPY docker-entrypoint.sh /usr/local/bin/
 
 # Garantir que o script seja executável
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
