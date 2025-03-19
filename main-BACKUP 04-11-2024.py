@@ -9,6 +9,17 @@ import string
 import sqlite3
 import MYSQL_db_tvde_users_external
 import SQLite_db_tvde_content_internal
+from dotenv import load_dotenv
+import os
+
+# Carregar variáveis do .env
+load_dotenv()
+
+MYSQLHOST=os.getenv("MYSQLHOST")
+MYSQLUSER=os.getenv("MYSQLUSER")
+MYSQLPASSWORD=os.getenv("MYSQLPASSWORD")
+MYSQL_DATABASE=os.getenv("MYSQL_DATABASE")
+MYSQLPORT=os.getenv("MYSQLPORT")   
 
 def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
@@ -54,10 +65,11 @@ def main(page: ft.Page):
             
             # Conectar ao banco de dados    
             conn = mysql.connector.connect(
-                host="localhost",                    
-                user="root",                    
-                password="",                    
-                database="db_tvde_users_external"       
+                host=MYSQLHOST,
+                user=MYSQLUSER,
+                password=MYSQLPASSWORD,
+                database=MYSQL_DATABASE,
+                port=MYSQLPORT
             )
                 
             cursor = conn.cursor()
@@ -171,10 +183,11 @@ def main(page: ft.Page):
                 try:
                 # Conectar ao banco de dados
                     conn = mysql.connector.connect(
-                        host="localhost",
-                        user="root",
-                        password="",
-                        database="db_tvde_users_external"  # Certifique-se de que este nome está correto
+                        host=MYSQLHOST,
+                        user=MYSQLUSER,
+                        password=MYSQLPASSWORD,
+                        database=MYSQL_DATABASE,
+                        port=MYSQLPORT
                     )
                     cursor = conn.cursor()
 
@@ -225,10 +238,11 @@ def main(page: ft.Page):
             
             # Conectar ao banco de dados
             conn = mysql.connector.connect(
-                host="localhost",
-                user="root",
-                password="",
-                database="db_tvde_users_external"
+                host=MYSQLHOST,
+                user=MYSQLUSER,
+                password=MYSQLPASSWORD,
+                database=MYSQL_DATABASE,
+                port=MYSQLPORT
             )
             cursor = conn.cursor()
 
@@ -295,10 +309,11 @@ def main(page: ft.Page):
 
             #Connect the db database="db_tvde_users_external"
             conn = mysql.connector.connect(
-                host = "localhost",
-                user = "root",
-                password = "",
-                database = "db_tvde_users_external"
+                host=MYSQLHOST,
+                user=MYSQLUSER,
+                password=MYSQLPASSWORD,
+                database=MYSQL_DATABASE,
+                port=MYSQLPORT
             )
             
             cursor = conn.cursor()
@@ -373,10 +388,11 @@ def main(page: ft.Page):
                 try:
                 # Conectar ao banco de dados
                     conn = mysql.connector.connect(
-                        host="localhost",
-                        user="root",
-                        password="",
-                        database="db_tvde_users_external"
+                        host=MYSQLHOST,
+                        user=MYSQLUSER,
+                        password=MYSQLPASSWORD,
+                        database=MYSQL_DATABASE,
+                        port=MYSQLPORT
                     )
                     cursor = conn.cursor()
 
