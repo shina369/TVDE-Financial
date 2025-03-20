@@ -1,12 +1,22 @@
 import mysql.connector
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+MYSQLHOST = os.getenv("MYSQLHOST")
+MYSQLUSER = os.getenv("MYSQLUSER")
+MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
+MYSQLPORT = os.getenv("MYSQLPORT")  # Valor padrão se não estiver definido
 
 # Connect to MySQL
 def connect():
     global connection, cursor
     connection = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
+        host=MYSQLHOST,
+        user=MYSQLUSER,
+        password=MYSQLPASSWORD
+,
     )
 
     cursor = connection.cursor()

@@ -12,8 +12,15 @@ import json
 import os
 import MYSQL_db_tvde_users_external
 import SQLite_db_tvde_content_internal
+from dotenv import load_dotenv
 
+load_dotenv()
 
+MYSQLHOST = os.getenv("MYSQLHOST")
+MYSQLUSER = os.getenv("MYSQLUSER")
+MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
+MYSQLPORT = os.getenv("MYSQLPORT")  # Valor padrão se não estiver definido
 
 def main(page: ft.Page):
 
@@ -1508,10 +1515,11 @@ def main(page: ft.Page):
             
             # Conectar ao banco de dados    
             conn = mysql.connector.connect(
-                host="localhost",                    
-                user="root",                    
-                password="",                    
-                database="db_tvde_users_external"       
+                host=MYSQLHOST,
+                user=MYSQLUSER,
+                password=MYSQLPASSWORD,
+                database="db_tvde_users_external",
+                port=MYSQLPORT     
             )
                 
             cursor = conn.cursor()
