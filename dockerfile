@@ -1,26 +1,27 @@
-# Usa uma imagem base do Python (pode ajustar a versão conforme necessário)
+# Usar uma imagem base adequada
 FROM python:3.10-slim
 
-# Define o diretório de trabalho
-WORKDIR /app  
+# Definir ambiente não interativo para evitar prompts
+ENV DEBIAN_FRONTEND=noninteractive 
 
-RUN apt-get update && apt-get upgrade -y
+# Instalar dependências
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential python3-dev pkg-config gcc \
+    default-libmysqlclient-dev mysql-client && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instala dependências necessárias
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-dev \
-    pkg-config \
-    gcc \
-    default-libmysqlclient-dev \
-    mysql-client \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*  
+# Criar diretório de trabalho
+WORKDIR /app
 
-# Copia os arquivos do projeto para o contêiner
-COPY . /app  
+# Copiar os arquivos do projeto para o container
+COPY . /app
 
-# Instala as dependências do Python
-RUN pip install --no-cache-dir -r requirements.txt  
+# Instalar dependências do Python
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Define o comando de execução do app
+# Expor a porta usada pelo app (se necessário)
+EXPOSE 8501  
+
+# Comando para rodar o app
 CMD ["python", "main.py"]
