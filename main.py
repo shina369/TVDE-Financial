@@ -2995,8 +2995,8 @@ def main(page: ft.Page):
                 host=MYSQLHOST,
                 user=MYSQLUSER,
                 password=MYSQLPASSWORD,
-                database="db_tvde_users_external",
-                port=MYSQLPORT   
+                database=MYSQL_DATABASE,
+                port=int(MYSQLPORT)  
             )
             cursor = conn.cursor()
 
@@ -3627,7 +3627,7 @@ def main(page: ft.Page):
                         user=MYSQLUSER,
                         password=MYSQLPASSWORD,
                         database="db_tvde_users_external",
-                        port=MYSQLPORT   
+                        port=int(MYSQLPORT)    
                     )
                     cursor = conn.cursor()
 
@@ -3678,7 +3678,7 @@ def main(page: ft.Page):
                 user=MYSQLUSER,
                 password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
-                port=MYSQLPORT   
+                port=int(MYSQLPORT)    
             )
             cursor = conn.cursor()
 
@@ -3743,7 +3743,7 @@ def main(page: ft.Page):
                 user=MYSQLUSER,
                 password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
-                port=MYSQLPORT   
+                port=int(MYSQLPORT)    
             )
             
             cursor = conn.cursor()
@@ -3820,7 +3820,7 @@ def main(page: ft.Page):
                         user=MYSQLUSER,
                         password=MYSQLPASSWORD,
                         database="db_tvde_users_external",
-                        port=MYSQLPORT   
+                        port=int(MYSQLPORT)  
                     )
                     cursor = conn.cursor()
 
