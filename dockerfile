@@ -21,7 +21,7 @@ COPY . /app
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expor a porta usada pelo app (se necessário)
-EXPOSE 8501
+EXPOSE 3306
 
 # Comando para rodar o app
 CMD ["python", "main.py"]
