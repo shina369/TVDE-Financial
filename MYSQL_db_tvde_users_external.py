@@ -7,7 +7,7 @@ MYSQLHOST = os.getenv("MYSQLHOST")
 MYSQLUSER = os.getenv("MYSQLUSER")
 MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
-MYSQLPORT = os.getenv("MYSQLPORT")  # Valor padrão se não estiver definido
+MYSQLPORT = os.getenv("MYSQLPORT") 
 
 # Connect to MySQL
 def connect():
