@@ -4,17 +4,6 @@ FROM python:3.10-slim
 # Definir ambiente não interativo para evitar prompts durante o build
 ENV DEBIAN_FRONTEND=noninteractive 
 
-# Atualizar pacotes e instalar dependências necessárias
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    python3-dev \
-    pkg-config \
-    gcc \
-    default-libmysqlclient-dev \
-    mysql-client && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 # Criar diretório de trabalho
 WORKDIR /app
 
