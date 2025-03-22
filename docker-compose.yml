@@ -20,4 +20,4 @@ services:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: railway
     ports:
-      - "3306:3306"
+      - "52230:52230"
