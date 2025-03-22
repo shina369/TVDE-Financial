@@ -3681,11 +3681,11 @@ def main(page: ft.Page):
             
             # Conectar ao banco de dados    
             conn = mysql.connector.connect(
-                host=os.getenv("DB_HOST"),
-                user=os.getenv("DB_USER"),
-                password=os.getenv("DB_PASSWORD"),
+                host=MYSQLHOST,
+                user=MYSQLUSER,
+                password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
-                port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
+                port=MYSQLPORT     
             )
             cursor = conn.cursor()
 
