@@ -13,6 +13,15 @@ import os
 from dotenv import load_dotenv
 from MYSQL_db_tvde_users_external import connect
 import SQLite_db_tvde_content_internal
+from dotenv import load_dotenv
+
+load_dotenv()
+
+MYSQLHOST = os.getenv("MYSQLHOST")
+MYSQLUSER = os.getenv("MYSQLUSER")
+MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
+MYSQLPORT = os.getenv("MYSQLPORT")  # Valor padrão se não estiver definido
 
 
 def main(page: ft.Page):
