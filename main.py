@@ -3745,13 +3745,13 @@ def main(page: ft.Page):
 
         def verify_email_exist(field_email):
 
-             conn = mysql.connector.connect(
+            conn = mysql.connector.connect(
                 host=MYSQLHOST,
                 user=MYSQLUSER,
                 password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
                 port=MYSQLPORT     
-                )
+            )
                 
             
             cursor = conn.cursor()
