@@ -21,7 +21,7 @@ MYSQLHOST = os.getenv("MYSQLHOST")
 MYSQLUSER = os.getenv("MYSQLUSER")
 MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
-MYSQLPORT = os.getenv(int("MYSQLPORT"))  # Valor padrão se não estiver definido
+MYSQLPORT = int(os.getenv("MYSQLPORT", 52230))  
 
 
 def main(page: ft.Page):
