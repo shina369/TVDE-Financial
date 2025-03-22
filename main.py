@@ -3823,13 +3823,13 @@ def main(page: ft.Page):
             if field_code == codigo_temporario:
                 try:
                     # Conectar ao banco de dados
-                       conn = mysql.connector.connect(
+                    conn = mysql.connector.connect(
                             host=MYSQLHOST,
                             user=MYSQLUSER,
                             password=MYSQLPASSWORD,
                             database="db_tvde_users_external",
                             port=MYSQLPORT     
-                        )
+                    )
                 
                     cursor = conn.cursor()
 
