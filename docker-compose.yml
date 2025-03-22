@@ -6,16 +6,18 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_USER=root
-      - DATABASE_PASSWORD=root
-    command: ["python", "main.py"]
+      - MYSQLHOST=crossover.proxy.rlwy.net
+      - MYSQLUSER=root
+      - MYSQLPASSWORD=HklMpAMgktuUeJVWWImttcQqcPObNVmy
+      - MYSQL_DATABASE=railway
+      - MYSQLPORT=52230
+    command: ["python3", "main.py"]
 
   db:
     image: mysql:8.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: meu_banco
+      MYSQL_DATABASE: railway
     ports:
       - "3306:3306"
