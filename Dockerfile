@@ -17,7 +17,7 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt
 
 # Expõe a porta que o Flet vai usar (geralmente a porta 8551 para Flet)
-EXPOSE 8551
+EXPOSE 52230
 
 # Define o comando para rodar o app com Flet
 CMD ["python3", "main.py"]
