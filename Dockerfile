@@ -1,5 +1,5 @@
 # Usa uma imagem base completa e estável do Python
-FROM python:3.9-bullseye
+FROM python:3.9
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
@@ -12,9 +12,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copia os arquivos do projeto para o contêiner
 COPY . .
 
-# Atualiza o pip e instala as dependências do projeto
+# Instala as dependências do projeto
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir --ignore-installed contourpy -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt
 
 # Define o comando padrão para iniciar o app
-CMD ["python", "main.py"]
+CMD ["python3", "main.py"]
