@@ -17,4 +17,4 @@ RUN pip install --upgrade pip setuptools wheel && \
     pip install --no-cache-dir --ignore-installed contourpy -r requirements.txt
 
 # Define o comando padrão para iniciar o app
-CMD ["python", "app.py"]
+CMD ["python", "main.py"]
