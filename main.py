@@ -23,7 +23,6 @@ MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 MYSQLPORT = int(os.getenv("MYSQLPORT"))  
 
-
 def main(page: ft.Page):
     
     load_dotenv()
