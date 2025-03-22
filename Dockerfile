@@ -1,13 +1,12 @@
-# Usa uma imagem base completa para evitar problemas no Railway
+# Usa uma imagem base estável do Python
 FROM python:3.9-bullseye
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
 # Atualiza os repositórios e instala dependências do sistema
-RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends \
-    python3-dev pkg-config gcc libmysqlclient-dev curl && \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-dev pkg-config gcc mariadb-dev curl && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copia os arquivos do projeto para o contêiner
