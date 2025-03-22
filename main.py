@@ -21,7 +21,7 @@ MYSQLHOST = os.getenv("MYSQLHOST")
 MYSQLUSER = os.getenv("MYSQLUSER")
 MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
-MYSQLPORT = os.getenv("MYSQLPORT")  # Valor padrão se não estiver definido
+MYSQLPORT = os.getenv(int("MYSQLPORT"))  # Valor padrão se não estiver definido
 
 
 def main(page: ft.Page):
@@ -1519,12 +1519,13 @@ def main(page: ft.Page):
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
             
             # Conectar ao banco de dados    
+          # Conectar ao banco de dados    
             conn = mysql.connector.connect(
-                host=os.getenv("DB_HOST"),
-                user=os.getenv("DB_USER"),
-                password=os.getenv("DB_PASSWORD"),
+                host=MYSQLHOST,
+                user=MYSQLUSER,
+                password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
-                port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
+                port=MYSQLPORT     
             )
                 
             cursor = conn.cursor()
@@ -2997,12 +2998,13 @@ def main(page: ft.Page):
 
         def search_user_name(email_login):
             # Conectar ao banco de dados    
+            # Conectar ao banco de dados    
             conn = mysql.connector.connect(
-                host=os.getenv("DB_HOST"),
-                user=os.getenv("DB_USER"),
-                password=os.getenv("DB_PASSWORD"),
+                host=MYSQLHOST,
+                user=MYSQLUSER,
+                password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
-                port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
+                port=MYSQLPORT     
             )
             cursor = conn.cursor()
 
@@ -3628,13 +3630,13 @@ def main(page: ft.Page):
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
                 try:
                     # Conectar ao banco de dados    
-                    conn = mysql.connector.connect(
-                        host=os.getenv("DB_HOST"),
-                        user=os.getenv("DB_USER"),
-                        password=os.getenv("DB_PASSWORD"),
-                        database="db_tvde_users_external",
-                        port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
-                    )
+                      conn = mysql.connector.connect(
+                            host=MYSQLHOST,
+                            user=MYSQLUSER,
+                            password=MYSQLPASSWORD,
+                            database="db_tvde_users_external",
+                            port=MYSQLPORT     
+                        )
                     cursor = conn.cursor()
 
                     # Executar a consulta para verificar se o e-mail existe
@@ -3743,13 +3745,14 @@ def main(page: ft.Page):
 
         def verify_email_exist(field_email):
 
-            conn = mysql.connector.connect(
-                host=os.getenv("DB_HOST"),
-                user=os.getenv("DB_USER"),
-                password=os.getenv("DB_PASSWORD"),
+             conn = mysql.connector.connect(
+                host=MYSQLHOST,
+                user=MYSQLUSER,
+                password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
-                port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
-            )
+                port=MYSQLPORT     
+                )
+                
             
             cursor = conn.cursor()
 
@@ -3820,13 +3823,14 @@ def main(page: ft.Page):
             if field_code == codigo_temporario:
                 try:
                     # Conectar ao banco de dados
-                    conn = mysql.connector.connect(
-                        host=os.getenv("DB_HOST"),
-                        user=os.getenv("DB_USER"),
-                        password=os.getenv("DB_PASSWORD"),
-                        database="db_tvde_users_external",
-                        port=int(os.getenv("DB_PORT"))  # Certifique-se de converter a porta para inteiro
-                    )
+                       conn = mysql.connector.connect(
+                            host=MYSQLHOST,
+                            user=MYSQLUSER,
+                            password=MYSQLPASSWORD,
+                            database="db_tvde_users_external",
+                            port=MYSQLPORT     
+                        )
+                
                     cursor = conn.cursor()
 
                     # Executa a atualização
