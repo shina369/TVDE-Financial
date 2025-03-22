@@ -8,7 +8,7 @@ chardet==5.2.0
 charset-normalizer==3.3.2
 click==8.1.7
 colorama==0.4.6
-contourpy==1.3.1
+contourpy
 cookiecutter==2.6.0
 cycler==0.12.1
 fastapi==0.115.0
@@ -22,7 +22,7 @@ httptools==0.6.1
 httpx==0.27.2
 idna==3.8
 Jinja2==3.1.4
-kiwisolver==1.4.8
+kiwisolver
 markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 matplotlib==3.10.0
