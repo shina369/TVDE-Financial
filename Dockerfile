@@ -1,24 +1,20 @@
-# Use a imagem do MySQL 8.0 diretamente
-FROM debian:bookworm
+# Usa uma imagem base completa e estável do Python
+FROM python:3.9-bullseye
 
-# Instalar dependências do sistem
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    python3-dev pkg-config gcc default-libmysqlclient-dev mysql-client && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
+# Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
-# Copiar o script de entrada
-COPY docker-entrypoint.sh /usr/local/bin/
+# Atualiza os repositórios e instala dependências do sistema
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-dev pkg-config gcc libmariadb-dev curl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Garantir permissões de execução
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Copia os arquivos do projeto para o contêiner
+COPY . .
 
-# Definir o script como entrypoint
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# Atualiza o pip e instala as dependências do projeto
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir --ignore-installed contourpy -r requirements.txt
 
-# Definir o comando padrão
+# Define o comando padrão para iniciar o app
 CMD ["python", "main.py"]
