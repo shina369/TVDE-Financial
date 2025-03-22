@@ -16,7 +16,6 @@ def connect():
         host=MYSQLHOST,
         user=MYSQLUSER,
         password=MYSQLPASSWORD,
-        database="db_tvde_users_external",
         port=MYSQLPORT 
     )
 
