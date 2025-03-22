@@ -3630,13 +3630,13 @@ def main(page: ft.Page):
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
                 try:
                     # Conectar ao banco de dados    
-                      conn = mysql.connector.connect(
+                    conn = mysql.connector.connect(
                             host=MYSQLHOST,
                             user=MYSQLUSER,
                             password=MYSQLPASSWORD,
                             database="db_tvde_users_external",
                             port=MYSQLPORT     
-                        )
+                    )
                     cursor = conn.cursor()
 
                     # Executar a consulta para verificar se o e-mail existe
