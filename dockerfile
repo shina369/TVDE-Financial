@@ -1,20 +1,21 @@
-# Usar uma imagem base leve do Python
-FROM python:3.10-slim
+# Usa uma imagem base completa para evitar problemas no Railway
+FROM python:3.9-bullseye
 
-# Definir ambiente não interativo para evitar prompts durante o build
-ENV DEBIAN_FRONTEND=noninteractive 
-
-# Criar diretório de trabalho
+# Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
 
-# Copiar os arquivos do projeto para o diretório de trabalho
-COPY . /app
+# Atualiza os repositórios e instala dependências do sistema
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends \
+    python3-dev pkg-config gcc libmysqlclient-dev curl && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Instalar as dependências do Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Copia os arquivos do projeto para o contêiner
+COPY . .
 
-# Expor a porta que o app vai rodar (ajuste conforme sua necessidade)
-EXPOSE 8501
+# Atualiza o pip e instala as dependências do projeto
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Comando para rodar o app
-CMD ["python", "main.py"]
+# Define o comando padrão para iniciar o app
+CMD ["python", "app.py"]
