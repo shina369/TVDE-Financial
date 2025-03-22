@@ -15,8 +15,9 @@ def connect():
     connection = mysql.connector.connect(
         host=MYSQLHOST,
         user=MYSQLUSER,
-        password=MYSQLPASSWORD
-,
+        password=MYSQLPASSWORD,
+        database="db_tvde_users_external",
+        port=MYSQLPORT 
     )
 
     cursor = connection.cursor()
