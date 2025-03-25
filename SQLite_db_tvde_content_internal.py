@@ -1,10 +1,12 @@
 import sqlite3
+import os
+from MYSQL_db_tvde_users_external import connect
 
 # Conectar ao SQLite
 def connect():
     global connection, cursor
     # Conecta ou cria o banco de dados SQLite
-    connection = sqlite3.connect('db_tvde_content_internal.db')
+    connection = sqlite3.connect('db_tvde_content_internal{email}.db')
     cursor = connection.cursor()
     print("Conectado com sucesso ao banco de dados SQLite!")
 

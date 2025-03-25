@@ -10,7 +10,6 @@ import string
 import sqlite3
 import json
 import os
-from dotenv import load_dotenv
 from MYSQL_db_tvde_users_external import connect
 import SQLite_db_tvde_content_internal
 from dotenv import load_dotenv
@@ -3697,6 +3696,11 @@ def main(page: ft.Page):
                 if cursor.rowcount > 0:
                     conn.commit()
                     page_message_screen("Usuário cadastrado com sucesso!")
+                    connection = sqlite3.connect('db_tvde_content_internal{email}.db')
+                    connection.commit()
+                    cursor.close()
+                    connection.close()
+                    print("Conexão com o banco de dados fechada com sucesso333.")
                     page.go("/")
                 else:
                     page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
