@@ -1,5 +1,5 @@
 # Usa uma imagem base completa e estável do Python
-FROM python:3.9
+FROM python:3.9 
 
 # Define o diretório de trabalho dentro do contêiner
 WORKDIR /app
@@ -12,12 +12,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copia os arquivos do projeto para o contêiner
 COPY . .
 
-# Instala as dependências do projeto
-RUN pip install --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir -r requirements.txt
+# Cria um ambiente virtual e ativa
+RUN python -m venv /opt/venv
 
-# Expõe a porta que o Flet vai usar (geralmente a porta 8551 para Flet)
+# Instala as dependências no ambiente virtual
+RUN /opt/venv/bin/pip install --upgrade pip
+RUN /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+# Expõe a porta que o Flet vai usar (geralmente a porta 8551 para Flet, mas use 52230 conforme sua configuração)
 EXPOSE 52230
 
-# Define o comando para rodar o app com Flet
-CMD ["python3", "main.py"]
+# Define o comando para rodar o app com Flet no ambiente virtual
+CMD ["/opt/venv/bin/python", "main.py"]
