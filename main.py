@@ -3425,7 +3425,7 @@ def main(page: ft.Page):
                                     ],
                                 ),
                                 alignment=ft.alignment.center,
-                                clexpand=True,
+                                expand=True,
                             ),
 
                             ft.Container(
