@@ -29,7 +29,7 @@ def main(page: ft.Page):
 
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
-    page.window.width=page.width * 0.95
+    page.window.width=435
     page.window.height = 810  # Altura típica de um smartphone
     page.title = "FLEX TVDE - FINANCIAL"
     page.scroll = ft.ScrollMode.AUTO
@@ -40,6 +40,7 @@ def main(page: ft.Page):
             background="red",
         )
     )
+
     
     def check_item_clicked(e):
         e.control.checked = not e.control.checked
@@ -67,11 +68,13 @@ def main(page: ft.Page):
     )
 
     header = ft.Row(
+        expand=True,
         controls=[
             ft.Container(),
             ft.Container(
                 width=399,
                 height=66,
+                expand=True,
                 content=ft.Row(
                      controls=[
                         pb,
@@ -460,76 +463,75 @@ def main(page: ft.Page):
         total_value = total_gain + goal_sum_tips_float + total_reimbursement
 
         panel_reports = ft.Container(
-        width=385,
-        height=273,
-        bgcolor="#EFEFEF",
-        border_radius=21,
-        margin=6,
-        padding=12,
-        content=ft.Column(
-            spacing=5,  # Adiciona espaçamento entre os itens
-            controls=[
-                # Cabeçalho com ícone
-                ft.Row(
-                    controls=[
-                        ft.Icon(ft.icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
-                        ft.Text("Resumo do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                    ],
-                    alignment=ft.MainAxisAlignment.START
-                ),
-                ft.Divider(),  # Linha divisória para separar título do conteúdo
+            width=385,
+            height=273,
+            bgcolor="#EFEFEF",
+            border_radius=21,
+            margin=6,
+            padding=12,
+            content=ft.Column(
+                spacing=5,  # Adiciona espaçamento entre os itens
+                controls=[
+                    # Cabeçalho com ícone
+                    ft.Row(
+                        controls=[
+                            ft.Icon(ft.icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
+                            ft.Text("Resumo do Objetivo", size=15, weight=ft.FontWeight.BOLD),
+                        ],
+                        alignment=ft.MainAxisAlignment.START
+                    ),
+                    ft.Divider(),  # Linha divisória para separar título do conteúdo
 
-                # Layout melhorado usando Colunas para alinhar os textos
-                ft.Row(
-                    controls=[
-                        ft.Column(
-                            controls=[
-                                ft.Text("Objetivo Líquido:", size=14),
-                                ft.Text("Gorjetas:", size=14),
-                                ft.Text("Reembolso/Portagem:", size=14),
-                                ft.Text("Ganhos até agora + Gorjetas + Reembolso:", size=14),
-                            ],
-                            alignment=ft.MainAxisAlignment.START
-                        ),
-                        
-                        ft.Column(
-                            controls=[
-                                ft.Text(f"€ {goal_value2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
-                                ft.Text(f"€ {goal_sum_tips_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
-                                ft.Text(f"€ {total_reimbursement:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
-                                ft.Text(f"€ {total_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
-                            ],
-                            alignment=ft.MainAxisAlignment.END
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-                ),
-                ft.Container(),
+                    # Layout melhorado usando Colunas para alinhar os textos
+                    ft.Row(
+                        controls=[
+                            ft.Column(
+                                controls=[
+                                    ft.Text("Objetivo Líquido:", size=14),
+                                    ft.Text("Gorjetas:", size=14),
+                                    ft.Text("Reembolso/Portagem:", size=14),
+                                    ft.Text("Ganhos até agora + Gorjetas + Reembolso:", size=14),
+                                ],
+                                alignment=ft.MainAxisAlignment.START
+                            ),
+                            
+                            ft.Column(
+                                controls=[
+                                    ft.Text(f"€ {goal_value2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                    ft.Text(f"€ {goal_sum_tips_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                    ft.Text(f"€ {total_reimbursement:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                    ft.Text(f"€ {total_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                ],
+                                alignment=ft.MainAxisAlignment.END
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                    ),
+                    ft.Container(),
 
-                ft.Row(
-                    controls=[
-                        ft.Column(
-                            controls=[
-                                ft.Text("Despesas:", size=14),
-                                ft.Text("Pago a frota:", size=14),
-                                ft.Text("Objetivo Bruto:", size=14),
-                            ],
-                            alignment=ft.MainAxisAlignment.START
-                        ),
-                        ft.Column(
-                            controls=[
-                                ft.Text(f"€ {expenses if expenses is not None else 0.0:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
-                                ft.Text(f"€ {fleet_discount_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
-                                ft.Text(f"€ {goal_gross2:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
-                            ],
-                            alignment=ft.MainAxisAlignment.END
-                        ),
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-                ),
-            ]
+                    ft.Row(
+                        controls=[
+                            ft.Column(
+                                controls=[
+                                    ft.Text("Despesas:", size=14),
+                                    ft.Text("Pago a frota:", size=14),
+                                    ft.Text("Objetivo Bruto:", size=14),
+                                ],
+                                alignment=ft.MainAxisAlignment.START
+                            ),
+                            ft.Column(
+                                controls=[
+                                    ft.Text(f"€ {expenses if expenses is not None else 0.0:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                    ft.Text(f"€ {fleet_discount_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                    ft.Text(f"€ {goal_gross2:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                ],
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                    ),
+                ]
+            )
         )
-    )
 
 
         primeira = ft.Container(
@@ -2426,7 +2428,7 @@ def main(page: ft.Page):
         )
         page.update()
 
-    def page_more_date(page):
+    def page_more_date():
         page.views.clear()
 
         big_button_bolt = ft.Container(
@@ -3086,7 +3088,7 @@ def main(page: ft.Page):
                             ft.Text("Valores líquidos sem taxas e impostos", size=9, color="#858585"),
                             ],
                             spacing=0,
-                            alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
+                            alignment=ft.alignment.center,
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
                     ),
                 )
@@ -3385,10 +3387,9 @@ def main(page: ft.Page):
                                         remaining_text2,  # Coloca o texto estilizado no meio
                                         ft.Text("DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
                                     ],
-                                    alignment=ft.MainAxisAlignment.CENTER,  # Alinha ao centro
-                                    expand=True  # Torna o Row expansível
                                 ),
                             ),
+                            
                             ft.Container(
                                 width=399,
                                 height=30,
@@ -3434,6 +3435,8 @@ def main(page: ft.Page):
                         horizontal_alignment="center",
                         
                     ),
+                    alignment=ft.alignment.center,
+                    expand=True,
                 ),
             ],
         )
@@ -3544,13 +3547,12 @@ def main(page: ft.Page):
                             ),
                             ft.Text("valores brutos", size=12, color="#B0B0B0"),
                             ],
-                            spacing=0, 
-                            alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente na coluna
-                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,  #
+                            alignment=ft.alignment.center,  # Centraliza verticalmente na coluna
                     ),
+                    alignment=ft.alignment.center,
+                    expand=True,
                 )
             ],
-            spacing=0,
         )
         
         button_bolt_uber = ft.Row(
