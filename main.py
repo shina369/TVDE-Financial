@@ -75,7 +75,7 @@ def main(page: ft.Page):
                     content=ft.Row(
                         controls=[
                             pb,
-                            ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png", width=154, height=51)
+                            ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png", width=154, height=51)
                             
                         ],
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN, 
@@ -145,7 +145,7 @@ def main(page: ft.Page):
             border_radius=21,
             content=ft.Column(
                 controls=[
-                    ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
+                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
                     ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
                     ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREY_900)),
                     ft.Container(height=90),
@@ -156,7 +156,7 @@ def main(page: ft.Page):
                     ft.Text("Seja PREMIUM agora"),
                     ft.Row(
                         ft.Text("SEJA \n PREMIUM \n AQUI"),
-                        ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
+                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
                         ft.Text("Desbloqueie relatórios completos..."),
                     ),
                     ft.ElevatedButton(
@@ -1595,7 +1595,7 @@ def main(page: ft.Page):
                             horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                             controls=[
                                 ft.Container(
-                                    ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
+                                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
                                     padding=90,
                                 ),
                                 ft.Container(
@@ -3722,7 +3722,7 @@ def main(page: ft.Page):
                 "/register",
                 controls=[
                     ft.Container(
-                        ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
+                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
                     ),
                     ft.Text("Cadastro de Novo Usuário"),
                     ft.Row(controls=[name]),
@@ -3807,7 +3807,7 @@ def main(page: ft.Page):
                 "/forget_password",
                 controls=[
                     ft.Container(
-                        ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
+                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
                         padding=90,
                     ),
                     title,
@@ -3904,7 +3904,7 @@ def main(page: ft.Page):
                 "/page_new_password",
                 controls=[
                     ft.Container(
-                        ft.Image(src="https://i.ibb.co/SrqCT9S/logo.png"),
+                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
                         padding=90,
                     ),
                     title,
