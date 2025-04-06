@@ -29,9 +29,9 @@ def main(page: ft.Page):
 
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
-    page.window.width = 435  # Largura típica de um smartphone
+    page.window.width=page.width * 0.95,
     page.window.height = 810  # Altura típica de um smartphone
-    page.title = "TVDE - FINANCIAL"
+    page.title = "FLEX TVDE - FINANCIAL"
     page.scroll = ft.ScrollMode.AUTO
     page.theme = ft.Theme(
         color_scheme=ft.ColorScheme(
@@ -67,22 +67,23 @@ def main(page: ft.Page):
     )
 
     header = ft.Row(
-            controls=[
-                ft.Container(
-                    width=399,
-                    expand=True,
-                    height=66,
-                    content=ft.Row(
-                        controls=[
-                            pb,
-                            ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png", width=154, height=51)
+        controls=[
+            ft.Container(),
+            ft.Container(
+                width=399,
+                height=66,
+                content=ft.Row(
+                     controls=[
+                        pb,
+                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png", width=154, height=51)
                             
-                        ],
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN, 
-                    ),
-                )
-            ]
-        )
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN, 
+                ),
+            )
+        ]
+    )
+    
     def on_change(e):
         destinos = ["/page_parcial", "/page_more_date", "/page_reports", "/page_settings"]
         page.go(destinos[e.control.selected_index])
@@ -99,7 +100,6 @@ def main(page: ft.Page):
             ],
             on_change=on_change,
         ),
-        bgcolor="#EEEEEE",
     )
 
     button_edit = ft.ElevatedButton(
