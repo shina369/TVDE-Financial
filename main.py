@@ -2426,7 +2426,7 @@ def main(page: ft.Page):
         )
         page.update()
 
-    def page_more_date():
+    def page_more_date(page):
         page.views.clear()
 
         big_button_bolt = ft.Container(
