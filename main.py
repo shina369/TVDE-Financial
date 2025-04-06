@@ -3043,7 +3043,7 @@ def main(page: ft.Page):
         
         message_welcome = ft.Container(
             width=399,
-            height=48,
+            height=57,
             alignment=ft.Alignment(0, 0),
             content=ft.Text(f"🍀\n Olá {user_name}, boa sorte!", size=18, text_align=ft.TextAlign.CENTER),
         )
