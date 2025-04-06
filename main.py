@@ -29,7 +29,7 @@ def main(page: ft.Page):
 
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
-    page.window.width=page.width * 0.95,
+    page.window.width=page.width * 0.95
     page.window.height = 810  # Altura típica de um smartphone
     page.title = "FLEX TVDE - FINANCIAL"
     page.scroll = ft.ScrollMode.AUTO
