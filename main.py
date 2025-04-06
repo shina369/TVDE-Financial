@@ -3091,6 +3091,8 @@ def main(page: ft.Page):
                             alignment=ft.alignment.center,
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
                     ),
+                    alignment=ft.alignment.center,
+                    expand=True,
                 )
             ]
         )
@@ -3389,7 +3391,6 @@ def main(page: ft.Page):
                                     ],
                                 ),
                             ),
-                            
                             ft.Container(
                                 width=399,
                                 height=30,
@@ -3423,6 +3424,8 @@ def main(page: ft.Page):
                                         ),
                                     ],
                                 ),
+                                alignment=ft.alignment.center,
+                                clexpand=True,
                             ),
 
                             ft.Container(
