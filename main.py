@@ -3367,84 +3367,107 @@ def main(page: ft.Page):
   
 
         # Criar a interface
-        hourglass = ft.Row(
+        hourglass = ft.Column(
             controls=[
+                # Parte superior com a ampulheta e texto
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[
+                        ft.Container(
+                            width=399,
+                            height=81,
+                            padding=0,
+                            margin=0,
+                            content=ft.Column(
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                controls=[
+                                    ft.Container(
+                                        bgcolor=ft.Colors.RED_300,
+                                        padding=ft.Padding(top=0, bottom=12, left=0, right=0),
+                                        content=ft.Row(
+                                            alignment=ft.MainAxisAlignment.CENTER,
+                                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                                            controls=[
+                                                ft.Image(
+                                                    src="https://i.ibb.co/93ps7s5/hourglass.png",
+                                                    height=33,
+                                                    width=27
+                                                ),
+                                                ft.Text(
+                                                    "FALTAM",
+                                                    size=15,
+                                                    color="#858585",
+                                                    text_align=ft.TextAlign.CENTER
+                                                ),
+                                                remaining_text2,
+                                                ft.Text(
+                                                    "DIAS PARA FIM DO OBJETIVO",
+                                                    size=15,
+                                                    color="#858585",
+                                                    text_align=ft.TextAlign.CENTER
+                                                ),
+                                            ],
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ),
+                    ],
+                ),
+
+                # Faixa com flag, carro e linha de chegada
                 ft.Container(
                     width=399,
-                    height=81,
-                    padding=0,
+                    height=30,
                     margin=0,
-                    content=ft.Column(
+                    border=ft.border.only(
+                        bottom=ft.border.BorderSide(2, ft.colors.BLACK)
+                    ),
+                    content=ft.Stack(
                         controls=[
-                            ft.Image(
-                                src="https://i.ibb.co/93ps7s5/hourglass.png",
-                                height=27,
-                                width=27
-                            ),
+                            # Bandeira vermelha fixa à esquerda
                             ft.Container(
-                                padding=ft.Padding(top=0, bottom=12, left=0, right=0),   
-                                content=ft.Row(
-                                    controls=[
-                                        ft.Text("FALTAM", size=15, color="#858585"),
-                                        remaining_text2,  # Coloca o texto estilizado no meio
-                                        ft.Text("DIAS PARA FIM DO OBJETIVO", size=15, color="#858585"),
-                                    ],
+                                left=0,
+                                content=ft.Image(
+                                    src="https://i.ibb.co/80MV450/flag.png",
                                 ),
                             ),
+                            # Carro com posição dinâmica
                             ft.Container(
-                                width=399,
-                                height=30,
-                                margin=0,
-                                border=ft.border.only(bottom=ft.border.BorderSide(2, ft.colors.BLACK)),
-                                content=ft.Stack(
-                                    controls=[
-                                        # Bandeira vermelha fixada à esquerda
-                                        ft.Container(
-                                            left=0,
-                                            content=ft.Image(
-                                                src="https://i.ibb.co/80MV450/flag.png",
-                                            ),
-                                        ),
-                                        # Carro verde com posição dinâmica baseada no total_gain
-                                        ft.Container(
-                                            left=car_position,
-                                            padding=ft.padding.only(top=7, left=0, right=5, bottom=0),
-                                            content=ft.Image(
-                                                src="https://i.ibb.co/27GrFHLV/car.png",
-                                            ),
-                                            alignment=ft.Alignment(0, 0),
-                                        ),
-                                        # Linha de chegada preta fixada à direita (não será empurrada)
-                                        ft.Container(
-                                            right=0,  # Garante que fique sempre na extrema direita
-                                            width=finish_width,  # Mantém a largura correta
-                                            content=ft.Image(
-                                                src="https://i.ibb.co/M5nXHpq/finish-line-5-stars.png",
-                                            ),
-                                        ),
-                                    ],
+                                left=car_position,
+                                padding=ft.padding.only(top=7, right=5),
+                                content=ft.Image(
+                                    src="https://i.ibb.co/27GrFHLV/car.png",
                                 ),
-                                alignment=ft.alignment.center,
-                                expand=True,
+                                alignment=ft.Alignment(0, 0),
                             ),
-
+                            # Linha de chegada à direita
                             ft.Container(
-                                width=3,
-                                height=6,
-                                bgcolor="black",
+                                right=0,
+                                width=finish_width,
+                                content=ft.Image(
+                                    src="https://i.ibb.co/M5nXHpq/finish-line-5-stars.png",
+                                ),
                             ),
                         ],
-                        spacing=0,
-                        horizontal_alignment="center",
-                        
                     ),
                     alignment=ft.alignment.center,
                     expand=True,
                 ),
+
+                # Pequeno marcador preto
+                ft.Container(
+                    width=3,
+                    height=6,
+                    bgcolor="black",
+                ),
             ],
+            spacing=0,
+            horizontal_alignment="center",
+            alignment=ft.alignment.center,
+            expand=True,
         )
-
-
             
         def fetch_goal_from_db4(total_gain):
             with sqlite3.connect("db_tvde_content_internal.db") as conn:
