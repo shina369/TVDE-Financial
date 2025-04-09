@@ -3081,7 +3081,7 @@ def main(page: ft.Page):
                 ft.Container(
                     width=399,
                     height=87,
-                    padding=ft.Padding(top=12, bottom=6, left=0, right=0), 
+                    padding=ft.Padding(top=3, bottom=6, left=0, right=0), 
                     content=ft.Column(
                         controls=[
                             ft.Text("OBJETIVO GERAL", size=18, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
@@ -3098,29 +3098,60 @@ def main(page: ft.Page):
             ]
         )
 
+        # Função que lida com o clique no botão "detalhes"
         def details_goal(e):
-            if details_goal.height == 0:  # Se o container estiver fechado
-                details_goal.height = 99  # Expande o container
+            # Verifica se o pop-up já está aberto
+            if not details_popup.open:
+                # Se o pop-up não estiver aberto, abre ele
+                details_popup.open = True
             else:
-                details_goal.height = 0  # Fecha o container
+                # Se o pop-up estiver aberto, fecha
+                details_popup.open = False
+
+            # Atualiza a página para refletir a mudança
             page.update()
 
+        # Cria o botão "detalhes"
         button = ft.ElevatedButton(
-                text="« detalhes »",
-                on_click=details_goal,
-                width=120,  # Largura do botão
-                height=27, # Define a ação de clique
-        style=ft.ButtonStyle(
-            text_style=ft.TextStyle(
-                size=12,  # Tamanho da fonte do botão
+            text="« detalhes »",
+            on_click=details_goal,
+            width=120,  # Largura do botão
+            height=27,  # Altura do botão
+            style=ft.ButtonStyle(
+                text_style=ft.TextStyle(size=12),  # Tamanho da fonte
             ),
         )
-        )
+
         button_container = ft.Container(
             content=button,
             alignment=ft.alignment.center,  # Centraliza o botão
         )
-       
+
+        # Criar o conteúdo do pop-up
+        details_content = ft.Column(
+            controls=[
+                ft.Text("Início do Objetivo", size=15, weight=ft.FontWeight.BOLD),
+                ft.Text("Data de início: 01/01/2025", size=15),
+                ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
+                ft.Text("10 dias", size=15),
+                ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
+                ft.Text("€ 500,00", size=15),  # Formatação das despesas
+            ],
+            spacing=10,
+        )
+
+       # Criação do AlertDialog
+        details_popup = ft.AlertDialog(
+            open=False,  # Começa fechado
+            title=ft.Text("Detalhes do Objetivo", size=18, weight=ft.FontWeight.BOLD),
+            content=details_content,  # Conteúdo do pop-up
+            actions=[  # Botão de ação dentro do pop-up
+                ft.ElevatedButton(
+                    text="Fechar",
+                    on_click=lambda e: details_popup.close(),  # Fecha o pop-up
+                ),
+            ],
+        )
         # Registrar adaptadores para datetime
         sqlite3.register_adapter(datetime, lambda x: x.isoformat())
         sqlite3.register_converter("datetime", lambda x: datetime.fromisoformat(x.decode("utf-8")))
@@ -3259,6 +3290,8 @@ def main(page: ft.Page):
                         ],
                         spacing=0, 
                     ),
+                    alignment=ft.alignment.center,
+                    expand=True, 
                 ),
                 ft.Container(
                     ft.Column(
@@ -3275,6 +3308,8 @@ def main(page: ft.Page):
                         ],
                         spacing=0, 
                     ),
+                    alignment=ft.alignment.center,
+                    expand=True,
                 ),
             ]
         )
@@ -3419,7 +3454,6 @@ def main(page: ft.Page):
                 # Faixa com flag, carro e linha de chegada
                 ft.Container(
                     width=399,
-                    bgcolor=ft.colors.RED,
                     margin=0,
                     height=30, 
                     border=ft.border.only(
@@ -3578,6 +3612,8 @@ def main(page: ft.Page):
                 )
             ],
         )
+
+        buttons_visible = True
         
         button_bolt_uber = ft.Row(
             alignment=ft.MainAxisAlignment.CENTER,
@@ -3628,6 +3664,7 @@ def main(page: ft.Page):
                     button_bolt_uber,
                     details_goal,
                     button_container,
+                    details_popup
                     
                 ]
             )
