@@ -67,25 +67,17 @@ def main(page: ft.Page):
         ]
     )
 
-    header = ft.Row(
-        expand=True,
-        controls=[
-            ft.Container(),
-            ft.Container(
-                width=399,
-                height=66,
-                expand=True,
-                content=ft.Row(
-                     controls=[
-                        pb,
-                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png", width=154, height=51)
-                            
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN, 
-                ),
-            )
-        ]
+    header = ft.AppBar(
+        leading=pb,  # botão/menu à esquerda
+        title=ft.Image(
+            src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
+            width=154,
+            height=51
+        ),
+        center_title=True,
+        toolbar_height=66,
     )
+
     
     def on_change(e):
         destinos = ["/page_parcial", "/page_more_date", "/page_reports", "/page_settings"]
@@ -3391,18 +3383,17 @@ def main(page: ft.Page):
                                 alignment=ft.MainAxisAlignment.CENTER,
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                 controls=[
+                                    ft.Image(
+                                        src="https://i.ibb.co/93ps7s5/hourglass.png",
+                                        height=33,
+                                        width=27
+                                    ),
                                     ft.Container(
-                                        bgcolor=ft.Colors.RED_300,
                                         padding=ft.Padding(top=0, bottom=12, left=0, right=0),
                                         content=ft.Row(
                                             alignment=ft.MainAxisAlignment.CENTER,
                                             vertical_alignment=ft.CrossAxisAlignment.CENTER,
                                             controls=[
-                                                ft.Image(
-                                                    src="https://i.ibb.co/93ps7s5/hourglass.png",
-                                                    height=33,
-                                                    width=27
-                                                ),
                                                 ft.Text(
                                                     "FALTAM",
                                                     size=15,
@@ -3428,8 +3419,9 @@ def main(page: ft.Page):
                 # Faixa com flag, carro e linha de chegada
                 ft.Container(
                     width=399,
-                    height=30,
+                    bgcolor=ft.colors.RED,
                     margin=0,
+                    height=30, 
                     border=ft.border.only(
                         bottom=ft.border.BorderSide(2, ft.colors.BLACK)
                     ),
@@ -3461,8 +3453,6 @@ def main(page: ft.Page):
                             ),
                         ],
                     ),
-                    alignment=ft.alignment.center,
-                    expand=True,
                 ),
 
                 # Pequeno marcador preto
@@ -3472,7 +3462,6 @@ def main(page: ft.Page):
                     bgcolor="black",
                 ),
             ],
-            spacing=0,
             horizontal_alignment="center",
             alignment=ft.alignment.center,
             expand=True,
