@@ -3043,11 +3043,20 @@ def main(page: ft.Page):
         formatted_date = date_obj.strftime("%d-%m-%Y")
         
         
-        message_welcome = ft.Container(
-            width=399,
-            height=57,
-            alignment=ft.Alignment(0, 0),
-            content=ft.Text(f"🍀\n Olá {user_name}, boa sorte!", size=18, text_align=ft.TextAlign.CENTER),
+        message_welcome = ft.Row(
+            alignment=ft.MainAxisAlignment.CENTER,
+            controls=[
+                ft.Container(
+                    expand=True,  # O container acompanha a largura disponível
+                    height=57,
+                    alignment=ft.alignment.center,
+                    content=ft.Text(
+                        f"🍀\nOlá {user_name}, boa sorte!",
+                        size=18,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                )
+            ]
         )
 
         def fetch_goal_from_db():
@@ -3582,11 +3591,15 @@ def main(page: ft.Page):
         )
         
         button_bolt_uber = ft.Row(
+            alignment=ft.MainAxisAlignment.CENTER,
             controls=[
                 ft.Container(
-                    width=399,
+                    expand=True,  # Responsivo: ocupa largura disponível
                     height=72,
+                    alignment=ft.alignment.center,
                     content=ft.Row(
+                        alignment=ft.MainAxisAlignment.SPACE_EVENLY,  # Espaço igual entre os botões
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
                         controls=[
                             ft.Container(
                                 content=ft.Image(
@@ -3605,11 +3618,11 @@ def main(page: ft.Page):
                                 on_click=lambda e: page.go("/page_daily?param=Uber")
                             ),
                         ],
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     ),
                 )
             ]
         )
+
             
         page.views.clear()
         page.views.append(
