@@ -3757,11 +3757,11 @@ def main(page: ft.Page):
             cursor.close()
             conn.close()
         
-        name = ft.TextField(label="Name", border_radius=21, on_change=validate_name)
-        surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname)
-        email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
-        password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21)
-        password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password)
+        name = ft.TextField(label="Name", border_radius=21, on_change=validate_name, expand=True)
+        surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname, expand=True)
+        email = ft.TextField(label="Email", border_radius=21, on_change=validate_email, expand=True)
+        password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21, expand=True)
+        password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password, expand=True)
         
         button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
                                           on_click=lambda e: add_in_db(name.value, surname.value, email.value, password.value))
@@ -3769,16 +3769,55 @@ def main(page: ft.Page):
             ft.View(
                 "/register",
                 controls=[
-                    ft.Container(
-                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
+                    ft.Row(
+                        controls=[
+                            ft.IconButton(
+                                icon=ft.icons.ARROW_BACK,
+                                icon_size=27,
+                                tooltip="Voltar",
+                                on_click=lambda e: page.go("/")  # substitua "/" pela página anterior real, ex: "/login"
+                            )
+                        ],
+                        alignment=ft.MainAxisAlignment.START
                     ),
-                    ft.Text("Cadastro de Novo Usuário"),
-                    ft.Row(controls=[name]),
-                    ft.Row(controls=[surname]),
-                    ft.Row(controls=[email]),
-                    ft.Row(controls=[password]),
-                    ft.Row(controls=[password_confirm]),
-                    ft.Row(controls=[button_to_db]),
+                    ft.Container(
+                        expand=True, bgcolor="white", border_radius=21,
+                        content=ft.Column(
+                            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+                            controls=[
+                                 ft.Container(
+                                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
+                                        fit=ft.ImageFit.CONTAIN  # garante que a imagem se ajuste proporcionalmente),
+                                    ),
+                                    padding=ft.Padding(top=30, left=90, right=90, bottom=30),
+                                ),
+                                ft.Container(
+                                    content=ft.Column(
+                                        controls=[ 
+                                            title_app(
+                                            icon=ft.Icon(ft.icons.PERSON_ADD),
+                                            title=ft.Text("Novo usuário", size=21),
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                                ft.Container(
+                                    content=ft.Column(
+                                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                        controls=[
+                                            ft.Row(controls=[name]),
+                                            ft.Row(controls=[surname]),
+                                            ft.Row(controls=[email]),
+                                            ft.Row(controls=[password]),
+                                            ft.Row(controls=[password_confirm]),
+                                            ft.Row(controls=[button_to_db]),
+                                        ],
+                                        alignment=ft.MainAxisAlignment.CENTER
+                                    )
+                                )
+                            ]
+                        )
+                    )
                 ]
             )
         )
@@ -3844,8 +3883,6 @@ def main(page: ft.Page):
             
     
         global field_email
-
-        title = ft.Text("Recuperacao de senha")
         field_email = ft.TextField(label="Email", border_radius=21, on_change=validate_email)
         button_send = ft.ElevatedButton(text="Enviar", on_click=lambda e:verify_email_exist(field_email.value))
 
@@ -3854,13 +3891,44 @@ def main(page: ft.Page):
             ft.View(
                 "/forget_password",
                 controls=[
-                    ft.Container(
-                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
-                        padding=90,
+                    ft.Row(
+                        controls=[
+                            ft.IconButton(
+                                icon=ft.icons.ARROW_BACK,
+                                icon_size=27,
+                                tooltip="Voltar",
+                                on_click=lambda e: page.go("/")  # substitua "/" pela página anterior real, ex: "/login"
+                            )
+                        ],
+                        alignment=ft.MainAxisAlignment.START
                     ),
-                    title,
-                    field_email,
-                    button_send
+                    ft.Container(
+                        expand=True, bgcolor="white", border_radius=21,
+                        content=ft.Column(
+                            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+                            controls=[
+                                ft.Container(
+                                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
+                                    padding=ft.Padding(top=30, left=90, right=90, bottom=30),
+                                ),
+                                ft.Container(
+                                    content=ft.Column(
+                                        controls=[ 
+                                            title_app(
+                                                icon=ft.Icon(ft.icons.LOCK),
+                                                title=ft.Text("Gerar nova senha", size=21),
+                                            ),
+                                            ft.Container(),
+                                            ft.Column(controls=[field_email]),
+                                            ft.Container(),
+                                            ft.Row(controls=[button_send]),
+
+                                        ],
+                                    ),
+                                ),
+                            ]
+                        )
+                    )
                 ]
             )
         )
@@ -3947,19 +4015,59 @@ def main(page: ft.Page):
             disabled=True, 
             on_click=lambda e: verify_code_email(field_code.value, new_password.value, field_email.value, codigo_temporario)
         )
+
         page.views.append(
             ft.View(
                 "/page_new_password",
                 controls=[
-                    ft.Container(
-                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
-                        padding=90,
+                    ft.Row(
+                        controls=[
+                            ft.IconButton(
+                                icon=ft.icons.ARROW_BACK,
+                                icon_size=27,
+                                tooltip="Voltar",
+                                on_click=lambda e: page.go("/")  # substitua "/" pela página anterior real, ex: "/login"
+                            )
+                        ],
+                        alignment=ft.MainAxisAlignment.START
                     ),
-                    title,
-                    field_code,
-                    new_password,
-                    confirm_new_password,
-                    button_updated_password
+                    ft.Container(
+                        expand=True, bgcolor="white", border_radius=21,
+                        content=ft.Column(
+                            horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+                            controls=[
+                                 ft.Container(
+                                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
+                                        fit=ft.ImageFit.CONTAIN  # garante que a imagem se ajuste proporcionalmente),
+                                    ),
+                                    padding=ft.Padding(top=30, left=90, right=90, bottom=30),
+                                ),
+                                ft.Container(
+                                    content=ft.Column(
+                                        controls=[ 
+                                            title_app(
+                                            icon=ft.Icon(ft.icons.LOCK),
+                                            title=ft.Text("Criar nova senha", size=21),
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                                ft.Container(
+                                    content=ft.Column(
+                                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                        controls=[
+                                            ft.Column(controls=[field_code]),
+                                            ft.Column(controls=[new_password]),
+                                            ft.Column(controls=[confirm_new_password]),
+                                            ft.Container(),
+                                            ft.Row(controls=[button_updated_password]),
+                                        ],
+                                        alignment=ft.MainAxisAlignment.CENTER
+                                    )
+                                )
+                            ]
+                        )
+                    )
                 ]
             )
         )
