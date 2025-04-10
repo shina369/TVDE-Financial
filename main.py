@@ -416,7 +416,7 @@ def main(page: ft.Page):
                 height=111,
                 bgcolor="#EFEFEF",
                 border_radius=21,
-                margin=ft.Margin(top=3, bottom=3, left=18, right=9),
+                margin=ft.Margin(top=3, bottom=3, left=12, right=9),
                 on_click=on_click_action,
                 content=ft.Column(
                     controls=[
@@ -482,7 +482,7 @@ def main(page: ft.Page):
                                     ft.Text("Objetivo Líquido:", size=14),
                                     ft.Text("Gorjetas:", size=14),
                                     ft.Text("Reembolso/Portagem:", size=14),
-                                    ft.Text("Ganhos até agora + Gorjetas + Reembolso:", size=14),
+                                    ft.Text("Ganhos + Gorjetas + Reembolso:", size=14),
                                 ],
                                 alignment=ft.MainAxisAlignment.START
                             ),
