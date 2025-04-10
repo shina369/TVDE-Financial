@@ -3585,33 +3585,38 @@ def main(page: ft.Page):
 
         
         goal_today = ft.Row(
-            controls=[
-                ft.Container(
-                    width=399,
-                    height=123,
-                    padding=0,
-                    margin=0,
-                    border_radius=25,
-                    content=ft.Column(
-                        controls=[
-                            ft.Text("OBJETIVO DIÁRIO", size=15, color=ft.colors.BLACK),
-                            ft.Container(
-                                content=ft.Text(f"€ {daily_value_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), 
-                                    size=42, 
-                                    color="#15CD74", 
-                                    weight=ft.FontWeight.BOLD
-                                ),
-                                shadow=ft.BoxShadow(color="#15CD74", blur_radius=180)  # Sombra
+        alignment=ft.MainAxisAlignment.CENTER,  # Centraliza o container na tela
+        controls=[
+            ft.Container(
+                width=399,
+                height=123,
+                padding=0,
+                margin=0,
+                border_radius=25,
+                alignment=ft.alignment.center,
+                expand=True,  # Responsivo
+                content=ft.Column(
+                    alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
+                    controls=[
+                        ft.Text("OBJETIVO DIÁRIO", size=18, color=ft.colors.BLACK),
+                        ft.Container(
+                            content=ft.Text(
+                                f"€ {daily_value_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
+                                size=45,
+                                color="#15CD74",
+                                weight=ft.FontWeight.BOLD
                             ),
-                            ft.Text("valores brutos", size=12, color="#B0B0B0"),
-                            ],
-                            alignment=ft.alignment.center,  # Centraliza verticalmente na coluna
-                    ),
-                    alignment=ft.alignment.center,
-                    expand=True,
+                            shadow=ft.BoxShadow(color="#15CD74", blur_radius=180)  # Sombra no valor
+                        ),
+                        ft.Text("valores brutos", size=15, color="#B0B0B0"),
+                    ]
                 )
-            ],
-        )
+            )
+        ]
+    )
+
+
 
         buttons_visible = True
         
