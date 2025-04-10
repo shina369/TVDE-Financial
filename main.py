@@ -586,7 +586,7 @@ def main(page: ft.Page):
         page.views.clear()
 
         selected_date_range = ft.Container(
-            width=390,  # Defina o tamanho do contêiner conforme necessário
+            expand=True,  # Defina o tamanho do contêiner conforme necessário
             alignment=ft.alignment.center,  # Centraliza o texto dentro do contêiner
             content=ft.Text(
                 "Selecione um intervalo de datas:",
@@ -824,7 +824,7 @@ def main(page: ft.Page):
 
         # Container que engloba os campos de data lado a lado
         date_range_container = ft.Container(
-            width=390,
+            expand=True,
             alignment=ft.alignment.center,
             content=ft.Column(
                 controls=[
@@ -876,7 +876,7 @@ def main(page: ft.Page):
                         ],
                     ),
                     ft.Container(
-                        width=390,
+                        expand=True,
                         bgcolor="#EFEFEF",
                         border_radius=21,
                         margin=6,
@@ -952,7 +952,7 @@ def main(page: ft.Page):
     # Atualizar o container com os valores dinâmicos
     def metrics_container(title, color, data):
         return ft.Container(
-            width=390,
+            expand=True,
             bgcolor="#EFEFEF",
             border_radius=21,
             margin=6,
@@ -1114,7 +1114,7 @@ def main(page: ft.Page):
     # Layout de métricas por plataforma
     def metrics_container2(title, color, data):
         return ft.Container(
-            width=390,
+            expand=True,
             bgcolor="#EFEFEF",
             border_radius=21,
             margin=6,
