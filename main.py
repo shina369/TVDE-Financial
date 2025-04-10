@@ -2682,16 +2682,18 @@ def main(page: ft.Page):
             )
         )
         
-        date_picker = ft.DatePicker(on_change=None)  # on_change definido depois dinamicamente
+        # Criando o DatePicker
+        date_picker = ft.DatePicker(on_change=None)  # on_change será atribuído dinamicamente
 
+        # Função para abrir o DatePicker ao clicar no ícone de calendário
         def pick_date(e, field):
             date_picker.on_change = lambda e: on_date_selected(e, field)
-            date_picker.pick_date()
+            page.open(date_picker)
 
+        # Função para tratar a seleção da data
         def on_date_selected(e, field):
             if date_picker.value:
                 field.value = date_picker.value.strftime("%d/%m/%Y")
-                validate_date(e)
                 page.update()
         
         daily_date_field = ft.TextField(
@@ -2709,6 +2711,7 @@ def main(page: ft.Page):
                 )
             )
         )
+        page.update()
 
         def hour_validy(e):
             texto = e.control.value
