@@ -3492,7 +3492,7 @@ def main(page: ft.Page):
                 # Pequeno marcador preto
                 ft.Container(
                     width=3,
-                    height=6,
+                    height=9,
                     bgcolor="black",
                 ),
             ],
@@ -3589,7 +3589,7 @@ def main(page: ft.Page):
         controls=[
             ft.Container(
                 width=399,
-                height=123,
+                height=153,
                 padding=0,
                 margin=0,
                 border_radius=25,
@@ -3615,11 +3615,6 @@ def main(page: ft.Page):
             )
         ]
     )
-
-
-
-        buttons_visible = True
-        
         button_bolt_uber = ft.Row(
             alignment=ft.MainAxisAlignment.CENTER,
             controls=[
