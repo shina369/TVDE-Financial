@@ -2423,79 +2423,52 @@ def main(page: ft.Page):
     def page_more_date():
         page.views.clear()
 
-        big_button_bolt = ft.Container(
-                        width=180,
-                        height=135,
-                        bgcolor="#EFEFEF",
-                        border_radius=21,
-                        margin=10,
-                        on_click=lambda e: page.go("/page_daily?param=Bolt"),
-                        content=
-                            ft.Column(  
-                                controls=[
-                                    ft.Image(src="https://i.ibb.co/FKM5tjP/icon-bolt51x51.png"),
-                                    ft.Text("Diária Bolt")
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                            )
+        def create_button(content, route):
+            return ft.Container(
+                bgcolor="#EFEFEF",
+                border_radius=21,
+                margin=10,
+                expand=1,
+                height=160,
+                on_click=lambda e: page.go(route),
+                content=ft.Column(
+                    controls=content,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                )
+            )
+
+        big_button_bolt = create_button(
+            [
+                ft.Image(src="https://i.ibb.co/FKM5tjP/icon-bolt51x51.png"),
+                ft.Text("Diária Bolt")
+            ],
+            "/page_daily?param=Bolt"
         )
 
-        big_button_uber = ft.Container(
-                        width=180,
-                        height=135,
-                        bgcolor="#EFEFEF",
-                        border_radius=21,
-                        on_click=lambda e: page.go("/page_daily?param=Uber"),
-                        content=
-                            ft.Column(  
-                                controls=[
-                                    ft.Image(src="https://i.ibb.co/5xGNqkc/icon-uber51x51.png"),
-                                    ft.Text("Diária Uber")
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                            )
-                            
+        big_button_uber = create_button(
+            [
+                ft.Image(src="https://i.ibb.co/5xGNqkc/icon-uber51x51.png"),
+                ft.Text("Diária Uber")
+            ],
+            "/page_daily?param=Uber"
         )
 
-
-        big_button_expense = ft.Container(
-                        width=180,
-                        height=135,
-                        bgcolor="#EFEFEF",
-                        border_radius=21,
-                        margin=10,
-                        on_click=lambda e: page.go("/page_expense"),
-                        content=
-                            ft.Column(  
-                                controls=[
-                                    ft.Icon(ft.icons.MONEY_OFF_SHARP, size=48),
-                                    ft.Text("Nova Despesa")
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                            )
+        big_button_expense = create_button(
+            [
+                ft.Icon(ft.icons.MONEY_OFF_SHARP, size=48),
+                ft.Text("Nova Despesa")
+            ],
+            "/page_expense"
         )
 
-        
-        big_button_new_goal = ft.Container(
-                        width=180,
-                        height=135,
-                        bgcolor="#EFEFEF",
-                        border_radius=21,
-                        on_click=lambda e: page.go("/page_new_goal"),
-                        content=
-                            ft.Column(  
-                                controls=[
-                                    ft.Icon(ft.icons.ADD_CHART_OUTLINED, size=48),
-                                    ft.Text("Novo Objetivo")
-                                ],
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                            )
+        big_button_new_goal = create_button(
+            [
+                ft.Icon(ft.icons.ADD_CHART_OUTLINED, size=48),
+                ft.Text("Novo Objetivo")
+            ],
+            "/page_new_goal"
         )
-
 
         page.views.append(
             ft.View(
