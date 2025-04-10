@@ -2423,14 +2423,18 @@ def main(page: ft.Page):
     def page_more_date():
         page.views.clear()
 
-        def create_button(content, route):
+        def create_button(content, route, gradient_colors):
             return ft.Container(
-                bgcolor="#EFEFEF",
                 border_radius=21,
                 margin=10,
                 expand=1,
                 height=160,
                 on_click=lambda e: page.go(route),
+                gradient=ft.LinearGradient(
+                    begin=ft.alignment.top_left,
+                    end=ft.alignment.bottom_right,
+                    colors=gradient_colors
+                ),
                 content=ft.Column(
                     controls=content,
                     alignment=ft.MainAxisAlignment.CENTER,
@@ -2443,7 +2447,8 @@ def main(page: ft.Page):
                 ft.Image(src="https://i.ibb.co/FKM5tjP/icon-bolt51x51.png"),
                 ft.Text("Diária Bolt")
             ],
-            "/page_daily?param=Bolt"
+            "/page_daily?param=Bolt",
+            ["#00C853", "#B2FF59"]  # verde limão degradê
         )
 
         big_button_uber = create_button(
@@ -2451,7 +2456,8 @@ def main(page: ft.Page):
                 ft.Image(src="https://i.ibb.co/5xGNqkc/icon-uber51x51.png"),
                 ft.Text("Diária Uber")
             ],
-            "/page_daily?param=Uber"
+            "/page_daily?param=Uber",
+            ["#424242", "#BDBDBD"]  # cinza escuro para claro
         )
 
         big_button_expense = create_button(
@@ -2459,7 +2465,8 @@ def main(page: ft.Page):
                 ft.Icon(ft.icons.MONEY_OFF_SHARP, size=48),
                 ft.Text("Nova Despesa")
             ],
-            "/page_expense"
+            "/page_expense",
+            ["#FF6F00", "#FFD54F"]  # laranja para amarelo
         )
 
         big_button_new_goal = create_button(
@@ -2467,7 +2474,8 @@ def main(page: ft.Page):
                 ft.Icon(ft.icons.ADD_CHART_OUTLINED, size=48),
                 ft.Text("Novo Objetivo")
             ],
-            "/page_new_goal"
+            "/page_new_goal",
+            ["#2962FF", "#82B1FF"]  # azul intenso para azul claro
         )
 
         page.views.append(
