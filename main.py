@@ -2586,6 +2586,8 @@ def main(page: ft.Page):
             btn_bolt.update()
             btn_uber.update()
             configure_buttons(param)
+
+            format_number_only99(trips_made_field)
             
             daily_value_field.on_change = lambda e: (validate_fields(), format_number_accounting(e))
             trips_made_field.on_change = lambda e: validate_fields()
@@ -2620,19 +2622,25 @@ def main(page: ft.Page):
                 e.control.update()
             
         def format_number_only99(e):
-        # Remove qualquer caractere que não seja dígito
+            # Remove qualquer caractere que não seja dígito
             raw_value = ''.join(filter(str.isdigit, e.control.value))
             
             if raw_value:
-                # Converte para inteiro e formata com separador de milhar
+                # Converte para inteiro e limita a no máximo 99
                 integer_value = min(int(raw_value[:2]), 99)
                 formatted_value = str(integer_value)
             else:
                 formatted_value = ""
-
+            
             # Atualiza o TextField com o valor formatado
             e.control.value = formatted_value
             e.control.update()
+
+            # Limita o número de caracteres a 2
+            if len(formatted_value) > 2:
+                e.control.value = formatted_value[:2]
+                e.control.update()
+
 
         def validate_date(e):
             # Chama a validação sempre que a data mudar
@@ -2783,7 +2791,7 @@ def main(page: ft.Page):
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
             helper_text=f"*Todas as Viagens realizadas da {param}",
-            on_change=format_number_only99
+            on_change=lambda e: [format_number_only99(e), validate_fields()]  # Chama a formatação e validação
         )
 
         observation_field = ft.TextField(
@@ -2877,18 +2885,26 @@ def main(page: ft.Page):
             # Atualiza a página para refletir as mudanças
             page.update()
 
+        def handle_bolt_click(e):
+            validate_fields()
+            if not btn_bolt.disabled:
+                save_daily_bolt_uber("Bolt")
+
+        def handle_uber_click(e):
+            validate_fields()
+            if not btn_uber.disabled:
+                save_daily_bolt_uber("Uber")
+
         btn_bolt = ft.ElevatedButton(
-        text="Cadastrar Bolt",
-        on_click=lambda _: save_daily_bolt_uber("Bolt"),
-        visible=False,  # Inicialmente invisível
-        disabled=True    # Inicialmente desabilitado
-    )
+            text="Cadastrar Bolt",
+            on_click=handle_bolt_click,
+            disabled=False
+        )
 
         btn_uber = ft.ElevatedButton(
-        text="Cadastrar Uber",
-        on_click=lambda _: save_daily_bolt_uber("Uber"),
-        visible=False,  # Inicialmente invisível
-        disabled=True    # Inicialmente desabilitado
+            text="Cadastrar Uber",
+            on_click=handle_uber_click,
+            disabled=False
         )
 
         configure_buttons(param)
