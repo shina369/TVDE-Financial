@@ -412,7 +412,7 @@ def main(page: ft.Page):
         
         def create_big_button(icon, text, on_click_action):
             return ft.Container(
-                width=165,
+                expand=True,
                 height=111,
                 bgcolor="#EFEFEF",
                 border_radius=21,
@@ -455,7 +455,7 @@ def main(page: ft.Page):
         total_value = total_gain + goal_sum_tips_float + total_reimbursement
 
         panel_reports = ft.Container(
-            width=385,
+            expand=True,
             height=273,
             bgcolor="#EFEFEF",
             border_radius=21,
