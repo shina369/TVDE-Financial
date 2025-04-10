@@ -3570,7 +3570,7 @@ def main(page: ft.Page):
         controls=[
             ft.Container(
                 width=399,
-                height=153,
+                height=146,
                 padding=0,
                 margin=0,
                 border_radius=25,
@@ -3584,8 +3584,8 @@ def main(page: ft.Page):
                         ft.Container(
                             content=ft.Text(
                                 f"€ {daily_value_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
-                                size=45,
-                                color="#15CD74",
+                                size=51,
+                                color="#000000",
                                 weight=ft.FontWeight.BOLD
                             ),
                             shadow=ft.BoxShadow(color="#15CD74", blur_radius=180)  # Sombra no valor
