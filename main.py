@@ -435,7 +435,11 @@ def main(page: ft.Page):
 
         expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
 
-        goal_value2_float = float(goal_value2.replace(",", ".")) if isinstance(goal_value2, str) else float(goal_value2)
+        if isinstance(goal_value2, str):
+            goal_value2 = goal_value2.replace(".", "").replace(",", ".")
+            goal_value2_float = float(goal_value2)
+
+
         goal_sum_tips_float = float(goal_sum_tips.replace(",", ".")) if isinstance(goal_sum_tips, str) else float(goal_sum_tips)
 
         # Soma os valores já convertidos
@@ -2623,7 +2627,7 @@ def main(page: ft.Page):
             
         def format_number_only99(e):
             # Remove qualquer caractere que não seja dígito
-            raw_value = ''.join(filter(str.isdigit, e.control.value))
+            raw_value = ''.join(filter(str.isdigit, e.value))
             
             if raw_value:
                 # Converte para inteiro e limita a no máximo 99
@@ -2633,13 +2637,13 @@ def main(page: ft.Page):
                 formatted_value = ""
             
             # Atualiza o TextField com o valor formatado
-            e.control.value = formatted_value
-            e.control.update()
+            e.value = formatted_value
+            e.update()
 
             # Limita o número de caracteres a 2
             if len(formatted_value) > 2:
-                e.control.value = formatted_value[:2]
-                e.control.update()
+                e.value = formatted_value[:2]
+                e.update()
 
 
         def validate_date(e):
