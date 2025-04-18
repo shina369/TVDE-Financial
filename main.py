@@ -11,6 +11,7 @@ import sqlite3
 import json
 import os
 from MYSQL_db_tvde_users_external import connect
+import SQLite_db_tvde_content_internal
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -66,15 +67,17 @@ def main(page: ft.Page):
         ]
     )
 
-    header = ft.AppBar(
-        leading=pb,  # botão/menu à esquerda
-        title=ft.Image(
-            src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
-            width=154,
-            height=51
-        ),
-        center_title=True,
-        toolbar_height=66,
+    # Barra de Navegação na Row
+    header = ft.Row(
+        controls=[
+            pb,  # Menu à esquerda
+            ft.Image(
+                src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
+                width=154,
+                height=72,
+            ),  # Logo à direita
+        ],
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Distribui entre as extremidades
     )
 
     
