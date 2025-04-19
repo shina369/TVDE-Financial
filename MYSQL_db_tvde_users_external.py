@@ -52,79 +52,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 )
 """
-create_table_query_goal = """ 
-CREATE TABLE IF NOT EXISTS goal (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    goal DECIMAL(10,2) DEFAULT 0.00,
-    goal_gross DECIMAL(10,2) DEFAULT 0.00,
-    goal_start DATE NOT NULL,
-    goal_end DATE NOT NULL,
-    day_off INT DEFAULT 0,
-    fleet_discount DECIMAL(5,2) DEFAULT 0.00,
-    tax_discount DECIMAL(5,2) DEFAULT 0.00,
-    total_gain DECIMAL(10,2) DEFAULT 0.00,
-    goal_successful VARCHAR(20) DEFAULT 'negativo',
-    UNIQUE(user_id, goal_start, goal_end),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-"""
-
-create_table_query_uber = """ 
-CREATE TABLE IF NOT EXISTS uber (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    daily_value DECIMAL(10, 2) NOT NULL,
-    daily_value_tips DECIMAL(10, 2) NOT NULL,
-    daily_date DATE NOT NULL,
-    working_hours VARCHAR(50),
-    distance_traveled DECIMAL(10, 2),
-    trips_made INT,
-    observation TEXT,
-    daily_reimbursement DECIMAL(10, 2),
-    UNIQUE(user_id, daily_date),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-"""
-
-create_table_query_bolt = """ 
-CREATE TABLE IF NOT EXISTS bolt (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    daily_value DECIMAL(10, 2) NOT NULL,
-    daily_value_tips DECIMAL(10, 2),
-    daily_date DATE NOT NULL,
-    working_hours VARCHAR(50),
-    distance_traveled DECIMAL(10, 2),
-    trips_made INT,
-    observation TEXT,
-    daily_reimbursement DECIMAL(10, 2),
-    UNIQUE(user_id, daily_date),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-"""
-
-create_table_query_expense = """ 
-CREATE TABLE IF NOT EXISTS expense (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    expense_value DECIMAL(10, 2) NOT NULL,
-    expense_date DATE NOT NULL,
-    expense_name VARCHAR(100) NOT NULL,
-    expense_amount_liters DECIMAL(10, 2),
-    expense_amount_energy DECIMAL(10, 2),
-    expense_amount_cubic_meters DECIMAL(10, 2),
-    observation_expense TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
-"""
-
 cursor.execute(create_table_query)
-cursor.execute(create_table_query_goal)
-cursor.execute(create_table_query_uber)
-cursor.execute(create_table_query_bolt)
-cursor.execute(create_table_query_expense)
 
    # Commit the transactio
 

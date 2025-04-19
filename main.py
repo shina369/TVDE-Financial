@@ -11,6 +11,7 @@ import sqlite3
 import json
 import os
 from MYSQL_db_tvde_users_external import connect
+import SQLite_db_tvde_content_internal
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -47,21 +48,21 @@ def main(page: ft.Page):
 
     pb = ft.PopupMenuButton(
         icon=ft.Icons.MENU,
-        shadow_color=ft.Colors.GREEN_300,
+        shadow_color=ft.colors.GREEN_300,
         bgcolor="#F1F1F1",
         icon_size=33,
         items=[
                 ft.PopupMenuItem(text="MENU"),
-                ft.PopupMenuItem(icon=ft.Icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
-                ft.PopupMenuItem(icon=ft.Icons.ADD_CIRCLE_OUTLINE_ROUNDED, text="Lançamentos" , on_click=lambda _: page.go("/page_more_date")),
-                ft.PopupMenuItem(icon=ft.Icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
-                ft.PopupMenuItem(icon=ft.Icons.INSERT_CHART_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
-                ft.PopupMenuItem(icon=ft.Icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
-                ft.PopupMenuItem(icon=ft.Icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração", on_click=lambda _: page.go("/page_settings")),
-                ft.PopupMenuItem(icon=ft.Icons.WORKSPACE_PREMIUM_OUTLINED, text="SEJA PREMIUM", on_click=lambda _: page.go("/page_premium")),
+                ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
+                ft.PopupMenuItem(icon=ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, text="Lançamentos" , on_click=lambda _: page.go("/page_more_date")),
+                ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
+                ft.PopupMenuItem(icon=ft.icons.INSERT_CHART_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
+                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
+                ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração", on_click=lambda _: page.go("/page_settings")),
+                ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="SEJA PREMIUM", on_click=lambda _: page.go("/page_premium")),
                 ft.PopupMenuItem(),  # divider
                 ft.PopupMenuItem(
-                    icon=ft.Icons.EXIT_TO_APP_SHARP, text="SAIR",on_click=lambda _: page.go("/")
+                    icon=ft.icons.EXIT_TO_APP_SHARP, text="SAIR",on_click=lambda _: page.go("/")
                 ),
         ]
     )
@@ -89,10 +90,10 @@ def main(page: ft.Page):
         content=ft.NavigationBar(
             indicator_color="#19D278",
             destinations=[
-                ft.NavigationBarDestination(icon=ft.Icons.HOME_OUTLINED, label="Início"),
-                ft.NavigationBarDestination(icon=ft.Icons.ADD_CIRCLE_OUTLINE_ROUNDED, label="Novo dado"),
-                ft.NavigationBarDestination(icon=ft.Icons.INSERT_CHART_OUTLINED, label="Relatórios"),
-                ft.NavigationBarDestination(icon=ft.Icons.SETTINGS, label="Config"),
+                ft.NavigationBarDestination(icon=ft.icons.HOME_OUTLINED, label="Início"),
+                ft.NavigationBarDestination(icon=ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, label="Novo dado"),
+                ft.NavigationBarDestination(icon=ft.icons.INSERT_CHART_OUTLINED, label="Relatórios"),
+                ft.NavigationBarDestination(icon=ft.icons.SETTINGS, label="Config"),
             ],
             on_change=on_change,
         ),
@@ -113,7 +114,7 @@ def main(page: ft.Page):
                 "/message_screen",
                 controls=[
                     ft.Container(
-                        content=ft.Text(msg, color=ft.Colors.GREEN, size=21)
+                        content=ft.Text(msg, color=ft.colors.GREEN, size=21)
                     )
                 ]  
             )
@@ -128,14 +129,14 @@ def main(page: ft.Page):
                 alignment=ft.MainAxisAlignment.CENTER  # Alinha no centro
             ),
             padding=ft.padding.only(bottom=21),
-            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.Colors.GREY_900))
+            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREY_900))
         )
     
     def page_menu():
         page.views.clear()
 
         page_menu_open = ft.Container(
-            bgcolor=ft.Colors.AMBER_300,
+            bgcolor=ft.colors.AMBER_300,
             width=435,
             height=600,
             border_radius=21,
@@ -143,7 +144,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
                     ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
-                    ft.border.only(bottom=ft.border.BorderSide(0.3, ft.Colors.GREY_900)),
+                    ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREY_900)),
                     ft.Container(height=90),
                     ft.Text("Nome: "),
                     ft.Text("Email: "),
@@ -181,36 +182,36 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.Icons.WORKSPACE_PREMIUM_OUTLINED),
+                           icon = ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED),
                            title = ft.Text("PREMIUM", size=21),
                     ),
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
                             ft.Text("CONTROLE SEUS GANHOS E GASTOS")
                         ]
                     ), 
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
                             ft.Text("DESBLOQUEIE RELATÓRIOS COMPLETOS")
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
                             ft.Text("RELATÓRIOS EXCLUSIVOS")
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
                             ft.Text("SEM PROPAGANDAS")
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
                             ft.Text("CANCELE A QUALQUER MOMENTO")
                         ]
                     ),
@@ -240,14 +241,14 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.Icons.ACCOUNT_CIRCLE_OUTLINED),
+                        icon=ft.Icon(ft.icons.ACCOUNT_CIRCLE_OUTLINED),
                         title=ft.Text(my_account_title, size=21),
                     ),
                     ft.Container(
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.Icons.ACCOUNT_CIRCLE, size=18),
+                                    content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=18),
                                     padding=ft.padding.all(9),
                                 ),
                                 ft.Text(f"{user_name_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
@@ -256,13 +257,13 @@ def main(page: ft.Page):
                         ),
                     ),
                     ft.Container(
-                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_200)),
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
                     ),
                     ft.Container(
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.Icons.EMAIL_OUTLINED, size=18),
+                                    content=ft.Icon(ft.icons.EMAIL_OUTLINED, size=18),
                                     padding=ft.padding.all(9),
                                 ),
                                 ft.Text(f"{email_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
@@ -271,13 +272,13 @@ def main(page: ft.Page):
                         ),
                     ),
                     ft.Container(
-                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_200)),
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
                     ),
                     ft.Container(
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.Icons.WORKSPACE_PREMIUM_OUTLINED, size=18),
+                                    content=ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED, size=18),
                                     padding=ft.padding.all(9),
                                 ),
                                 ft.Text(f"{account_type_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
@@ -287,13 +288,13 @@ def main(page: ft.Page):
                         ),
                     ),
                     ft.Container(
-                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_200)),
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
                     ),
                     ft.Container(
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.Icons.DATE_RANGE, size=18),
+                                    content=ft.Icon(ft.icons.DATE_RANGE, size=18),
                                     padding=ft.padding.all(9),
                                 ),
                                 ft.Text(f"{account_creation_date_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
@@ -302,7 +303,7 @@ def main(page: ft.Page):
                         ),
                     ),
                     ft.Container(
-                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_200)),
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
                     ),
                     button_edit,
                     bottom_menu
@@ -315,96 +316,100 @@ def main(page: ft.Page):
     def page_reports():
         page.views.clear()
 
-        # Conectar ao banco de dados MySQL usando as variáveis de ambiente
-        conn = mysql.connector.connect(
-            host=MYSQLHOST,
-            user=MYSQLUSER,
-            password=MYSQLPASSWORD,
-            database="db_tvde_users_external",
-            port=MYSQLPORT
-        )
+        with sqlite3.connect("db_tvde_content_internal.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
+            cursor = conn.cursor()  # Inicializando o cursor
 
-        cursor = conn.cursor()
+            # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
+            cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+            goal_result = cursor.fetchone()
 
-        # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
-        cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
-        goal_result = cursor.fetchone()
-
-        if goal_result:
-            goal_start = datetime.strptime(goal_result[0], '%d/%m/%Y')  # Convertendo string para datetime
-            goal_end = datetime.strptime(goal_result[1], '%d/%m/%Y')
-        else:
-            goal_start, goal_end = None, None
-
-        def fetch_expenses(start_date, end_date):
-            """Consulta as despesas entre start_date e end_date."""
-            cursor.execute("""
-                SELECT SUM(expense_value) 
-                FROM expense 
-                WHERE STR_TO_DATE(expense_date, '%d/%m/%Y') BETWEEN %s AND %s
-            """, (start_date, end_date))
-            result = cursor.fetchone()
-            return result[0] if result else 0.0
-
-        def fetch_goal_from_db():
-            # Executar a consulta para obter o valor do objetivo, fleet_discount e tax_discount
-            cursor.execute("SELECT goal, fleet_discount, tax_discount FROM goal ORDER BY id DESC LIMIT 1")  
-            result = cursor.fetchone()
-
-            if result:
-                try:
-                    goal = float(result[0])  # Convertendo para float
-                    return f"{goal:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-                except ValueError:
-                    return "Erro ao converter os valores"
+            if goal_result:
+                goal_start = datetime.strptime(goal_result[0], '%d/%m/%Y')  # Convertendo string para datetime
+                goal_end = datetime.strptime(goal_result[1], '%d/%m/%Y')
             else:
-                return "€ 0.00"
+                goal_start, goal_end = None, None
 
-        def fetch_goal_gross():
-            cursor.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
-            goal_gross_result = cursor.fetchone()
-
-            if goal_gross_result and goal_gross_result[0] is not None:
-                return float(goal_gross_result[0])
-            return 0.0
-
-        def fetch_goal_sum_tip(goal_start, goal_end):
-            cursor.execute("""
-            SELECT 
-                (SELECT COALESCE(SUM(daily_value_tips), 0) 
-                FROM uber 
-                WHERE STR_TO_DATE(daily_date, '%d/%m/%Y') BETWEEN %s AND %s) +
-                (SELECT COALESCE(SUM(daily_value_tips), 0) 
-                FROM bolt 
-                WHERE STR_TO_DATE(daily_date, '%d/%m/%Y') BETWEEN %s AND %s)
-            """, (goal_start, goal_end, goal_start, goal_end))
+            def fetch_expenses(start_date, end_date):
+                """Consulta as despesas entre start_date e end_date."""
+                cursor.execute(""" 
+                    SELECT SUM(expense_value) 
+                    FROM expense 
+                    WHERE date(substr(expense_date, 7, 4) || '-' || substr(expense_date, 4, 2) || '-' || substr(expense_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?)
+                """, (start_date, end_date))
+                result = cursor.fetchone()
+                return result[0] if result else 0.0
             
-            total_tips = cursor.fetchone()[0]  # Pega o resultado da soma
-            return float(total_tips) if total_tips is not None else 0.0
+            def fetch_goal_from_db():
+                # Executar a consulta para obter o valor do objetivo, fleet_discount e tax_discount
+                cursor.execute("SELECT goal, fleet_discount, tax_discount FROM goal ORDER BY id DESC LIMIT 1")  # Ajuste conforme necessário
+                result = cursor.fetchone()
 
-        def fetch_last_fleet_discount():
-            # Consulta SQL para pegar o último valor da coluna "fleet_discount"
-            cursor.execute("SELECT fleet_discount FROM goal ORDER BY id DESC LIMIT 1")
-            result = cursor.fetchone()
+                if result:
+                    # Garantir que goal_value, fleet_discount e tax_discount sejam do tipo float
+                    try:
+                        goal_value = float(result[0])  # Convertendo para float
+                        # Formatar o valor final para exibição
+                        return f"{goal_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                    except ValueError:
+                        return "Erro ao converter os valores"
+                else:
+                    return "€ 0.00"
+                
+            def fetch_goal_gross():
+                cursor.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
+                goal_gross_result = cursor.fetchone()
+                
+                if goal_gross_result and goal_gross_result[0] is not None:
+                    return float(goal_gross_result[0])
+                return 0.0
+            
+            def fetch_goal_sum_tip(goal_start, goal_end):
+                cursor.execute("""
+                  SELECT 
+                    (SELECT COALESCE(SUM(daily_value_tips), 0) 
+                    FROM uber 
+                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?)) +
+                    (SELECT COALESCE(SUM(daily_value_tips), 0) 
+                    FROM bolt 
+                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?))
+                """, (goal_start, goal_end, goal_start, goal_end))
+                
+                total_tips = cursor.fetchone()[0]  # Pega o resultado da soma
+                return float(total_tips) if total_tips is not None else 0.0
 
-            if result:
-                return result[0]
-            else:
-                return None
+            def fetch_last_fleet_discount():
+                # Consulta SQL para pegar o último valor da coluna "fleet_discount"
+                query = "SELECT fleet_discount FROM goal ORDER BY id DESC LIMIT 1"  # Altere 'sua_tabela' para o nome da tabela correta
+                
+                cursor.execute(query)
+                result = cursor.fetchone()
+                
+                # Se encontrou algum valor, retorna ele
+                if result:
+                    return result[0]  # O valor de "fleet_discount" estará na primeira posição
+                else:
+                    return None  # Se não encontrar nenhum valor, retorna None
+                # Função para criar um botão grande
 
-        def fetch_total_reimbursement(goal_start, goal_end):
-            cursor.execute("""
-                SELECT 
-                (SELECT COALESCE(SUM(daily_reimbursement), 0) 
-                FROM uber 
-                WHERE STR_TO_DATE(daily_date, '%d/%m/%Y') BETWEEN %s AND %s) +
-                (SELECT COALESCE(SUM(daily_reimbursement), 0) 
-                FROM bolt 
-                WHERE STR_TO_DATE(daily_date, '%d/%m/%Y') BETWEEN %s AND %s)
-            """, (goal_start, goal_end, goal_start, goal_end))
+            def fetch_total_reimbursement(goal_start, goal_end):
+                cursor.execute("""
+                    SELECT 
+                    (SELECT COALESCE(SUM(daily_reimbursement), 0) 
+                    FROM uber 
+                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?)) +
+                    (SELECT COALESCE(SUM(daily_reimbursement), 0) 
+                    FROM bolt 
+                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                    BETWEEN date(?) AND date(?))
 
-            total_reimbursement = cursor.fetchone()[0]  # Pega o resultado da soma
-            return float(total_reimbursement) if total_reimbursement is not None else 0.0
+                """, (goal_start, goal_end, goal_start, goal_end))
+
+                total_reimbursement = cursor.fetchone()[0]  # Pega o resultado da soma
+                return float(total_reimbursement) if total_reimbursement is not None else 0.0
 
         
         def create_big_button(icon, text, on_click_action):
@@ -424,7 +429,7 @@ def main(page: ft.Page):
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
                 )
             )
-        goal2 = fetch_goal_from_db()
+        goal_value2 = fetch_goal_from_db()
 
         goal_gross2 = fetch_goal_gross()
 
@@ -432,9 +437,9 @@ def main(page: ft.Page):
 
         expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
 
-        if isinstance(goal2, str):
-            goal2 = goal2.replace(".", "").replace(",", ".")
-            goal2_float = float(goal2)
+        if isinstance(goal_value2, str):
+            goal_value2 = goal_value2.replace(".", "").replace(",", ".")
+            goal_value2_float = float(goal_value2)
 
 
         goal_sum_tips_float = float(goal_sum_tips.replace(",", ".")) if isinstance(goal_sum_tips, str) else float(goal_sum_tips)
@@ -468,7 +473,7 @@ def main(page: ft.Page):
                     # Cabeçalho com ícone
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.Icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
+                            ft.Icon(ft.icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
                             ft.Text("Resumo do Objetivo", size=15, weight=ft.FontWeight.BOLD),
                         ],
                         alignment=ft.MainAxisAlignment.START
@@ -490,7 +495,7 @@ def main(page: ft.Page):
                             
                             ft.Column(
                                 controls=[
-                                    ft.Text(f"€ {goal2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
+                                    ft.Text(f"€ {goal_value2_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
                                     ft.Text(f"€ {goal_sum_tips_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
                                     ft.Text(f"€ {total_reimbursement:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
                                     ft.Text(f"€ {total_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=14, weight=ft.FontWeight.BOLD),
@@ -531,12 +536,12 @@ def main(page: ft.Page):
             content=ft.Row(
                 controls=[
                     create_big_button(
-                        ft.Icon(ft.Icons.EURO, size=39),
+                        ft.Icon(ft.icons.EURO, size=39),
                         "Despesas",
                         lambda e: page.go("/page_reports_expense")
                     ),
                     create_big_button(
-                        ft.Icon(ft.Icons.ADD_TO_HOME_SCREEN, size=36),
+                        ft.Icon(ft.icons.ADD_TO_HOME_SCREEN, size=36),
                         "Plataforma",
                         lambda e: page.go("/page_reports_fleet")
                     )
@@ -548,12 +553,12 @@ def main(page: ft.Page):
             content=ft.Row(
                 controls=[
                     create_big_button(
-                        ft.Icon(ft.Icons.DIRECTIONS_CAR, size=36),
+                        ft.Icon(ft.icons.DIRECTIONS_CAR, size=36),
                         "Geral",
                         lambda e: page.go("/page_reports_general")
                     ),
                     create_big_button(
-                        ft.Icon(ft.Icons.CALENDAR_MONTH, size=36), 
+                        ft.Icon(ft.icons.CALENDAR_MONTH, size=36), 
                         "Mensal", 
                         lambda e: page.go("/page_reports_monthly")
                     )
@@ -569,7 +574,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.Icons.INSERT_CHART_OUTLINED),
+                           icon = ft.Icon(ft.icons.INSERT_CHART_OUTLINED),
                            title = ft.Text("RELATÓRIOS", size=21),
                     ),
                     panel_reports,
@@ -625,7 +630,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             expand=True,  # Tornando o campo expansível
             suffix=ft.IconButton(
-                icon=ft.Icons.CALENDAR_MONTH,
+                icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, start_date_field),
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
@@ -647,7 +652,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             expand=True,  # Tornando o campo expansível
             suffix=ft.IconButton(
-                icon=ft.Icons.CALENDAR_MONTH,
+                icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, end_date_field),
             )
         )
@@ -668,14 +673,7 @@ def main(page: ft.Page):
                 return
 
             try:
-                # Conectar ao banco de dados MySQL usando as variáveis de ambiente
-                conn = mysql.connector.connect(
-                    host=MYSQLHOST,
-                    user=MYSQLUSER,
-                    password=MYSQLPASSWORD,
-                    database="db_tvde_users_external",
-                    port=MYSQLPORT
-                )
+                conn = sqlite3.connect("db_tvde_content_internal.db")
                 cursor = conn.cursor()
 
                 # Obtém todas as categorias dinâmicas de despesas
@@ -683,11 +681,11 @@ def main(page: ft.Page):
                 expense_names = [row[0] for row in cursor.fetchall()]
                 print("Despesas encontradas:", expense_names)  # Depuração
 
-                # Monta a consulta dinâmica para somar os valores das despesas
+                # Monta a consulta dinâmica
                 query = """
                 SELECT expense_name, COALESCE(SUM(expense_value), 0) AS total_expense
                 FROM expense
-                WHERE expense_date BETWEEN %s AND %s
+                WHERE expense_date BETWEEN ? AND ?
                 GROUP BY expense_name
                 """
                 cursor.execute(query, (start_date, end_date))
@@ -695,8 +693,6 @@ def main(page: ft.Page):
                 print("Valores das despesas:", expenses)  # Depuração
 
                 conn.close()
-            except mysql.connector.Error as err:
-                print("Erro ao conectar ou executar a consulta no MySQL:", err)
 
             except Exception as e:
                 report_message.content = ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")
@@ -783,14 +779,7 @@ def main(page: ft.Page):
                 return
 
             try:
-    # Conectar ao banco de dados MySQL usando as variáveis de ambiente
-                conn = mysql.connector.connect(
-                    host=MYSQLHOST,
-                    user=MYSQLUSER,
-                    password=MYSQLPASSWORD,
-                    database="db_tvde_users_external",
-                    port=MYSQLPORT
-                )
+                conn = sqlite3.connect("db_tvde_content_internal.db")
                 cursor = conn.cursor()
 
                 # Obtém todas as categorias dinâmicas de despesas
@@ -798,11 +787,11 @@ def main(page: ft.Page):
                 expense_names = [row[0] for row in cursor.fetchall()]
                 print("Despesas encontradas:", expense_names)  # Depuração
 
-                # Monta a consulta dinâmica para somar os valores das despesas
+                # Monta a consulta dinâmica
                 query = """
                 SELECT expense_name, COALESCE(SUM(expense_value), 0) AS total_expense
                 FROM expense
-                WHERE expense_date BETWEEN %s AND %s
+                WHERE expense_date BETWEEN ? AND ?
                 GROUP BY expense_name
                 """
                 cursor.execute(query, (start_date, end_date))
@@ -811,8 +800,6 @@ def main(page: ft.Page):
 
                 conn.close()
 
-            except mysql.connector.Error as err:
-                print("Erro ao conectar ou executar a consulta no MySQL:", err)
             except Exception as e:
                 report_message.controls = [ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")]
                 report_message.update()
@@ -883,7 +870,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.Icons.EURO),
+                        icon=ft.Icon(ft.icons.EURO),
                         title=ft.Text("RELATÓRIO DE DESPESAS", size=21),
                     ),
                     ft.Column(
@@ -907,7 +894,7 @@ def main(page: ft.Page):
                                     controls=[
                                         ft.Row(
                                             controls=[
-                                                ft.Icon(ft.Icons.RECEIPT_LONG, size=20, color="blue"),
+                                                ft.Icon(ft.icons.RECEIPT_LONG, size=20, color="blue"),
                                                 ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
                                             ],
                                             alignment=ft.MainAxisAlignment.START,
@@ -927,32 +914,25 @@ def main(page: ft.Page):
         page.update()
 
     # Função para buscar os dados do SQLite de uma tabela específica (uber ou bolt)
-    def fetch_fleet_data(table_name, user_id):
+    def fetch_fleet_data(table_name):
         try:
-            conn = mysql.connector.connect(
-                host=MYSQLHOST,
-                user=MYSQLUSER,
-                password=MYSQLPASSWORD,
-                database="db_tvde_users_external",
-                port=MYSQLPORT
-            )
+            conn = sqlite3.connect("db_tvde_content_internal.db")  # Nome do banco de dados
             cursor = conn.cursor()
 
-            query = f"""
+            cursor.execute(f"""
                 SELECT 
-                    COALESCE(SUM(daily_value), 0), 
-                    COALESCE(SUM(daily_value_tips), 0),
-                    COALESCE(SUM(CAST(working_hours AS DECIMAL(10,2))), 0),
-                    COALESCE(SUM(distance_traveled), 0),
-                    COALESCE(SUM(trips_made), 0)
+                    COALESCE(SUM(daily_value), 0) AS total_rendimento, 
+                    COALESCE(SUM(daily_value_tips), 0) AS total_gorjetas,
+                    COALESCE(SUM(working_hours), 0) AS total_horas,
+                    COALESCE(SUM(distance_traveled), 0) AS total_km,
+                    COALESCE(SUM(trips_made), 0) AS total_viagens
                 FROM {table_name}
-                WHERE user_id = %s
-            """
-            cursor.execute(query, (user_id,))
+            """)
             data = cursor.fetchone()
 
             total_rendimento, total_gorjetas, total_horas, total_km, total_viagens = data
 
+            #  Evita divisão por zero
             rendimento_por_hora = total_rendimento / total_horas if total_horas > 0 else 0
             rendimento_por_km = total_rendimento / total_km if total_km > 0 else 0
             rendimento_por_viagem = total_rendimento / total_viagens if total_viagens > 0 else 0
@@ -969,9 +949,8 @@ def main(page: ft.Page):
                 "distancia_media_por_viagem": distancia_media_por_viagem,
                 "viagens_por_hora": viagens_por_hora
             }
-
         except Exception as e:
-            print(f"Erro ao buscar dados da tabela {table_name} para o usuário {user_id}:", e)
+            print(f"Erro ao buscar dados da tabela {table_name}:", e)
             return None
         finally:
             conn.close()
@@ -989,7 +968,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.Icons.BAR_CHART, size=20, color=color),
+                            ft.Icon(ft.icons.BAR_CHART, size=20, color=color),
                             ft.Text(title, size=15, weight=ft.FontWeight.BOLD),
                         ],
                         alignment=ft.MainAxisAlignment.START,
@@ -1078,7 +1057,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.Icons.ADD_TO_HOME_SCREEN),
+                        icon=ft.Icon(ft.icons.ADD_TO_HOME_SCREEN),
                         title=ft.Text("RELATÓRIO DE PLATAFORMA", size=21),
                     ),
                     metrics_container("Uber", "blue", uber_data),
@@ -1094,13 +1073,7 @@ def main(page: ft.Page):
 
     def fetch_fleet_data2(table_name):
         try:
-            conn = mysql.connector.connect(
-                host=MYSQLHOST,
-                user=MYSQLUSER,
-                password=MYSQLPASSWORD,
-                database="db_tvde_users_external",
-                port=MYSQLPORT
-            )
+            conn = sqlite3.connect("db_tvde_content_internal.db")  # Nome do banco de dados
             cursor = conn.cursor()
 
             cursor.execute(f"""
@@ -1111,14 +1084,14 @@ def main(page: ft.Page):
                     COALESCE(SUM(distance_traveled), 0) AS total_km,
                     COALESCE(SUM(trips_made), 0) AS total_viagens
                 FROM {table_name}
-            """)
+                """)
             data = cursor.fetchone()
 
             # Verificando os dados retornados
             print(f"Dados recuperados da tabela {table_name}: {data}")  # Depuração
 
             if data:
-                total_rendimento, total_gorjetas, total_reembolso, total_km, total_viagens = data
+                total_rendimento, total_gorjetas, total_reembolso, total_km, total_viagens, = data
 
                 # Lucro Líquido
                 lucro_liquido = total_rendimento
@@ -1134,7 +1107,6 @@ def main(page: ft.Page):
             else:
                 print(f"Nenhum dado encontrado na tabela {table_name}")
                 return None
-
 
         except Exception as e:
             print(f"Erro ao buscar dados da tabela {table_name}:", e)
@@ -1158,7 +1130,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.Icons.BAR_CHART, size=20, color=color),
+                            ft.Icon(ft.icons.BAR_CHART, size=20, color=color),
                             ft.Text(title, size=15, weight=ft.FontWeight.BOLD),
                         ],
                         alignment=ft.MainAxisAlignment.START,
@@ -1233,13 +1205,13 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.Icons.DIRECTIONS_CAR),
+                        icon=ft.Icon(ft.icons.DIRECTIONS_CAR),
                         title=ft.Text("RELATÓRIO GERAL", size=21),
                     ),
                     ft.Column(
                         controls=[
-                            metrics_container2("Uber", ft.Colors.BLUE, uber_data),
-                            metrics_container2("Bolt", ft.Colors.GREEN, bolt_data),
+                            metrics_container2("Uber", ft.colors.BLUE, uber_data),
+                            metrics_container2("Bolt", ft.colors.GREEN, bolt_data),
                         ]
                     ),
                     bottom_menu,
@@ -1264,14 +1236,8 @@ def main(page: ft.Page):
         if not month_start_num or not month_end_num:
             return 0, 0  # Retorna 0 em caso de mês inválido
 
-        # Conecta ao banco de dados MySQL
-        conn = mysql.connector.connect(
-            host=MYSQLHOST,
-            user=MYSQLUSER,
-            password=MYSQLPASSWORD,
-            database="db_tvde_users_external",
-            port=MYSQLPORT
-        )
+        # Conecta ao banco de dados
+        conn = sqlite3.connect("db_tvde_content_internal.db")  # Substitua pelo caminho correto
         cursor = conn.cursor()
 
         # Debug: Verificar datas reais no banco
@@ -1284,8 +1250,8 @@ def main(page: ft.Page):
         # Ajuste na consulta para tratar o formato da data (DD/MM/YYYY)
         query = """
             SELECT daily_date, SUM(daily_value) FROM uber
-            WHERE DATE_FORMAT(STR_TO_DATE(daily_date, '%d/%m/%Y'), '%m') BETWEEN %s AND %s
-            GROUP BY DATE_FORMAT(STR_TO_DATE(daily_date, '%d/%m/%Y'), '%m')
+            WHERE substr(daily_date, 4, 2) BETWEEN ? AND ?
+            GROUP BY substr(daily_date, 4, 2)
         """
         print(f"Consulta Uber: {query} | Meses: {month_start_num:02} - {month_end_num:02}")
         cursor.execute(query, (f"{month_start_num:02}", f"{month_end_num:02}"))
@@ -1298,8 +1264,8 @@ def main(page: ft.Page):
         # Consulta Bolt
         query = """
             SELECT daily_date, SUM(daily_value) FROM bolt
-            WHERE DATE_FORMAT(STR_TO_DATE(daily_date, '%d/%m/%Y'), '%m') BETWEEN %s AND %s
-            GROUP BY DATE_FORMAT(STR_TO_DATE(daily_date, '%d/%m/%Y'), '%m')
+            WHERE substr(daily_date, 4, 2) BETWEEN ? AND ?
+            GROUP BY substr(daily_date, 4, 2)
         """
         print(f"Consulta Bolt: {query} | Meses: {month_start_num:02} - {month_end_num:02}")
         cursor.execute(query, (f"{month_start_num:02}", f"{month_end_num:02}"))
@@ -1312,8 +1278,8 @@ def main(page: ft.Page):
         # Consulta Expenses
         query = """
             SELECT expense_date, SUM(expense_value) FROM expense
-            WHERE DATE_FORMAT(STR_TO_DATE(expense_date, '%d/%m/%Y'), '%m') BETWEEN %s AND %s
-            GROUP BY DATE_FORMAT(STR_TO_DATE(expense_date, '%d/%m/%Y'), '%m')
+            WHERE substr(expense_date, 4, 2) BETWEEN ? AND ?
+            GROUP BY substr(expense_date, 4, 2)
         """
         print(f"Consulta Expenses: {query} | Meses: {month_start_num:02} - {month_end_num:02}")
         cursor.execute(query, (f"{month_start_num:02}", f"{month_end_num:02}"))
@@ -1387,7 +1353,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.Icons.INSERT_CHART_OUTLINED),
+                        icon=ft.Icon(ft.icons.INSERT_CHART_OUTLINED),
                         title=ft.Text("RELATÓRIO MENSAL", size=21),
                     ),
                     # Texto explicativo com espaçamento adequado
@@ -1469,7 +1435,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.Icons.SETTINGS_APPLICATIONS_SHARP),
+                        icon=ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
                         title=ft.Text(current_translations.get("settings", "Configurações"), size=21),
                     ),
                     ft.Row(
@@ -1514,7 +1480,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.Icons.SETTINGS_APPLICATIONS_SHARP),
+                        icon=ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
                         title=ft.Text(current_translations.get("settings", "Configurações"), size=21),
                     ),
                     ft.Row(
@@ -1541,7 +1507,7 @@ def main(page: ft.Page):
         page.views.clear()
 
         def validate_email(e):
-            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zAZ0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value):
+            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value):
                 email_login.error_text = None
             else:
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
@@ -1551,6 +1517,7 @@ def main(page: ft.Page):
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
             
             # Conectar ao banco de dados    
+          # Conectar ao banco de dados    
             conn = mysql.connector.connect(
                 host=MYSQLHOST,
                 user=MYSQLUSER,
@@ -1558,11 +1525,13 @@ def main(page: ft.Page):
                 database="db_tvde_users_external",
                 port=MYSQLPORT     
             )
-            
+                
             cursor = conn.cursor()
-            
+            cursor = conn.cursor(buffered=True)
+
             # Verificar se o email existe no banco de dados
             cursor.execute("""SELECT password FROM users WHERE email = %s""", (email_login.value,))
+
             result = cursor.fetchone()
             
             if result is None:
@@ -1572,52 +1541,41 @@ def main(page: ft.Page):
                 stored_password = result[0]   
                 if hash_password_login == stored_password:
                     print(current_translations.get("login_successful", "Login bem-sucedido!"))
+                    # Conectar ao banco SQLite para verificar metas
+                    conn_sqlite = sqlite3.connect("db_tvde_content_internal.db")
+                    cursor_sqlite = conn_sqlite.cursor()
 
-                    try:
-                        # Buscar o ID do usuário
-                        cursor.execute("SELECT id FROM users WHERE email = %s", (email_login.value,))
-                        user_data = cursor.fetchone()
-                        user_id = user_data[0] if user_data else None
+                    # Executar uma consulta para buscar o valor de goal_successful
+                    cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
+                    goal_successful = cursor_sqlite.fetchone()
 
-                        if user_id:
-                            # Salvar o user_id na sessão
-                            page.session.set("user_id", user_id)
-                            page.update()
+                    cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
+                    meta_count = cursor_sqlite.fetchone()[0]
 
-                            # Conectar ao banco de dados das metas
-                            conn_mysql = mysql.connector.connect(
-                                host=MYSQLHOST,
-                                user=MYSQLUSER,
-                                password=MYSQLPASSWORD,
-                                database="db_tvde_users_external",
-                                port=MYSQLPORT
-                            )
-                            cursor_mysql = conn_mysql.cursor()
+                    # Verificar se o valor foi encontrado e retornar o resultado
+                    if goal_successful:
+                        goal_successful = goal_successful[0]  # Se encontrar o valor
+                    else:
+                        goal_successful = "default_value"  # Valor padrão se não encontrar nenhum
 
-                            # Verificar se o usuário tem metas cadastradas
-                            cursor_mysql.execute("""SELECT COUNT(*) FROM goal WHERE user_id = %s""", (user_id,))
-                            meta_count = cursor_mysql.fetchone()[0]
+                    conn_sqlite.close()
 
-                            # Se o usuário não tem metas cadastradas, redireciona para a página de cadastro de metas
-                            if meta_count == 0:
-                                print("Usuário sem metas, redirecionando para página de cadastro de metas")
-                                page.go("/page_new_goal")
-                            else:
-                                print("Usuário com metas, redirecionando para page_parcial")
-                                page.go("/page_parcial")
+                    # Redirecionar o usuário com base na existência de metas
+                    if meta_count > 0 and goal_successful == "negativo":
+                        page.go("/page_parcial")
+                    elif meta_count > 0 and goal_successful == "positivo":
+                        page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
+                        time.sleep(3)
+                        page.go("/page_new_goal")  # Página principal
                         
-                    except Exception as e:
-                        print("Erro ao consultar metas:", e)
-                    finally:
-                        conn_mysql.close()
+                    else:
+                        page.go("/page_new_goal")  # Página de nova meta
                 else:
                     password_login.error_text = current_translations.get("password_incorrect", "Senha incorreta")
                     password_login.update()
 
-            cursor.close()
+            cursor.close()  
             conn.close()
-
-
 
         global email_login
         email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email)
@@ -1722,7 +1680,8 @@ def main(page: ft.Page):
       
         def format_number(e):
             # Filtra e mantém apenas os dígitos numéricos
-            raw_value = ''.join(filter(str.isdigit, e.control.value)).replace(",", ".")
+            raw_value = ''.join(filter(str.isdigit, e.control.value))
+
             if raw_value:
                 # Adiciona vírgula para centavos, separando os dois últimos dígitos
                 if len(raw_value) > 2:
@@ -1777,16 +1736,8 @@ def main(page: ft.Page):
                     if hasattr(control, 'name') and control.name == 'button_salve':
                         control.enabled = False
                         control.update()
-            page.update()
-
-
-        def parse_currency(value_str):
-                """
-                Converte '1.500,00' em 1500.00 (float)
-                """
-                if not value_str:
-                    return 0.0
-                return float(value_str.replace("€", "").replace(".", "").replace(",", ".").strip())
+            
+            validate_button_state()  # Atualiza o estado do botão
 
         def format_number_only99(e):
         # Remove qualquer caractere que não seja dígito
@@ -1814,14 +1765,6 @@ def main(page: ft.Page):
             helper_text="* Valor líquido pretendido ao fim da meta.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
         )
-
-        global goal
-        global goal_gross
-        global fleet_discount
-
-        goal = 0
-
-        goal = parse_currency(goal_field.value)  # Resultado: 1500.00 (float)
         
         date_picker = ft.DatePicker(on_change=None)  # on_change definido depois dinamicamente
 
@@ -1850,7 +1793,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             expand=True,
             suffix=ft.IconButton(
-                icon=ft.Icons.CALENDAR_MONTH,
+                icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, goal_start_field),
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
@@ -1873,7 +1816,7 @@ def main(page: ft.Page):
             helper_text="* Data do Fim da Meta",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
-                icon=ft.Icons.CALENDAR_MONTH,
+                icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, goal_end_field)
             )
         )
@@ -1956,85 +1899,79 @@ def main(page: ft.Page):
             global goal_start
             global goal_end
             global fleet_discount
-            global tax_discount
-            global user_id  # Definição global da variável user_id
-            total_gain = 0
             # Coletar os valores dos campos
-            goal = float(goal_field.value.replace('.', '').replace(',', '.'))  # Converte o valor da meta
-            goal_gross = goal / (1 - (float(fleet_discount_field.value) / 100))
-            # Converte a string para objeto datetime se necessário
-            if isinstance(goal_start_field.value, str):
-                goal_start = datetime.strptime(goal_start_field.value, '%d/%m/%Y').strftime('%Y-%m-%d')  # Converte a data de início
-            else:
-                goal_start = goal_start_field.value.strftime('%Y-%m-%d')  # Caso já seja datetime, converte para string
-
-            if isinstance(goal_end_field.value, str):
-                goal_end = datetime.strptime(goal_end_field.value, '%d/%m/%Y').strftime('%Y-%m-%d')  # Converte a data de término
-            else:
-                goal_end = goal_end_field.value.strftime('%Y-%m-%d')  # Caso já seja datetime, converte para string
-
-            day_off = int(day_off_field.value)  # Converte os dias de folga para inteiro
-            fleet_discount = float(fleet_discount_field.value)  # Converte o desconto de frota para float
+            goal = float(goal_field.value.replace('.', '').replace(',', '.'))
+            goal_start = goal_start_field.value
+            goal_end = goal_end_field.value
+            day_off = int(day_off_field.value)
+            fleet_discount = float(fleet_discount_field.value)
+            tax_discount = float(tax_discount_field.value)
 
             # Verifica se o campo de desconto de imposto não está vazio antes de converter
             tax_discount_value = tax_discount_field.value.strip()  # Remove espaços em branco
-            if tax_discount_value:  # Se não estiver vazio
-                tax_discount = float(tax_discount_value)  # Converte para float
+            if tax_discount_value:  # Verifica se não está vazio
+                tax_discount = float(tax_discount_value)
             else:
-                tax_discount = 0.0  # Atribui valor padrão 0.0 se estiver vazio
+                tax_discount = 0.0  # Atribui um valor padrão (0.0) se estiver vazio
+            
+            # Conectar ao banco para verificar se as datas já existem
+            conn = sqlite3.connect("db_tvde_content_internal.db")
+            cursor = conn.cursor()
 
-            goal_successful = "negativo"  # Inicializa goal_successful com um valor padrão
-
-            # Conectar ao banco de dados para pegar o user_id baseado no email
             try:
-                conn = mysql.connector.connect(
-                    host=MYSQLHOST,
-                    user=MYSQLUSER,
-                    password=MYSQLPASSWORD,
-                    database="db_tvde_users_external",
-                    port=MYSQLPORT
-                )
-                cursor = conn.cursor()
-
-                # Buscar o user_id baseado no email (substitua `email_login.value` pelo valor correto)
-                cursor.execute("SELECT id FROM users WHERE email = %s", (email_login.value,))
-                user_data = cursor.fetchone()
-
-                if user_data:
-                    user_id = user_data[0]  # Obtém o user_id
-                else:
-                    print("Usuário não encontrado!")
-                    return  # Encerra a função se o usuário não for encontrado
-
-                # Verificar se já existe uma meta para o mesmo período
+                # Verificar se já existe um objetivo com as mesmas datas de início e fim
                 cursor.execute("""
-                    SELECT COUNT(*) 
-                    FROM goal 
-                    WHERE user_id = %s AND goal_start = %s AND goal_end = %s
-                """, (user_id, goal_start, goal_end))
+                    SELECT 1 FROM goal WHERE goal_start = ? AND goal_end = ?
+                """, (goal_start, goal_end))
 
-                meta_exists = cursor.fetchone()[0] > 0
-                if meta_exists:
-                    print("Já existe uma meta para esse período.")
+                # Se encontrar um resultado, significa que já existe
+                if cursor.fetchone():
+                    snack_bar = ft.SnackBar(
+                        content=ft.Container(
+                            content=ft.Text(f"Já existe um objetivo nestas datas {goal_start} , {goal_end}  \n Tente outra data!", weight=ft.FontWeight.BOLD),
+                            alignment=ft.alignment.center,  # Alinha o conteúdo (texto) dentro do Container
+                        ),
+                        bgcolor="red"  # Cor de fundo vermelha
+                    )
+                    page.overlay.append(snack_bar)
+                    snack_bar.open = True
+                    page.go("/page_new_goal")
+                    conn.close()
+                    return
+
+                # Calcular o valor bruto (goal_gross)
+                total_discount = fleet_discount + tax_discount
+                global goal_gross
+                goal_gross = goal / (1 - (total_discount / 100))
+
+                # Inserir os dados no banco
+                cursor.execute("""
+                    INSERT INTO goal (goal, goal_gross, goal_start, goal_end, day_off, fleet_discount, tax_discount)
+                    VALUES (?,?,?,?,?,?,?)
+                """, (goal, goal_gross, goal_start, goal_end, day_off, fleet_discount, tax_discount))
+                
+                conn.commit()
+                
+                # Verifica se a inserção foi bem-sucedida
+                if cursor.rowcount > 0:
+                    page_message_screen("Meta cadastrada com sucesso!!!")
+                    page.go("/page_parcial")
                 else:
-                    # Inserir a nova meta no banco de dados
-                    cursor.execute("""
-                        INSERT INTO goal (
-                            user_id, goal, goal_gross, goal_start, goal_end, 
-                            day_off, fleet_discount, tax_discount, total_gain, goal_successful
-                        ) 
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (
-                        user_id, goal, goal_gross, goal_start, goal_end, 
-                        day_off, fleet_discount, tax_discount, total_gain, goal_successful
-                    ))
-                    conn.commit()
-                    page_message_screen("Meta cadastrada com sucesso!")
-                page.go("/page_parcial")
+                    page_message_screen("Houve algum erro. Tente novamente mais tarde!!!")
+                    page.go("/page_new_goal")
 
-            except Exception as e:
-                print("Erro ao salvar a meta:", e)
-                conn.rollback()
+            except sqlite3.IntegrityError as e:
+                snack_bar = ft.SnackBar(
+                    content=ft.Container(
+                        content=ft.Text(f"Já existe um objetivo nestas datas {goal_start} , {goal_end}  \n Tente outra data!", weight=ft.FontWeight.BOLD),
+                        alignment=ft.alignment.center,  # Alinha o conteúdo (texto) dentro do Container
+                    ),
+                    bgcolor="red"  # Cor de fundo vermelha
+                )
+                page.overlay.append(snack_bar)
+                snack_bar.open = True
+                page.go("/page_new_goal")
+            
             finally:
                 conn.close()
 
@@ -2058,7 +1995,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.Icons.MORE_TIME),
+                           icon = ft.Icon(ft.icons.MORE_TIME),
                            title = ft.Text("NOVO OBJETIVO", size=21),
                     ),
                     ft.Container(height=0.9),
@@ -2241,7 +2178,7 @@ def main(page: ft.Page):
             helper_text="* Data da despesa.",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
-                icon=ft.Icons.CALENDAR_MONTH,
+                icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, expense_date),  # Chama pick_date para abrir o DatePicker
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão
@@ -2417,43 +2354,30 @@ def main(page: ft.Page):
             expense_amount_liters_value = expense_amount_liters.value.replace("€", "").replace(".", "").replace(",", ".").strip()
             expense_amount_cubic_meters_value = expense_amount_cubic_meters.value.replace("€", "").replace(".", "").replace(",", ".").strip()
             expense_amount_energy_value = expense_amount_energy.value.replace("€", "").replace(".", "").replace(",", ".").strip()
-    
+            
+        
 
-            try:
-                conn_mysql = mysql.connector.connect(
-                    host=MYSQLHOST,
-                    user=MYSQLUSER,
-                    password=MYSQLPASSWORD,
-                    database="db_tvde_users_external",
-                    port=MYSQLPORT
-                )
-                cursor_mysql = conn_mysql.cursor()
+            # Conectar ao banco de dados SQLite
+            conn = sqlite3.connect("db_tvde_content_internal.db")
+            cursor = conn.cursor()
 
-                # Inserir os dados na tabela de despesas
-                insert_query = """
-                    INSERT INTO expense (expense_value, expense_date, expense_name, expense_amount_liters, expense_amount_cubic_meters, expense_amount_energy, observation_expense)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s)
-                """
-                
-                cursor_mysql.execute(insert_query, (expense_value_text, expense_date_text, expense_name_text, expense_amount_liters_value, expense_amount_cubic_meters_value, expense_amount_energy_value, observation_expense_value))
+            # Inserir os dados na tabela
+            cursor.execute('''
+                INSERT INTO expense (expense_value, expense_date, expense_name, expense_amount_liters, expense_amount_cubic_meters, expense_amount_energy, observation_expense)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (expense_value_text, expense_date_text, expense_name_text, expense_amount_liters_value, expense_amount_cubic_meters_value, expense_amount_energy_value, observation_expense_value))
 
-                # Confirmar a transação
-                conn_mysql.commit()
-
-                if cursor_mysql.rowcount > 0:
-                    page_message_screen("Despesa cadastrada com sucesso!")
-                    page.go("/page_more_date")
-                else:
-                    page_message_screen("Houve algum erro. Tente novamente mais tarde!!!")
-                    page.go("/page_more_date")
-
-            except mysql.connector.Error as err:
-                print(f"Erro ao inserir dados na tabela 'expense': {err}")
-                page_message_screen("Erro ao cadastrar despesa. Tente novamente mais tarde.")
+            # Confirmar a transação e fechar a conexão
+        
+            if cursor.rowcount > 0:
+                page_message_screen("Despesa cadastrada com sucesso!")
                 page.go("/page_more_date")
-            finally:
-                if conn_mysql.is_connected():
-                    conn_mysql.close()  
+            else:
+                page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
+                page.go("/page_more_date")
+           
+            conn.commit()
+            conn.close()        
 
             # Limpar os campos após o cadastro (se necessário)
             expense_value.value = ""
@@ -2480,7 +2404,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.Icons.MONEY_OFF_SHARP),
+                        icon=ft.Icon(ft.icons.MONEY_OFF_SHARP),
                         title=ft.Text("NOVA DESPESA", size=21),
                     ),
                     expense_value,
@@ -2544,7 +2468,7 @@ def main(page: ft.Page):
 
         big_button_expense = create_button(
             [
-                ft.Icon(ft.Icons.MONEY_OFF_SHARP, size=48),
+                ft.Icon(ft.icons.MONEY_OFF_SHARP, size=48),
                 ft.Text("Nova Despesa")
             ],
             "/page_expense",
@@ -2553,7 +2477,7 @@ def main(page: ft.Page):
 
         big_button_new_goal = create_button(
             [
-                ft.Icon(ft.Icons.ADD_CHART_OUTLINED, size=48),
+                ft.Icon(ft.icons.ADD_CHART_OUTLINED, size=48),
                 ft.Text("Novo Objetivo")
             ],
             "/page_new_goal",
@@ -2566,7 +2490,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.Icons.ADD_CIRCLE_OUTLINE_ROUNDED),
+                        icon=ft.Icon(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED),
                         title=ft.Text("LANÇAMENTOS", size=21)
                     ),
                     ft.Row(
@@ -2794,7 +2718,7 @@ def main(page: ft.Page):
             helper_text="* Data da diária",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
-                icon=ft.Icons.CALENDAR_MONTH,
+                icon=ft.icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, daily_date_field),
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
@@ -2810,7 +2734,7 @@ def main(page: ft.Page):
             # Verifica se o campo está vazio (campo opcional)
             if not texto:
                 # Não gera erro se o campo for vazio
-                e.control.border_color = ft.Colors.TRANSPARENT
+                e.control.border_color = ft.colors.TRANSPARENT
             else:
                 # Remove tudo o que não for número
                 texto = ''.join(filter(str.isdigit, texto))
@@ -2831,13 +2755,13 @@ def main(page: ft.Page):
                 if len(texto) == 5 and texto[2] == ":" and texto[:2].isdigit() and texto[3:].isdigit():
                     horas, minutos = texto.split(":")
                     if 0 <= int(horas) <= 23 and 0 <= int(minutos) <= 59:
-                        e.control.border_color = ft.Colors.GREEN
+                        e.control.border_color = ft.colors.GREEN
                     else:
                         hour_error = "* 00:00 e 23:59."
-                        e.control.border_color = ft.Colors.RED
+                        e.control.border_color = ft.colors.RED
                 else:
                     hour_error = "* Use HH:MM."
-                    e.control.border_color = ft.Colors.RED
+                    e.control.border_color = ft.colors.RED
 
             # Atualiza a mensagem de erro
             e.control.error_text = hour_error
@@ -2905,22 +2829,13 @@ def main(page: ft.Page):
             table_name = "Bolt" if param == "Bolt" else "Uber"
 
             # Conectar ao banco e inserir os dados
-            # Conecta ao banco de dados MySQL
-            conn = mysql.connector.connect(
-                host=MYSQLHOST,
-                user=MYSQLUSER,
-                password=MYSQLPASSWORD,
-                database="db_tvde_users_external",
-                port=MYSQLPORT
-            )
-            cursor = conn.cursor()
-
             try:
-                # Inserir os dados na tabela MySQL
+                conn = sqlite3.connect("db_tvde_content_internal.db")
+                cursor = conn.cursor()
                 cursor.execute(f"""
-                    INSERT INTO {table_name} 
-                    (daily_value, daily_value_tips, daily_reimbursement, daily_date, working_hours, distance_traveled, trips_made, observation)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO {table_name} 
+                (daily_value, daily_value_tips, daily_reimbursement, daily_date, working_hours, distance_traveled, trips_made, observation)
+                VALUES (?,?,?,?,?,?,?,?)
                 """, (daily_value, daily_value_tips, daily_reimbursement, daily_date, working_hours, distance_traveled, trips_made, observation))
                 
                 conn.commit()
@@ -2929,8 +2844,7 @@ def main(page: ft.Page):
                     page_message_screen(f"Diária {param} cadastrada com sucesso!!")
                 else:
                     page_message_screen("Houve algum erro. Tente novamente mais tarde!")
-
-            except mysql.connector.Error as e:
+            except sqlite3.Error as e:
                 snack_bar = ft.SnackBar(
                     content=ft.Container(
                         content=ft.Text(f"Já existe uma diária nesta data {daily_date} \n Tente outra data!", weight=ft.FontWeight.BOLD),
@@ -2943,7 +2857,8 @@ def main(page: ft.Page):
                 
                 page.update()
                 time.sleep(3)
-
+                
+                
             finally:
                 conn.close()
 
@@ -3007,7 +2922,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.Icons.MORE_TIME),
+                           icon = ft.Icon(ft.icons.MORE_TIME),
                            title = ft.Text(f"DIÁRIA {param.upper()}", size=21),
                     ),
                     ft.Container(height=0.9),
@@ -3031,33 +2946,23 @@ def main(page: ft.Page):
         page.update()
 
     def page_parcial(page):
-        # Conecta ao banco de dados MySQL
-        conn_mysql = mysql.connector.connect(
-            host=MYSQLHOST,
-            user=MYSQLUSER,
-            password=MYSQLPASSWORD,
-            database="db_tvde_users_external",
-            port=MYSQLPORT
-        )
-        cursor_mysql = conn_mysql.cursor()
+        conn_sqlite = sqlite3.connect("db_tvde_content_internal.db")
+        cursor_sqlite = conn_sqlite.cursor()
 
-        try:
-            # Executar consulta para buscar o valor de goal_successful
-            cursor_mysql.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
-            goal_successful = cursor_mysql.fetchone()
+        # Executar uma consulta para buscar o valor de goal_successful
+        cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
+        goal_successful = cursor_sqlite.fetchone()
 
-            # Consultar a quantidade de metas
-            cursor_mysql.execute("SELECT COUNT(*) FROM goal")
-            meta_count = cursor_mysql.fetchone()[0]
+        cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
+        meta_count = cursor_sqlite.fetchone()[0]
 
-            # Verificar se o valor foi encontrado e retornar o resultado
-            if goal_successful:
-                goal_successful = goal_successful[0]  # Se encontrar o valor
-            else:
-                goal_successful = "default_value"  # Valor padrão se não encontrar nenhum
+        # Verificar se o valor foi encontrado e retornar o resultado
+        if goal_successful:
+            goal_successful = goal_successful[0]  # Se encontrar o valor
+        else:
+            goal_successful = "default_value"  # Valor padrão se não encontrar nenhum
 
-        finally:
-            conn_mysql.close()
+        conn_sqlite.close()
 
         # Verificar o redirecionamento com base no resultado da meta
         if meta_count > 0:
@@ -3069,7 +2974,7 @@ def main(page: ft.Page):
                         content=ft.Row(
                             controls=[
                                 ft.Text(f"Parabéns!!! Você alcançou o último Objetivo. \n Crie um NOVO OBJETIVO!", size=15, weight=ft.FontWeight.BOLD),
-                                ft.Icon(ft.Icons.ADD_CIRCLE_OUTLINE_ROUNDED, size=30)  # Ícone após o texto
+                                ft.Icon(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, size=30)  # Ícone após o texto
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,  # Alinha o conteúdo no centro
                             vertical_alignment=ft.CrossAxisAlignment.CENTER,  # Alinha verticalmente no centro
@@ -3079,18 +2984,19 @@ def main(page: ft.Page):
                     bgcolor="green",
                     padding=ft.Padding(top=36, bottom=36, left=0, right=6),
                 )
-            
+        
                 page.overlay.append(snack_bar)
                 snack_bar.open = True
                 page.update()
-            
+        
                 time.sleep(9)
 
         # Navegar para a próxima página ou executar outro código
         page.go("/next_page")
 
         def search_user_name(email_login):
-            # Conectar ao banco de dados       
+            # Conectar ao banco de dados    
+            # Conectar ao banco de dados    
             conn = mysql.connector.connect(
                 host=MYSQLHOST,
                 user=MYSQLUSER,
@@ -3152,40 +3058,31 @@ def main(page: ft.Page):
         )
 
         def fetch_goal_from_db():
-            # Conectar ao banco de dados MySQL
-            conn_mysql = mysql.connector.connect(
-                host=MYSQLHOST,
-                user=MYSQLUSER,
-                password=MYSQLPASSWORD,
-                database="db_tvde_users_external",
-                port=MYSQLPORT
-            )
-            cursor_mysql = conn_mysql.cursor()
+            conn = sqlite3.connect("db_tvde_content_internal.db")
+            cursor = conn.cursor()
 
-            try:
-                # Executar a consulta para obter o valor do objetivo, fleet_discount e tax_discount
-                cursor_mysql.execute("SELECT goal, fleet_discount, tax_discount FROM goal ORDER BY id DESC LIMIT 1")
-                result = cursor_mysql.fetchone()
+            # Executar a consulta para obter o valor do objetivo, fleet_discount e tax_discount
+            cursor.execute("SELECT goal, fleet_discount, tax_discount FROM goal ORDER BY id DESC LIMIT 1")  # Ajuste conforme necessário
+            result = cursor.fetchone()
 
-                if result:
-                    # Garantir que goal, fleet_discount e tax_discount sejam do tipo float
-                    try:
-                        goal = float(result[0])  # Convertendo para float
-                        # Formatar o valor final para exibição
-                        return f"€ {goal:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-                    except ValueError:
-                        return "Erro ao converter os valores"
-                else:
-                    return "€ 0.00"
+            cursor.close()
+            conn.close()
 
-            finally:
-                cursor_mysql.close()
-                conn_mysql.close()
-
+            if result:
+                # Garantir que goal_value, fleet_discount e tax_discount sejam do tipo float
+                try:
+                    goal_value = float(result[0])  # Convertendo para float
+                    # Formatar o valor final para exibição
+                    return f"€ {goal_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                except ValueError:
+                    return "Erro ao converter os valores"
+            else:
+                return "€ 0.00"
+        global goal_value
         # Exemplo de como chamar a função
-        goal = fetch_goal_from_db()
+        goal_value = fetch_goal_from_db()
 
-        goal_row = ft.Row(
+        goal = ft.Row(
             controls=[
                 ft.Container(
                     width=399,
@@ -3193,8 +3090,8 @@ def main(page: ft.Page):
                     padding=ft.Padding(top=3, bottom=6, left=0, right=0), 
                     content=ft.Column(
                         controls=[
-                            ft.Text("OBJETIVO GERAL", size=18, color=ft.Colors.BLACK, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal, size=36, color=ft.Colors.BLACK),
+                            ft.Text("OBJETIVO GERAL", size=18, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
+                            ft.Text(goal_value, size=36, color=ft.colors.BLACK),
                             ft.Text("Valores líquidos sem taxas e impostos", size=9, color="#858585"),
                             ],
                             spacing=0,
@@ -3261,108 +3158,110 @@ def main(page: ft.Page):
                 ),
             ],
         )
-        # Função para buscar valores diários entre start_date e end_date
-        def fetch_daily_values(cursor, table_name, start_date, end_date, user_id):
-            """
-            Consulta valores diários entre start_date e end_date.
-            """
-            query = f"""
-                SELECT daily_value
-                FROM {table_name}
-                WHERE 
-                    STR_TO_DATE(daily_date, '%d/%m/%Y') 
-                    BETWEEN STR_TO_DATE(%s, '%Y-%m-%d') AND STR_TO_DATE(%s, '%Y-%m-%d')
-            """
-            cursor.execute(query, (start_date, end_date))
-            return cursor.fetchall()
+        # Registrar adaptadores para datetime
+        sqlite3.register_adapter(datetime, lambda x: x.isoformat())
+        sqlite3.register_converter("datetime", lambda x: datetime.fromisoformat(x.decode("utf-8")))
 
         def fetch_goal_details_from_db(page):
-            # Conectar ao banco de dados MySQL
-            conn_mysql = mysql.connector.connect(
-                host=MYSQLHOST,
-                user=MYSQLUSER,
-                password=MYSQLPASSWORD,
-                database="db_tvde_users_external",
-                port=MYSQLPORT
-            )
-            cursor_mysql = conn_mysql.cursor()
+            def fetch_daily_values(cursor, table_name, start_date, end_date):
+                """
+                Consulta valores diários entre start_date e end_date.
+                """
+                query = f"""
+                    SELECT daily_value
+                    FROM {table_name}
+                    WHERE 
+                        date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
+                        BETWEEN date(?) AND date(?)
+                """
+                cursor.execute(query, (start_date, end_date))
+                return cursor.fetchall()
 
-            try:
-                user_id = page.session.get("user_id")  # Garantir que user_id está disponível
-                if user_id is None:
-                    raise Exception("Usuário não identificado. user_id está ausente da sessão.")
+            with sqlite3.connect("db_tvde_content_internal.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
+                cursor = conn.cursor()  # Inicializando o cursor
 
                 # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
-                cursor_mysql.execute("SELECT goal_start, goal_end FROM goal WHERE user_id = %s ORDER BY id DESC LIMIT 1", (user_id,))
-                goal_result = cursor_mysql.fetchone()
+                cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+                goal_result = cursor.fetchone()
 
                 if goal_result:
-                    goal_start_dt = goal_result[0]  # datetime
-                    goal_end_dt = goal_result[1]    # datetime
-                    goal_start = goal_start_dt.strftime('%d/%m/%Y')  # Formato para exibição
-                    goal_end = goal_end_dt.strftime('%d/%m/%Y')      # Formato para exibição
+                    goal_start = datetime.strptime(goal_result[0], '%d/%m/%Y')  # Convertendo string para datetime
+                    goal_end = datetime.strptime(goal_result[1], '%d/%m/%Y')
                 else:
                     goal_start, goal_end = None, None
-                    return None, None, 0.0, 0.0, 0, 0.0  # retorna vazio caso não tenha metas salvas
 
                 # Consultar o valor de "day_off" da tabela "goal"
-                cursor_mysql.execute("SELECT day_off FROM goal WHERE user_id = %s ORDER BY id DESC LIMIT 1", (user_id,))
-                day_off_result = cursor_mysql.fetchone()
+                cursor.execute("SELECT day_off FROM goal ORDER BY id DESC LIMIT 1")
+                day_off_result = cursor.fetchone()
                 day_off = day_off_result[0] if day_off_result else 0
 
                 def fetch_expenses(start_date, end_date):
                     """Consulta as despesas entre start_date e end_date."""
-                    cursor_mysql.execute(""" 
+                    cursor.execute(""" 
                         SELECT SUM(expense_value) 
                         FROM expense 
-                        WHERE user_id = %s AND STR_TO_DATE(expense_date, '%d/%m/%Y') 
-                        BETWEEN STR_TO_DATE(%s, '%Y-%m-%d') AND STR_TO_DATE(%s, '%Y-%m-%d')
-                    """, (user_id, start_date, end_date))
-                    result = cursor_mysql.fetchone()
-                    return result[0] if result and result[0] else 0.0
+                        WHERE date(substr(expense_date, 7, 4) || '-' || substr(expense_date, 4, 2) || '-' || substr(expense_date, 1, 2)) 
+                        BETWEEN date(?) AND date(?)
+                    """, (start_date, end_date))
+                    result = cursor.fetchone()
+                    return result[0] if result else 0.0
 
                 # Consultar despesas entre goal_start e goal_end
-                expenses = fetch_expenses(goal_start_dt.strftime('%Y-%m-%d'), goal_end_dt.strftime('%Y-%m-%d'))
+                expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
 
                 # Consultar Uber entre goal_start e goal_end
-                uber_data = fetch_daily_values(cursor_mysql, "uber", goal_start_dt.strftime('%Y-%m-%d'), goal_end_dt.strftime('%Y-%m-%d'), user_id)
+                uber_data = fetch_daily_values(cursor, "uber", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
 
                 # Consultar Bolt entre goal_start e goal_end
-                bolt_data = fetch_daily_values(cursor_mysql, "bolt", goal_start_dt.strftime('%Y-%m-%d'), goal_end_dt.strftime('%Y-%m-%d'), user_id)
+                bolt_data = fetch_daily_values(cursor, "bolt", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
 
                 # Somar os valores diários
                 uber_gain = sum(float(row[0]) for row in uber_data if row[0])
                 bolt_gain = sum(float(row[0]) for row in bolt_data if row[0])
+
                 total_gain = uber_gain + bolt_gain
 
-                # Recuperar o valor de 'goal_gross'
-                cursor_mysql.execute("SELECT goal_gross FROM goal WHERE user_id = %s ORDER BY id DESC LIMIT 1", (user_id,))
-                goal_gross_result = cursor_mysql.fetchone()
+                # Recuperar o valor de 'goal_gross' da tabela 'goal' e garantir que seja um float
+                cursor.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
+                goal_gross_result = cursor.fetchone()
                 goal_gross = float(goal_gross_result[0]) if goal_gross_result and goal_gross_result[0] else 0.0
 
-                # Atualizar total_gain na tabela 'goal'
-                cursor_mysql.execute("""
+                # Atualizar o valor total_gain na tabela 'goal'
+                cursor.execute("""
                     UPDATE goal 
-                    SET total_gain = %s 
-                    WHERE user_id = %s AND goal_start = %s AND goal_end = %s
-                """, (total_gain, user_id, goal_start_dt.strftime('%Y-%m-%d'), goal_end_dt.strftime('%Y-%m-%d')))
+                    SET total_gain = ? 
+                    WHERE goal_start = ? AND goal_end = ?
+                """, (total_gain, goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
+                
+                # Caso não exista um registro com essas datas, você pode usar um INSERT para garantir que o valor seja armazenado
+                if cursor.rowcount == 0:  # Se não encontrou o registro para atualizar
+                    cursor.execute("""
+                        INSERT INTO goal (goal_start, goal_end, total_gain)
+                        VALUES (?, ?, ?)
+                    """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y'), total_gain))
 
-                # Atualizar status da meta com base no ganho
-                status = 'positivo' if total_gain >= goal_gross else 'negativo'
-                cursor_mysql.execute("""
-                    UPDATE goal 
-                    SET goal_successful = %s 
-                    WHERE user_id = %s AND goal_start = %s AND goal_end = %s
-                """, (status, user_id, goal_start_dt.strftime('%Y-%m-%d'), goal_end_dt.strftime('%Y-%m-%d')))
+                # Verificar se o total_gain é maior ou igual ao goal_gross
+                if total_gain >= goal_gross:
+                    # Se o total_gain for suficiente, atualizar para 'positivo'
+                    cursor.execute("""
+                        UPDATE goal 
+                        SET goal_successful = 'positivo' 
+                        WHERE goal_start = ? AND goal_end = ?
+                    """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
 
-                conn_mysql.commit()
+
+                else:
+                    # Se o total_gain não for suficiente, atualizar para 'negativo'
+                    cursor.execute("""
+                        UPDATE goal 
+                        SET goal_successful = 'negativo' 
+                        WHERE goal_start = ? AND goal_end = ?
+                    """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
+
+                # Confirma as alterações
+                conn.commit()
 
                 return goal_start, goal_end, expenses, total_gain, day_off, goal_gross
-
-            finally:
-                cursor_mysql.close()
-                conn_mysql.close()
-
             
         global total_gain
         # Atualizando a chamada para refletir 6 valores
@@ -3370,9 +3269,6 @@ def main(page: ft.Page):
 
 
         global days_of_work
-
-        goal_start = datetime.strptime(goal_start, "%d/%m/%Y").date()
-        goal_end = datetime.strptime(goal_end, "%d/%m/%Y").date()
         # Agora podemos calcular o número de dias de trabalho corretamente
         days_of_work = (goal_end - goal_start).days + 1
 
@@ -3424,59 +3320,35 @@ def main(page: ft.Page):
             ]
         )
         
-        def fetch_goal_from_db2(user_id):
+        def fetch_goal_from_db2():
             # Conectando ao banco SQLite
-            try:
-                conn_mysql = mysql.connector.connect(
-                    host=MYSQLHOST,
-                    user=MYSQLUSER,
-                    password=MYSQLPASSWORD,
-                    database="db_tvde_users_external",
-                    port=MYSQLPORT
-                )
-                cursor_mysql = conn_mysql.cursor()
+            conn = sqlite3.connect("db_tvde_content_internal.db")  # Nome correto do arquivo SQLite
+            cursor = conn.cursor()
 
             # Realiza a consulta para pegar o valor da meta e as datas
-                cursor_mysql.execute("""
-                    SELECT goal, goal_start, goal_end 
-                    FROM goal 
-                    WHERE user_id = %s  -- Certifique-se de usar o user_id do usuário logado
-                    ORDER BY id DESC 
-                    LIMIT 1
-                """, (user_id,))  # Passe o user_id como parâmetro para garantir que os dados sejam específicos para o usuário
+            cursor.execute("SELECT goal, goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+            result = cursor.fetchone()
 
-                result = cursor_mysql.fetchone()
-
-                if result:
-                    goal, goal_start, goal_end = result
-                else:
-                    goal = goal_start = goal_end = None
-
-            except mysql.connector.Error as err:
-                print(f"Erro ao consultar as metas: {err}")
-            finally:
-                if conn_mysql.is_connected():
-                    conn_mysql.close()
-
+            conn.close()  # Fecha a conexão com o banco de dados
 
             if result:
-                goal = result[0]
-                goal_start = result[1]
-                goal_end = result[2]
+                goal_value = result[0]
+                goal_start = datetime.strptime(result[1], "%d/%m/%Y")
+                goal_end = datetime.strptime(result[2], "%d/%m/%Y")
 
                 # Calcula os dias restantes
                 today = datetime.today()
                 remaining_days = (goal_end - today).days  # Diferença entre a data final e hoje
 
-                return goal, goal_start, goal_end, remaining_days
+                return goal_value, goal_start, goal_end, remaining_days
             else:
                 return None, None, None, None
 
         # Usando a função fetch_goal_from_db para obter o valor da meta e os dias restantes
-        goal, goal_start, goal_end, remaining_days = fetch_goal_from_db2("user_id")
+        goal_value, goal_start, goal_end, remaining_days = fetch_goal_from_db2()
 
         # Se a meta e os dias restantes foram encontrados
-        if goal is not None:
+        if goal_value is not None:
             remaining_text = remaining_days - int(day_off)
         else:
             remaining_text = "XX"
@@ -3490,7 +3362,7 @@ def main(page: ft.Page):
                 remaining_text = 0
 
         # Agora, subtraímos day_off de remaining_text
-        remaining_text += str(2)
+        remaining_text += 2
             
         remaining_text2 = ft.Text(
             f"{remaining_text}",  # O valor estilizado do texto
@@ -3499,20 +3371,12 @@ def main(page: ft.Page):
         )
 
 
-        # Definir um valor padrão para total_gain, caso a consulta falhe
+                    # Definir um valor padrão para total_gain, caso a consulta falhe
         # Buscar goal_gross e calcular a porcentagem de progresso
-        conn_mysql = mysql.connector.connect(
-            host=MYSQLHOST,  # Substitua com as credenciais do seu banco de dados MySQL
-            user=MYSQLUSER,
-            password=MYSQLPASSWORD,
-            database="db_tvde_users_external",
-            port=MYSQLPORT
-        )
-        cursor_mysql = conn_mysql.cursor()
-
-        # Consultar goal_gross
-        cursor_mysql.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
-        result = cursor_mysql.fetchone()
+        with sqlite3.connect("db_tvde_content_internal.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
+            result = cursor.fetchone()
 
         # Garantir que há um resultado válido e fazer a conversão para float
         if result and result[0]:
@@ -3526,12 +3390,6 @@ def main(page: ft.Page):
                 total_gain_car_position = 0  # Caso não consiga converter para float
         else:
             total_gain_car_position = 0  # Se não houver dado
-
-        print(f"Posição do ganho total: {total_gain_car_position:.2f}%")
-
-        # Fechar a conexão MySQL
-        cursor_mysql.close()
-        conn_mysql.close()
 
   
 
@@ -3605,7 +3463,7 @@ def main(page: ft.Page):
                     margin=0,
                     height=30, 
                     border=ft.border.only(
-                        bottom=ft.border.BorderSide(2, ft.Colors.BLACK)
+                        bottom=ft.border.BorderSide(2, ft.colors.BLACK)
                     ),
                     content=ft.Stack(
                         controls=[
@@ -3650,25 +3508,18 @@ def main(page: ft.Page):
         )
             
         def fetch_goal_from_db4(total_gain):
-            # Conectar ao MySQL
-            conn_mysql = mysql.connector.connect(
-                host=MYSQLHOST,  # Substitua com as credenciais do seu banco de dados MySQL
-                user=MYSQLUSER,
-                password=MYSQLPASSWORD,
-                database="db_tvde_users_external",
-                port=MYSQLPORT
-            )
-            cursor_mysql = conn_mysql.cursor()
+            with sqlite3.connect("db_tvde_content_internal.db") as conn:
+                cursor = conn.cursor()
 
-            # Obter os dados da meta mais recente
-            cursor_mysql.execute("SELECT goal_gross, goal_start, goal_end, day_off FROM goal ORDER BY id DESC LIMIT 1")
-            result = cursor_mysql.fetchone()
+                # Obter os dados da meta mais recente
+                cursor.execute("SELECT goal_gross, goal_start, goal_end, day_off FROM goal ORDER BY id DESC LIMIT 1")
+                result = cursor.fetchone()
 
             if result:
                 # Extrair valores da meta
                 goal_gross = float(result[0])  # Garantir que seja float
-                goal_start = result[1]
-                goal_end = result[2]
+                goal_start = datetime.strptime(result[1], "%d/%m/%Y")
+                goal_end = datetime.strptime(result[2], "%d/%m/%Y")
                 day_off = int(result[3]) if result[3] else 0  # Garantir que day_off seja int
 
                 # Calcular a porcentagem concluída do objetivo
@@ -3679,29 +3530,32 @@ def main(page: ft.Page):
                 days_of_work -= day_off  # Remover dias de folga
 
                 # **Contar quantos registros existem nas tabelas `uber` e `bolt`**
-                # Contar **todas** as inserções na tabela Uber
-                cursor_mysql.execute("""
-                    SELECT COUNT(*) FROM uber 
-                    WHERE daily_date BETWEEN %s AND %s
-                """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
-                uber_entries = cursor_mysql.fetchone()[0]
-                uber_entries = int(uber_entries) if uber_entries else 0  # Garantir que seja inteiro
+                with sqlite3.connect("db_tvde_content_internal.db") as conn:
+                    cursor = conn.cursor()
 
-                # Contar **todas** as inserções na tabela Bolt
-                cursor_mysql.execute("""
-                    SELECT COUNT(*) FROM bolt 
-                    WHERE daily_date BETWEEN %s AND %s
-                """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
-                bolt_entries = cursor_mysql.fetchone()[0]
-                bolt_entries = int(bolt_entries) if bolt_entries else 0  # Garantir que seja inteiro
+                    # Contar **todas** as inserções na tabela Uber
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM uber 
+                        WHERE daily_date BETWEEN ? AND ?
+                    """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
+                    uber_entries = cursor.fetchone()[0]  
+                    uber_entries = int(uber_entries) if uber_entries else 0  # Garantir que seja inteiro
 
-                # **Encontrar as datas comuns entre as tabelas `uber` e `bolt`**
-                cursor_mysql.execute("""
-                    SELECT COUNT(*) FROM uber
-                    WHERE daily_date IN (SELECT daily_date FROM bolt WHERE daily_date BETWEEN %s AND %s)
-                """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
-                common_entries = cursor_mysql.fetchone()[0]
-                common_entries = int(common_entries) if common_entries else 0  # Garantir que seja inteiro
+                    # Contar **todas** as inserções na tabela Bolt
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM bolt 
+                        WHERE daily_date BETWEEN ? AND ?
+                    """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
+                    bolt_entries = cursor.fetchone()[0]  
+                    bolt_entries = int(bolt_entries) if bolt_entries else 0  # Garantir que seja inteiro
+
+                    # **Encontrar as datas comuns entre as tabelas `uber` e `bolt`**
+                    cursor.execute("""
+                        SELECT COUNT(*) FROM uber
+                        WHERE daily_date IN (SELECT daily_date FROM bolt WHERE daily_date BETWEEN ? AND ?)
+                    """, (goal_start.strftime("%d/%m/%Y"), goal_end.strftime("%d/%m/%Y")))
+                    common_entries = cursor.fetchone()[0]
+                    common_entries = int(common_entries) if common_entries else 0  # Garantir que seja inteiro
 
                 # Log para depuração
                 print(f"🚗 Registros no Uber: {uber_entries}")
@@ -3726,12 +3580,9 @@ def main(page: ft.Page):
             else:
                 return "Erro ao recuperar os dados do banco de dados", 0
 
-            # Fechar a conexão MySQL
-        cursor_mysql.close()
-        conn_mysql.close()
+        # Assumindo que `total_gain` é obtido de outra função
 
-        # Exemplo de uso da função
-        # Supondo que `total_gain` seja obtido de outra função
+        # Calcular daily_value_value e total_gain_car_position com base no total_gain
         daily_value_value, total_gain_car_position = fetch_goal_from_db4(total_gain)
 
         # Calcular a posição do carro baseado no progresso
@@ -3740,38 +3591,36 @@ def main(page: ft.Page):
 
         
         goal_today = ft.Row(
-            alignment=ft.MainAxisAlignment.CENTER,  # Centraliza o container na tela
-            controls=[
-                ft.Container(
-                    width=399,
-                    height=146,
-                    padding=0,
-                    margin=0,
-                    border_radius=25,
-                    alignment=ft.alignment.center,
-                    expand=True,  # Responsivo
-                    content=ft.Column(
-                        alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
-                        controls=[
-                            ft.Text("OBJETIVO DIÁRIO", size=18, color=ft.Colors.BLACK),
-                            ft.Container(
-                                content=ft.Text(
-                                    f"€ {daily_value_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
-                                    size=51,
-                                    color="#000000",
-                                    weight=ft.FontWeight.BOLD
-                                ),
-                                shadow=ft.BoxShadow(color="#15CD74", blur_radius=180)  # Sombra no valor
+        alignment=ft.MainAxisAlignment.CENTER,  # Centraliza o container na tela
+        controls=[
+            ft.Container(
+                width=399,
+                height=146,
+                padding=0,
+                margin=0,
+                border_radius=25,
+                alignment=ft.alignment.center,
+                expand=True,  # Responsivo
+                content=ft.Column(
+                    alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
+                    controls=[
+                        ft.Text("OBJETIVO DIÁRIO", size=18, color=ft.colors.BLACK),
+                        ft.Container(
+                            content=ft.Text(
+                                f"€ {daily_value_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
+                                size=51,
+                                color="#000000",
+                                weight=ft.FontWeight.BOLD
                             ),
-                            ft.Text("valores brutos", size=15, color="#B0B0B0"),
-                        ]
-                    )
+                            shadow=ft.BoxShadow(color="#15CD74", blur_radius=180)  # Sombra no valor
+                        ),
+                        ft.Text("valores brutos", size=15, color="#B0B0B0"),
+                    ]
                 )
-            ]
-        )
-
-        # Botões Bolt e Uber
+            )
+        ]
+    )
         button_bolt_uber = ft.Row(
             alignment=ft.MainAxisAlignment.CENTER,
             controls=[
@@ -3804,7 +3653,8 @@ def main(page: ft.Page):
                 )
             ]
         )
-        # Atualizando a visualização da página
+
+            
         page.views.clear()
         page.views.append(
             ft.View(
@@ -3814,16 +3664,18 @@ def main(page: ft.Page):
                     header,
                     message_welcome,
                     goal_today,
-                    ft.Container(),  # Container vazio, pode ser removido se não necessário
+                    ft.Container(),
                     hourglass,
-                    goal_row,
+                    goal,
                     button_bolt_uber,
+                    details_goal,
                     button_container,
                     details_popup
+                    
                 ]
             )
         )
-    page.update()
+        page.update()
 
     def page_register():
         page.views.clear()
@@ -3896,53 +3748,39 @@ def main(page: ft.Page):
             button_to_db.update()
 
         def add_in_db(name, surname, email, password):
-            # Gerar o hash da senha
+            # Concatenar prefixo e sufixo do telefone
             hash_password = sha256(password.encode()).hexdigest()
             
-            # Conectar ao banco de dados MySQL
+            # Conectar ao banco de dados    
             conn = mysql.connector.connect(
                 host=MYSQLHOST,
                 user=MYSQLUSER,
                 password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
-                port=MYSQLPORT
+                port=MYSQLPORT     
             )
             cursor = conn.cursor()
 
             if name and email and password:
-                try:
-                    # Inserir os dados do usuário na tabela
-                    cursor.execute(
-                        """INSERT INTO users (name, surname, account_type, email, password, date_start) 
-                        VALUES (%s, %s, %s, %s, %s, CURDATE())""",
-                        (name, surname, "Básico", email, hash_password)
-                    )
-                    
-                    if cursor.rowcount > 0:
-                        conn.commit()
-                        page_message_screen("Usuário cadastrado com sucesso!")
-                        
-                        # Criar um banco de dados SQLite com base no e-mail do usuário
-                        # Criar nome do arquivo SQLite com base no e-mail (aqui uso a abordagem segura)
-                        email_db = f"db_tvde_content_internal_{email.replace('@', '_').replace('.', '_')}.db"
-                        connection = sqlite3.connect(email_db)
-                        connection.commit()
-                        connection.close()
-                        print(f"Banco de dados SQLite para o usuário {email} criado com sucesso.")
-
-                        page.go("/")  # Redirecionar para a página inicial
-                    else:
-                        page_message_screen("Houve algum erro. Tente novamente mais tarde!")
-                        page.go("/")  # Redirecionar para a página inicial
-                except Exception as e:
-                    # Caso ocorra algum erro, podemos mostrar a mensagem de erro para o usuário
-                    print(f"Erro ao cadastrar o usuário: {e}")
-                    page_message_screen("Houve um erro. Tente novamente mais tarde!")
-                    page.go("/")
-                finally:
-                    # Garantir que o cursor e a conexão sejam fechados
+                cursor.execute(
+                    """INSERT INTO users (name, surname, account_type, email, password, date_start) VALUES (%s, %s, %s, %s, %s, CURDATE())""",
+                    (name, surname, "Básico", email, hash_password)
+                )
+                if cursor.rowcount > 0:
+                    conn.commit()
+                    page_message_screen("Usuário cadastrado com sucesso!")
+                    connection = sqlite3.connect('db_tvde_content_internal{email}.db')
+                    connection.commit()
                     cursor.close()
-                    conn.close()
+                    connection.close()
+                    print("Conexão com o banco de dados fechada com sucesso333.")
+                    page.go("/")
+                else:
+                    page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
+                    page.go("/")
+            
+            cursor.close()
+            conn.close()
         
         name = ft.TextField(label="Name", border_radius=21, on_change=validate_name, expand=True)
         surname = ft.TextField(label="Surname", border_radius=21, on_change=validate_surname, expand=True)
@@ -3959,7 +3797,7 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.IconButton(
-                                icon=ft.Icons.ARROW_BACK,
+                                icon=ft.icons.ARROW_BACK,
                                 icon_size=27,
                                 tooltip="Voltar",
                                 on_click=lambda e: page.go("/")  # substitua "/" pela página anterior real, ex: "/login"
@@ -3982,7 +3820,7 @@ def main(page: ft.Page):
                                     content=ft.Column(
                                         controls=[ 
                                             title_app(
-                                            icon=ft.Icon(ft.Icons.PERSON_ADD),
+                                            icon=ft.Icon(ft.icons.PERSON_ADD),
                                             title=ft.Text("Novo usuário", size=21),
                                             ),
                                         ],
@@ -4081,7 +3919,7 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.IconButton(
-                                icon=ft.Icons.ARROW_BACK,
+                                icon=ft.icons.ARROW_BACK,
                                 icon_size=27,
                                 tooltip="Voltar",
                                 on_click=lambda e: page.go("/")  # substitua "/" pela página anterior real, ex: "/login"
@@ -4102,7 +3940,7 @@ def main(page: ft.Page):
                                     content=ft.Column(
                                         controls=[ 
                                             title_app(
-                                                icon=ft.Icon(ft.Icons.LOCK),
+                                                icon=ft.Icon(ft.icons.LOCK),
                                                 title=ft.Text("Gerar nova senha", size=21),
                                             ),
                                             ft.Container(),
@@ -4210,7 +4048,7 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.IconButton(
-                                icon=ft.Icons.ARROW_BACK,
+                                icon=ft.icons.ARROW_BACK,
                                 icon_size=27,
                                 tooltip="Voltar",
                                 on_click=lambda e: page.go("/")  # substitua "/" pela página anterior real, ex: "/login"
@@ -4233,7 +4071,7 @@ def main(page: ft.Page):
                                     content=ft.Column(
                                         controls=[ 
                                             title_app(
-                                            icon=ft.Icon(ft.Icons.LOCK),
+                                            icon=ft.Icon(ft.icons.LOCK),
                                             title=ft.Text("Criar nova senha", size=21),
                                             ),
                                         ],
