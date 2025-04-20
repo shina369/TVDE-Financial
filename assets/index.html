@@ -54,15 +54,14 @@
   <body>
     <img id="splash-logo" src="logo.png" alt="Logo" />
 
-    <!-- Carregador do Flet -->
-    <div id="flet-container" style="display:none;">
+    <!-- Carregador do Flet (se você quiser carregar o app localmente, descomente isso) -->
+    <!-- <div id="flet-container" style="display:none;">
       <script type="module" src="/_internal/flet/app.js"></script>
-    </div>
+    </div> -->
 
     <script>
       window.addEventListener("load", () => {
         const logo = document.getElementById("splash-logo");
-        const fletContainer = document.getElementById("flet-container");
 
         // Atraso antes de iniciar a animação
         setTimeout(() => {
@@ -74,13 +73,9 @@
             // Esconde o splash logo
             document.body.classList.add("hidden");
 
-            // Agora, mostramos o Flet e o conteúdo da página de login
-            fletContainer.style.display = "block"; // Torna visível o Flet
+            // Agora, redireciona para o URL do seu app Flet
+            window.location.href = "https://tvde-financial-production.up.railway.app/";
 
-            // Opcionalmente, podemos adicionar um pequeno atraso para garantir que o Flet tenha tempo de carregar
-            setTimeout(() => {
-              // Agora o conteúdo Flet deve aparecer na tela
-            }, 500);
           }, 600); // Atraso após o logo explodir e desaparecer
         }, 100); // Atraso inicial antes de iniciar a explosão do logo
       });
