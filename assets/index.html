@@ -1,31 +1,44 @@
 <!DOCTYPE html>
 <html lang="pt">
-<head>
-  <meta charset="UTF-8" />
-  <title>Carregando...</title>
-  <link rel="icon" href="logo.png" />
-  <style>
-    body {
-      margin: 0;
-      background-color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <title>Meu App</title>
+    <link rel="icon" href="logo.png" />
+    <style>
+      body {
+        margin: 0;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
 
-    #splash-logo {
-      width: 120px;
-      animation: spin 2s linear infinite;
-    }
+      #splash {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body>
-  <img id="splash-logo" src="logo.png" alt="Logo" />
-</body>
+      #splash-logo {
+        width: 120px;
+        animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="splash">
+      <img id="splash-logo" src="logo.png" alt="Logo" />
+    </div>
+
+    <!-- Ponto onde o Flet vai injetar o app -->
+    <script type="module" src="/_internal/flet/app.js"></script>
+  </body>
 </html>
