@@ -13,6 +13,7 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
+        transition: all 1s ease-out; /* Transição suave ao esconder o splash */
       }
 
       #splash-logo {
@@ -42,23 +43,40 @@
         transform: scale(20);
         opacity: 0;
       }
+
+      /* Adiciona um efeito de explosão final ao logo */
+      .hidden {
+        visibility: hidden;
+      }
     </style>
   </head>
+
   <body>
     <img id="splash-logo" src="logo.png" alt="Logo" />
 
     <!-- Carregador do Flet (mantém a funcionalidade!) -->
-    <script type="module" src="https://tvde-financial-production.up.railway.app/"></script>
+    <script type="module" src="/_internal/flet/app.js"></script>
 
-    <!-- Script para explosão ao carregar -->
+    <!-- Script para animação do logo e transição para o app -->
     <script>
       window.addEventListener("load", () => {
         const logo = document.getElementById("splash-logo");
 
-        // Dá tempo pro Flet carregar e explodir o logo
+        // Atraso antes de iniciar a explosão
         setTimeout(() => {
-          logo.classList.add("explode");
-        }, 100); // Espera um pouquinho antes da explosão
+          logo.classList.add("explode"); // Logo explode e some
+
+          // Espera o logo desaparecer, então oculta o splash e exibe o conteúdo do app
+          setTimeout(() => {
+            document.body.classList.add("hidden"); // Esconde o splash logo
+
+            // Aqui, o Flet deve carregar o conteúdo do app
+            // Adicionamos uma pequena pausa para garantir que o Flet seja carregado
+            setTimeout(() => {
+              // O app Flet pode ser injetado neste momento sem problemas
+            }, 500); // Pequeno atraso antes de mostrar o conteúdo
+          }, 600); // Tempo para o logo desaparecer antes de ocultar o splash
+        }, 100); // Atraso inicial antes da explosão
       });
     </script>
   </body>
