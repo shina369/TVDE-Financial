@@ -13,11 +13,11 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        transition: all 1s ease-out; /* Transição suave ao esconder o splash */
+        transition: all 1s ease-out;
       }
 
       #splash-logo {
-        width: 120px;
+        width: 200px; /* Aumentando o tamanho do logo */
         animation: pulse 2s ease-in-out infinite;
         opacity: 0.6;
         transition: all 0.6s ease;
@@ -38,13 +38,13 @@
         }
       }
 
-      /* Classe usada para a explosão final */
+      /* Classe para a explosão do logo */
       .explode {
         transform: scale(20);
         opacity: 0;
       }
 
-      /* Adiciona um efeito de explosão final ao logo */
+      /* Classe para ocultar o splash */
       .hidden {
         visibility: hidden;
       }
@@ -54,29 +54,35 @@
   <body>
     <img id="splash-logo" src="logo.png" alt="Logo" />
 
-    <!-- Carregador do Flet (mantém a funcionalidade!) -->
-    <script type="module" src="/_internal/flet/app.js"></script>
+    <!-- Carregador do Flet -->
+    <div id="flet-container" style="display:none;">
+      <script type="module" src="/_internal/flet/app.js"></script>
+    </div>
 
-    <!-- Script para animação do logo e transição para o app -->
     <script>
       window.addEventListener("load", () => {
         const logo = document.getElementById("splash-logo");
+        const fletContainer = document.getElementById("flet-container");
 
-        // Atraso antes de iniciar a explosão
+        // Atraso antes de iniciar a animação
         setTimeout(() => {
-          logo.classList.add("explode"); // Logo explode e some
+          // Logo explode
+          logo.classList.add("explode");
 
-          // Espera o logo desaparecer, então oculta o splash e exibe o conteúdo do app
+          // Espera a animação do logo desaparecer
           setTimeout(() => {
-            document.body.classList.add("hidden"); // Esconde o splash logo
+            // Esconde o splash logo
+            document.body.classList.add("hidden");
 
-            // Aqui, o Flet deve carregar o conteúdo do app
-            // Adicionamos uma pequena pausa para garantir que o Flet seja carregado
+            // Agora, mostramos o Flet e o conteúdo da página de login
+            fletContainer.style.display = "block"; // Torna visível o Flet
+
+            // Opcionalmente, podemos adicionar um pequeno atraso para garantir que o Flet tenha tempo de carregar
             setTimeout(() => {
-              // O app Flet pode ser injetado neste momento sem problemas
-            }, 500); // Pequeno atraso antes de mostrar o conteúdo
-          }, 600); // Tempo para o logo desaparecer antes de ocultar o splash
-        }, 100); // Atraso inicial antes da explosão
+              // Agora o conteúdo Flet deve aparecer na tela
+            }, 500);
+          }, 600); // Atraso após o logo explodir e desaparecer
+        }, 100); // Atraso inicial antes de iniciar a explosão do logo
       });
     </script>
   </body>
