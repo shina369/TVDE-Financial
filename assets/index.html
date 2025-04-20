@@ -13,17 +13,15 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
-        transition: all 1s ease-out;
       }
 
       #splash-logo {
-        width: 200px; /* Ajuste o tamanho do logo conforme necessário */
-        animation: pulse 2s ease-in-out infinite;
+        width: 220px;
+        animation: pulse 1.5s ease-in-out infinite;
         opacity: 0.6;
-        transition: all 0.6s ease;
+        transition: all 0.8s ease;
       }
 
-      /* Animação de aumento e diminuição do logo */
       @keyframes pulse {
         0% {
           transform: scale(1);
@@ -39,15 +37,19 @@
         }
       }
 
-      /* Classe para a explosão do logo */
       .explode {
-        transform: scale(20);
-        opacity: 0;
+        animation: explodeAnim 1s forwards;
       }
 
-      /* Classe para ocultar o splash */
-      .hidden {
-        visibility: hidden;
+      @keyframes explodeAnim {
+        0% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(20);
+          opacity: 0;
+        }
       }
     </style>
   </head>
@@ -56,25 +58,19 @@
     <img id="splash-logo" src="logo.png" alt="Logo" />
 
     <script>
-      window.addEventListener("load", () => {
-        const logo = document.getElementById("splash-logo");
+      const logo = document.getElementById("splash-logo");
 
-        // Atraso inicial antes de começar a animação
+      window.addEventListener("load", () => {
+        // Aguarda 2s para exibir a animação de entrada
         setTimeout(() => {
-          // Inicia a explosão do logo
+          // Aplica a animação de explosão
           logo.classList.add("explode");
 
-          // Espera a animação do logo desaparecer (tempo de animação + buffer)
+          // Aguarda a explosão terminar (1s), e depois redireciona
           setTimeout(() => {
-            // Esconde o logo após a animação
-            document.body.classList.add("hidden");
-
-            // Agora, redireciona para o URL do seu app
-            setTimeout(() => {
-              window.location.href = "https://tvde-financial-production.up.railway.app/";
-            }, 300); // Pequeno buffer de tempo antes do redirecionamento
-          }, 1500); // Tempo da animação do logo explodindo
-        }, 100); // Atraso inicial antes de começar a animação
+            window.location.href = "https://tvde-financial-production.up.railway.app/";
+          }, 1000); // Tempo da explosão
+        }, 2000); // Tempo de exibição inicial do splash
       });
     </script>
   </body>
