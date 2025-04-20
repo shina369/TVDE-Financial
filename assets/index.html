@@ -64,14 +64,17 @@
           // Inicia a explosão do logo
           logo.classList.add("explode");
 
-          // Espera a animação do logo desaparecer
+          // Espera a animação do logo desaparecer (tempo de animação + buffer)
           setTimeout(() => {
-            // Esconde o logo
+            // Esconde o logo após a animação
             document.body.classList.add("hidden");
 
-            // Agora, redireciona para o URL do seu app
-            window.location.href = "https://tvde-financial-production.up.railway.app/";
-          }, 1000); // O tempo da animação do logo explodindo
+            // Aguarda um pouco antes de redirecionar para garantir que a animação tenha terminado
+            setTimeout(() => {
+              // Agora, redireciona para o URL do seu app
+              window.location.replace("https://tvde-financial-production.up.railway.app/");
+            }, 500); // Pequeno buffer de tempo antes do redirecionamento
+          }, 1000); // Tempo da animação do logo explodindo
         }, 100); // Atraso inicial para começar a animação
       });
     </script>
