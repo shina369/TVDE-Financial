@@ -17,12 +17,13 @@
       }
 
       #splash-logo {
-        width: 200px; /* Aumentando o tamanho do logo */
+        width: 200px; /* Ajuste o tamanho do logo conforme necessário */
         animation: pulse 2s ease-in-out infinite;
         opacity: 0.6;
         transition: all 0.6s ease;
       }
 
+      /* Animação de aumento e diminuição do logo */
       @keyframes pulse {
         0% {
           transform: scale(1);
@@ -54,30 +55,24 @@
   <body>
     <img id="splash-logo" src="logo.png" alt="Logo" />
 
-    <!-- Carregador do Flet (se você quiser carregar o app localmente, descomente isso) -->
-    <!-- <div id="flet-container" style="display:none;">
-      <script type="module" src="/_internal/flet/app.js"></script>
-    </div> -->
-
     <script>
       window.addEventListener("load", () => {
         const logo = document.getElementById("splash-logo");
 
         // Atraso antes de iniciar a animação
         setTimeout(() => {
-          // Logo explode
+          // Inicia a explosão do logo
           logo.classList.add("explode");
 
           // Espera a animação do logo desaparecer
           setTimeout(() => {
-            // Esconde o splash logo
+            // Esconde o logo
             document.body.classList.add("hidden");
 
-            // Agora, redireciona para o URL do seu app Flet
+            // Agora, redireciona para o URL do seu app
             window.location.href = "https://tvde-financial-production.up.railway.app/";
-
-          }, 600); // Atraso após o logo explodir e desaparecer
-        }, 100); // Atraso inicial antes de iniciar a explosão do logo
+          }, 1000); // O tempo da animação do logo explodindo
+        }, 100); // Atraso inicial para começar a animação
       });
     </script>
   </body>
