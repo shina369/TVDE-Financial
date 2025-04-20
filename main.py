@@ -4149,4 +4149,4 @@ def main(page: ft.Page):
     # Definindo a rota inicial
     page.go("/")
 
-ft.app(target=main, view=None)
+ft.app(target=main)
