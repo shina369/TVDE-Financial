@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Carregando...</title>
+    <link rel="icon" href="logo.png" />
+    <style>
+      body {
+        margin: 0;
+        background-color: white;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      #splash-logo {
+        width: 200px;
+        animation: pulse 2s ease-in-out infinite;
+        opacity: 0.6;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+        50% {
+          transform: scale(1.2);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 0.6;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <img id="splash-logo" src="logo.png" alt="Logo" />
+  </body>
+</html>
