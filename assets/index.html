@@ -59,7 +59,7 @@
       window.addEventListener("load", () => {
         const logo = document.getElementById("splash-logo");
 
-        // Atraso antes de iniciar a animação
+        // Atraso inicial antes de começar a animação
         setTimeout(() => {
           // Inicia a explosão do logo
           logo.classList.add("explode");
@@ -69,13 +69,12 @@
             // Esconde o logo após a animação
             document.body.classList.add("hidden");
 
-            // Aguarda um pouco antes de redirecionar para garantir que a animação tenha terminado
+            // Agora, redireciona para o URL do seu app
             setTimeout(() => {
-              // Agora, redireciona para o URL do seu app
-              window.location.replace("https://tvde-financial-production.up.railway.app/");
-            }, 500); // Pequeno buffer de tempo antes do redirecionamento
-          }, 1000); // Tempo da animação do logo explodindo
-        }, 100); // Atraso inicial para começar a animação
+              window.location.href = "https://tvde-financial-production.up.railway.app/";
+            }, 300); // Pequeno buffer de tempo antes do redirecionamento
+          }, 1500); // Tempo da animação do logo explodindo
+        }, 100); // Atraso inicial antes de começar a animação
       });
     </script>
   </body>
