@@ -1766,19 +1766,25 @@ def main(page: ft.Page):
             validate_button_state()  # Atualiza o estado do botão
 
         def format_number_only99(e):
-        # Remove qualquer caractere que não seja dígito
-            raw_value = ''.join(filter(str.isdigit, e.control.value))
+            # Acesse o valor diretamente do TextField
+            field_value = e.value  # O 'e' já é um TextField, então você pode acessar o valor diretamente com 'e.value'
+
+            # Remove qualquer caractere que não seja dígito
+            raw_value = ''.join(filter(str.isdigit, field_value))
             
             if raw_value:
-                # Converte para inteiro e formata com separador de milhar
+                # Converte para inteiro e limita a no máximo 99
                 integer_value = min(int(raw_value[:2]), 99)
                 formatted_value = str(integer_value)
             else:
                 formatted_value = ""
-
+            
             # Atualiza o TextField com o valor formatado
-            e.control.value = formatted_value
-            e.control.update()
+            e.value = formatted_value
+            e.update()
+
+
+
 
         goal_field = ft.TextField(label="Valor total da meta", prefix_text="€ ",
             border_radius=21, 
@@ -2655,8 +2661,11 @@ def main(page: ft.Page):
                 e.control.update()
             
         def format_number_only99(e):
+            # Acesse o valor diretamente do TextField
+            field_value = e.value  # O 'e' já é um TextField, então você pode acessar o valor diretamente com 'e.value'
+
             # Remove qualquer caractere que não seja dígito
-            raw_value = ''.join(filter(str.isdigit, e.value))
+            raw_value = ''.join(filter(str.isdigit, field_value))
             
             if raw_value:
                 # Converte para inteiro e limita a no máximo 99
@@ -2669,10 +2678,8 @@ def main(page: ft.Page):
             e.value = formatted_value
             e.update()
 
-            # Limita o número de caracteres a 2
-            if len(formatted_value) > 2:
-                e.value = formatted_value[:2]
-                e.update()
+
+
 
 
         def validate_date(e):
@@ -2833,6 +2840,7 @@ def main(page: ft.Page):
         )
 
         def save_daily_bolt_uber(param, user_id):
+            user_id = get_user_id_from_mysql(email_login.value)
             # Validar o parâmetro
             if param not in ["Bolt", "Uber"]:
                 page_message_screen("Parâmetro inválido!")
@@ -2917,16 +2925,18 @@ def main(page: ft.Page):
 
             # Atualiza a página para refletir as mudanças
             page.update()
-
+        
         def handle_bolt_click(e):
+            user_id = get_user_id_from_mysql(email_login.value) 
             validate_fields()
             if not btn_bolt.disabled:
-                save_daily_bolt_uber("Bolt")
+                save_daily_bolt_uber(user_id,"Bolt")
 
         def handle_uber_click(e):
+            user_id = get_user_id_from_mysql(email_login.value) 
             validate_fields()
             if not btn_uber.disabled:
-                save_daily_bolt_uber("Uber")
+                save_daily_bolt_uber(user_id,"Uber")
 
         btn_bolt = ft.ElevatedButton(
             text="Cadastrar Bolt",
