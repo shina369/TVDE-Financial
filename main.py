@@ -11,7 +11,7 @@ import sqlite3
 import json
 import os
 from MYSQL_db_tvde_users_external import connect
-import SQLite_db_tvde_content_internal
+from SQLite_db_tvde_content_internal import get_user_id_from_mysql, create_user_tables
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -313,12 +313,11 @@ def main(page: ft.Page):
 
         page.update()
 
-    def page_reports():
+    def page_reports(user_id):
         page.views.clear()
 
-        with sqlite3.connect("db_tvde_content_internal.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
+        with sqlite3.connect(f"db_usuarios/db_user_{user_id}.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
             cursor = conn.cursor()  # Inicializando o cursor
-
             # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
             cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
             goal_result = cursor.fetchone()
@@ -657,7 +656,7 @@ def main(page: ft.Page):
             )
         )
 
-        def generate_report(start_date, end_date, report_message, page):
+        def generate_report(start_date, end_date, report_message, page, user_id):
             # Verifica se as datas são válidas
             if not start_date or not end_date:
                 report_message.content = ft.Text("Preencha ambas as datas.", color="red")
@@ -673,7 +672,7 @@ def main(page: ft.Page):
                 return
 
             try:
-                conn = sqlite3.connect("db_tvde_content_internal.db")
+                conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
                 cursor = conn.cursor()
 
                 # Obtém todas as categorias dinâmicas de despesas
@@ -770,7 +769,7 @@ def main(page: ft.Page):
         total_cubic_meters = 0
         total_expense = 0
         
-        def generate_report(start_date, end_date, report_message, page):
+        def generate_report(user_id, start_date, end_date, report_message, page):
             # Verifica se as datas são válidas
             if not start_date or not end_date:
                 report_message.controls = [ft.Text("Preencha ambas as datas.", color="red")]
@@ -778,8 +777,19 @@ def main(page: ft.Page):
                 page.update()
                 return
 
+            if user_id is None:
+                print("Erro: user_id não encontrado.")
+                report_message.controls = [ft.Text("Erro: user_id não encontrado.", color="red")]
+                report_message.update()
+                page.update()
+                return
+
             try:
-                conn = sqlite3.connect("db_tvde_content_internal.db")
+                # Verifique se o caminho do banco de dados está correto
+                db_path = f"db_usuarios/db_user_{user_id}.db"
+                print(f"Conectando ao banco de dados: {db_path}")  # Depuração
+
+                conn = sqlite3.connect(db_path)
                 cursor = conn.cursor()
 
                 # Obtém todas as categorias dinâmicas de despesas
@@ -801,6 +811,7 @@ def main(page: ft.Page):
                 conn.close()
 
             except Exception as e:
+                print(f"Erro ao gerar o relatório: {str(e)}")  # Depuração
                 report_message.controls = [ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")]
                 report_message.update()
                 page.update()
@@ -913,10 +924,10 @@ def main(page: ft.Page):
 
         page.update()
 
-    # Função para buscar os dados do SQLite de uma tabela específica (uber ou bolt)
-    def fetch_fleet_data(table_name):
+    def fetch_fleet_data(user_id, table_name):
         try:
-            conn = sqlite3.connect("db_tvde_content_internal.db")  # Nome do banco de dados
+            # Conecta ao banco de dados SQLite do usuário
+            conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
             cursor = conn.cursor()
 
             cursor.execute(f"""
@@ -932,7 +943,6 @@ def main(page: ft.Page):
 
             total_rendimento, total_gorjetas, total_horas, total_km, total_viagens = data
 
-            #  Evita divisão por zero
             rendimento_por_hora = total_rendimento / total_horas if total_horas > 0 else 0
             rendimento_por_km = total_rendimento / total_km if total_km > 0 else 0
             rendimento_por_viagem = total_rendimento / total_viagens if total_viagens > 0 else 0
@@ -949,11 +959,14 @@ def main(page: ft.Page):
                 "distancia_media_por_viagem": distancia_media_por_viagem,
                 "viagens_por_hora": viagens_por_hora
             }
+
         except Exception as e:
-            print(f"Erro ao buscar dados da tabela {table_name}:", e)
+            print(f"Erro ao buscar dados da tabela {table_name} para o usuário {user_id}:", e)
             return None
+
         finally:
             conn.close()
+
 
     # Atualizar o container com os valores dinâmicos
     def metrics_container(title, color, data):
@@ -1071,9 +1084,17 @@ def main(page: ft.Page):
 
 
 
-    def fetch_fleet_data2(table_name):
+    def fetch_fleet_data2(user_id, table_name):
+        if user_id is None:
+            print("Erro: user_id não encontrado.")
+            return None
+
         try:
-            conn = sqlite3.connect("db_tvde_content_internal.db")  # Nome do banco de dados
+            # Conecta ao banco de dados SQLite do usuário
+            db_path = f"db_usuarios/db_user_{user_id}.db"
+            print(f"Conectando ao banco de dados: {db_path}")  # Depuração
+
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
             cursor.execute(f"""
@@ -1221,7 +1242,7 @@ def main(page: ft.Page):
 
         page.update()
 
-    def fetch_total_values(month_start, month_end):
+    def fetch_total_values(user_id, month_start, month_end):
         # Mapeamento dos meses em português para números
         month_mapping = {
             "Janeiro": 1, "Fevereiro": 2, "Março": 3, "Abril": 4,
@@ -1236,8 +1257,10 @@ def main(page: ft.Page):
         if not month_start_num or not month_end_num:
             return 0, 0  # Retorna 0 em caso de mês inválido
 
+        db_path = f"db_usuarios/db_user_{user_id}.db"
+        print(f"Conectando ao banco de dados(LINHA: 1262): {db_path}")  # Depuração
         # Conecta ao banco de dados
-        conn = sqlite3.connect("db_tvde_content_internal.db")  # Substitua pelo caminho correto
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Debug: Verificar datas reais no banco
@@ -1515,73 +1538,75 @@ def main(page: ft.Page):
 
         def valid_email_password(email_login, password_login):
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
-            
-            # Conectar ao banco de dados    
-          # Conectar ao banco de dados    
+
+            # Conectar ao banco de dados MySQL
             conn = mysql.connector.connect(
                 host=MYSQLHOST,
                 user=MYSQLUSER,
                 password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
-                port=MYSQLPORT     
+                port=MYSQLPORT
             )
-                
-            cursor = conn.cursor()
+
             cursor = conn.cursor(buffered=True)
 
-            # Verificar se o email existe no banco de dados
-            cursor.execute("""SELECT password FROM users WHERE email = %s""", (email_login.value,))
-
+            # Verificar se o email existe no banco de dados e obter o user_id
+            cursor.execute("SELECT id, password FROM users WHERE email = %s", (email_login.value,))
             result = cursor.fetchone()
-            
+
+            get_user_id_from_mysql(email_login.value)
+
             if result is None:
                 email_login.error_text = current_translations.get("email_not_found", "Email não encontrado")
-                email_login.update() 
+                email_login.update()
             else:
-                stored_password = result[0]   
+                user_id, stored_password = result
                 if hash_password_login == stored_password:
                     print(current_translations.get("login_successful", "Login bem-sucedido!"))
-                    # Conectar ao banco SQLite para verificar metas
-                    conn_sqlite = sqlite3.connect("db_tvde_content_internal.db")
-                    cursor_sqlite = conn_sqlite.cursor()
+                    create_user_tables(user_id)
 
-                    # Executar uma consulta para buscar o valor de goal_successful
-                    cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
-                    goal_successful = cursor_sqlite.fetchone()
+                    # Caminho do banco SQLite do usuário
+                    db_path = f"db_usuarios/db_user_{user_id}.db"
+                    print(f"Conectando ao banco de dados SQLite: {db_path}")
 
-                    cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
-                    meta_count = cursor_sqlite.fetchone()[0]
+                    # Conectar ao banco de dados SQLite
+                    with sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES) as conn_sqlite:
+                        cursor_sqlite = conn_sqlite.cursor()
 
-                    # Verificar se o valor foi encontrado e retornar o resultado
-                    if goal_successful:
-                        goal_successful = goal_successful[0]  # Se encontrar o valor
-                    else:
-                        goal_successful = "default_value"  # Valor padrão se não encontrar nenhum
+                        # Buscar goal_successful
+                        cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
+                        goal_successful = cursor_sqlite.fetchone()
+                        goal_successful = goal_successful[0] if goal_successful else "default_value"
 
-                    conn_sqlite.close()
+                        # Contar metas
+                        cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
+                        meta_count = cursor_sqlite.fetchone()[0]
 
-                    # Redirecionar o usuário com base na existência de metas
+                    # Redirecionamento com base nas metas
                     if meta_count > 0 and goal_successful == "negativo":
                         page.go("/page_parcial")
                     elif meta_count > 0 and goal_successful == "positivo":
                         page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
                         time.sleep(3)
-                        page.go("/page_new_goal")  # Página principal
-                        
+                        page.go("/page_new_goal")
                     else:
-                        page.go("/page_new_goal")  # Página de nova meta
+                        page.go("/page_new_goal")
                 else:
                     password_login.error_text = current_translations.get("password_incorrect", "Senha incorreta")
                     password_login.update()
 
-            cursor.close()  
+            cursor.close()
             conn.close()
+
 
         global email_login
         email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email)
         password_login = ft.TextField(label=current_translations.get("password_label", "Password"), password=True, can_reveal_password=True, border_radius=21)
+
         button_login = ft.ElevatedButton(
-            text=current_translations.get("login_button", "LOGIN"), bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white",
+            text=current_translations.get("login_button", "LOGIN"),
+            bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"},
+            color="white",
             on_click=lambda e: valid_email_password(email_login, password_login)
         )
         
@@ -1894,7 +1919,8 @@ def main(page: ft.Page):
             button_salve.update()
 
         
-        def save_goal(e):
+        def save_goal(e, user_id):
+       
             global day_off
             global goal_start
             global goal_end
@@ -1915,7 +1941,7 @@ def main(page: ft.Page):
                 tax_discount = 0.0  # Atribui um valor padrão (0.0) se estiver vazio
             
             # Conectar ao banco para verificar se as datas já existem
-            conn = sqlite3.connect("db_tvde_content_internal.db")
+            conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
             cursor = conn.cursor()
 
             try:
@@ -1984,9 +2010,9 @@ def main(page: ft.Page):
             tax_discount_field.value = ""
             page.update()
 
-
+        user_id = get_user_id_from_mysql(email_login.value)
         button_salve = ft.ElevatedButton(
-        text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", on_click=save_goal)
+        text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", on_click=lambda e: save_goal(e, user_id),)
 
         page.overlay.append(date_picker)
         page.views.append(
@@ -2259,7 +2285,7 @@ def main(page: ft.Page):
             page.update()
 
         # Agora você pode acessar o valor dela corretamente
-        def cadastrar_despesa():
+        def cadastrar_despesa(user_id):
             all_fields_valid()
             # Limpar mensagens de erro anteriores e bordas
             page.controls = [control for control in page.controls if not isinstance(control, ft.Text) or control.color != "red"]
@@ -2358,7 +2384,7 @@ def main(page: ft.Page):
         
 
             # Conectar ao banco de dados SQLite
-            conn = sqlite3.connect("db_tvde_content_internal.db")
+            conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
             cursor = conn.cursor()
 
             # Inserir os dados na tabela
@@ -2805,7 +2831,7 @@ def main(page: ft.Page):
             border_radius=21,
         )
 
-        def save_daily_bolt_uber(param):
+        def save_daily_bolt_uber(param, user_id):
             # Validar o parâmetro
             if param not in ["Bolt", "Uber"]:
                 page_message_screen("Parâmetro inválido!")
@@ -2830,7 +2856,7 @@ def main(page: ft.Page):
 
             # Conectar ao banco e inserir os dados
             try:
-                conn = sqlite3.connect("db_tvde_content_internal.db")
+                conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
                 cursor = conn.cursor()
                 cursor.execute(f"""
                 INSERT INTO {table_name} 
@@ -2945,8 +2971,9 @@ def main(page: ft.Page):
         )
         page.update()
 
-    def page_parcial(page):
-        conn_sqlite = sqlite3.connect("db_tvde_content_internal.db")
+    def page_parcial(page, user_id):
+        user_id = get_user_id_from_mysql(email_login.value)
+        conn_sqlite = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
         cursor_sqlite = conn_sqlite.cursor()
 
         # Executar uma consulta para buscar o valor de goal_successful
@@ -3057,8 +3084,8 @@ def main(page: ft.Page):
             ]
         )
 
-        def fetch_goal_from_db():
-            conn = sqlite3.connect("db_tvde_content_internal.db")
+        def fetch_goal_from_db(user_id):
+            conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
             cursor = conn.cursor()
 
             # Executar a consulta para obter o valor do objetivo, fleet_discount e tax_discount
@@ -3080,7 +3107,7 @@ def main(page: ft.Page):
                 return "€ 0.00"
         global goal_value
         # Exemplo de como chamar a função
-        goal_value = fetch_goal_from_db()
+        goal_value = fetch_goal_from_db(user_id)
 
         goal = ft.Row(
             controls=[
@@ -3177,7 +3204,7 @@ def main(page: ft.Page):
                 cursor.execute(query, (start_date, end_date))
                 return cursor.fetchall()
 
-            with sqlite3.connect("db_tvde_content_internal.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
+            with sqlite3.connect(f"db_usuarios/db_user_{user_id}.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
                 cursor = conn.cursor()  # Inicializando o cursor
 
                 # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
@@ -3320,9 +3347,9 @@ def main(page: ft.Page):
             ]
         )
         
-        def fetch_goal_from_db2():
+        def fetch_goal_from_db2(user_id):
             # Conectando ao banco SQLite
-            conn = sqlite3.connect("db_tvde_content_internal.db")  # Nome correto do arquivo SQLite
+            conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
             cursor = conn.cursor()
 
             # Realiza a consulta para pegar o valor da meta e as datas
@@ -3345,7 +3372,7 @@ def main(page: ft.Page):
                 return None, None, None, None
 
         # Usando a função fetch_goal_from_db para obter o valor da meta e os dias restantes
-        goal_value, goal_start, goal_end, remaining_days = fetch_goal_from_db2()
+        goal_value, goal_start, goal_end, remaining_days = fetch_goal_from_db2(user_id)
 
         # Se a meta e os dias restantes foram encontrados
         if goal_value is not None:
@@ -3373,7 +3400,7 @@ def main(page: ft.Page):
 
                     # Definir um valor padrão para total_gain, caso a consulta falhe
         # Buscar goal_gross e calcular a porcentagem de progresso
-        with sqlite3.connect("db_tvde_content_internal.db") as conn:
+        with sqlite3.connect(f"db_usuarios/db_user_{user_id}.db") as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
             result = cursor.fetchone()
@@ -3508,7 +3535,7 @@ def main(page: ft.Page):
         )
             
         def fetch_goal_from_db4(total_gain):
-            with sqlite3.connect("db_tvde_content_internal.db") as conn:
+            with sqlite3.connect(f"db_usuarios/db_user_{user_id}.db") as conn:
                 cursor = conn.cursor()
 
                 # Obter os dados da meta mais recente
@@ -3530,7 +3557,7 @@ def main(page: ft.Page):
                 days_of_work -= day_off  # Remover dias de folga
 
                 # **Contar quantos registros existem nas tabelas `uber` e `bolt`**
-                with sqlite3.connect("db_tvde_content_internal.db") as conn:
+                with sqlite3.connect(f"db_usuarios/db_user_{user_id}.db") as conn:
                     cursor = conn.cursor()
 
                     # Contar **todas** as inserções na tabela Uber
@@ -3747,7 +3774,7 @@ def main(page: ft.Page):
                 button_to_db.disabled = True
             button_to_db.update()
 
-        def add_in_db(name, surname, email, password):
+        def add_in_db(name, surname, email, password, user_id):
             # Concatenar prefixo e sufixo do telefone
             hash_password = sha256(password.encode()).hexdigest()
             
@@ -3769,7 +3796,7 @@ def main(page: ft.Page):
                 if cursor.rowcount > 0:
                     conn.commit()
                     page_message_screen("Usuário cadastrado com sucesso!")
-                    connection = sqlite3.connect('db_tvde_content_internal{email}.db')
+                    connection = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
                     connection.commit()
                     cursor.close()
                     connection.close()
@@ -4113,7 +4140,7 @@ def main(page: ft.Page):
         elif page.route == "/page_new_password":
             page_new_password()
         elif page.route == "/page_parcial":
-            page_parcial(page)
+            page_parcial(page, user_id=None)
         elif page.route == "/page_expense":
             page_expense()
         elif page.route == "/page_daily":
@@ -4125,7 +4152,7 @@ def main(page: ft.Page):
         elif page.route == "/page_my_account":
             page_my_account(page, current_translations)
         elif page.route == "/page_reports":
-            page_reports()
+            page_reports(user_id=None)
         elif page.route == "/page_reports_expense":
             page_reports_expense()
         elif page.route == "/page_reports_fleet":
