@@ -314,6 +314,7 @@ def main(page: ft.Page):
         page.update()
 
     def page_reports(user_id):
+        user_id = get_user_id_from_mysql(email_login.value)
         page.views.clear()
 
         with sqlite3.connect(f"db_usuarios/db_user_{user_id}.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
