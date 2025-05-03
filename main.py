@@ -2930,13 +2930,13 @@ def main(page: ft.Page):
             user_id = get_user_id_from_mysql(email_login.value) 
             validate_fields()
             if not btn_bolt.disabled:
-                save_daily_bolt_uber(user_id,"Bolt")
+                save_daily_bolt_uber("Bolt", user_id)
 
         def handle_uber_click(e):
             user_id = get_user_id_from_mysql(email_login.value) 
             validate_fields()
             if not btn_uber.disabled:
-                save_daily_bolt_uber(user_id,"Uber")
+                save_daily_bolt_uber("Uber", user_id)
 
         btn_bolt = ft.ElevatedButton(
             text="Cadastrar Bolt",
@@ -2951,6 +2951,7 @@ def main(page: ft.Page):
         )
 
         configure_buttons(param)
+
         
         page.overlay.append(date_picker)
         page.views.append(
@@ -3826,7 +3827,7 @@ def main(page: ft.Page):
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password, expand=True)
         
         button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
-                                          on_click=lambda e: add_in_db(name.value, surname.value, email.value, password.value, user_id=None))
+                                          on_click=lambda e: add_in_db(name.value, surname.value, email.value, password.value))
         page.views.append(
             ft.View(
                 "/register",
