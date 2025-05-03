@@ -48,21 +48,21 @@ def main(page: ft.Page):
 
     pb = ft.PopupMenuButton(
         icon=ft.Icons.MENU,
-        shadow_color=ft.colors.GREEN_300,
+        shadow_color=ft.Colors.GREEN_300,
         bgcolor="#F1F1F1",
         icon_size=33,
         items=[
                 ft.PopupMenuItem(text="MENU"),
-                ft.PopupMenuItem(icon=ft.icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
-                ft.PopupMenuItem(icon=ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, text="Lançamentos" , on_click=lambda _: page.go("/page_more_date")),
-                ft.PopupMenuItem(icon=ft.icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
-                ft.PopupMenuItem(icon=ft.icons.INSERT_CHART_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
-                ft.PopupMenuItem(icon=ft.icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
-                ft.PopupMenuItem(icon=ft.icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração", on_click=lambda _: page.go("/page_settings")),
-                ft.PopupMenuItem(icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED, text="SEJA PREMIUM", on_click=lambda _: page.go("/page_premium")),
+                ft.PopupMenuItem(icon=ft.Icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
+                ft.PopupMenuItem(icon=ft.Icons.ADD_CIRCLE_OUTLINE_ROUNDED, text="Lançamentos" , on_click=lambda _: page.go("/page_more_date")),
+                ft.PopupMenuItem(icon=ft.Icons.ADD_CHART_OUTLINED, text="Novo Objetivo", on_click=lambda _: page.go("/page_new_goal")),
+                ft.PopupMenuItem(icon=ft.Icons.INSERT_CHART_OUTLINED, text="Relatórios", on_click=lambda _: page.go("/page_reports")),
+                ft.PopupMenuItem(icon=ft.Icons.CONTACTS_OUTLINED, text="Minha conta", on_click=lambda _: page.go("/page_my_account")),
+                ft.PopupMenuItem(icon=ft.Icons.SETTINGS_APPLICATIONS_SHARP, text="Configuração", on_click=lambda _: page.go("/page_settings")),
+                ft.PopupMenuItem(icon=ft.Icons.WORKSPACE_PREMIUM_OUTLINED, text="SEJA PREMIUM", on_click=lambda _: page.go("/page_premium")),
                 ft.PopupMenuItem(),  # divider
                 ft.PopupMenuItem(
-                    icon=ft.icons.EXIT_TO_APP_SHARP, text="SAIR",on_click=lambda _: page.go("/")
+                    icon=ft.Icons.EXIT_TO_APP_SHARP, text="SAIR",on_click=lambda _: page.go("/")
                 ),
         ]
     )
@@ -90,10 +90,10 @@ def main(page: ft.Page):
         content=ft.NavigationBar(
             indicator_color="#19D278",
             destinations=[
-                ft.NavigationBarDestination(icon=ft.icons.HOME_OUTLINED, label="Início"),
-                ft.NavigationBarDestination(icon=ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, label="Novo dado"),
-                ft.NavigationBarDestination(icon=ft.icons.INSERT_CHART_OUTLINED, label="Relatórios"),
-                ft.NavigationBarDestination(icon=ft.icons.SETTINGS, label="Config"),
+                ft.NavigationBarDestination(icon=ft.Icons.HOME_OUTLINED, label="Início"),
+                ft.NavigationBarDestination(icon=ft.Icons.ADD_CIRCLE_OUTLINE_ROUNDED, label="Novo dado"),
+                ft.NavigationBarDestination(icon=ft.Icons.INSERT_CHART_OUTLINED, label="Relatórios"),
+                ft.NavigationBarDestination(icon=ft.Icons.SETTINGS, label="Config"),
             ],
             on_change=on_change,
         ),
@@ -114,7 +114,7 @@ def main(page: ft.Page):
                 "/message_screen",
                 controls=[
                     ft.Container(
-                        content=ft.Text(msg, color=ft.colors.GREEN, size=21)
+                        content=ft.Text(msg, color=ft.Colors.GREEN, size=21)
                     )
                 ]  
             )
@@ -129,14 +129,14 @@ def main(page: ft.Page):
                 alignment=ft.MainAxisAlignment.CENTER  # Alinha no centro
             ),
             padding=ft.padding.only(bottom=21),
-            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREY_900))
+            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.Colors.GREY_900))
         )
     
     def page_menu():
         page.views.clear()
 
         page_menu_open = ft.Container(
-            bgcolor=ft.colors.AMBER_300,
+            bgcolor=ft.Colors.AMBER_300,
             width=435,
             height=600,
             border_radius=21,
@@ -144,7 +144,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
                     ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
-                    ft.border.only(bottom=ft.border.BorderSide(0.3, ft.colors.GREY_900)),
+                    ft.border.only(bottom=ft.border.BorderSide(0.3, ft.Colors.GREY_900)),
                     ft.Container(height=90),
                     ft.Text("Nome: "),
                     ft.Text("Email: "),
@@ -182,36 +182,36 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED),
+                           icon = ft.Icon(ft.Icons.WORKSPACE_PREMIUM_OUTLINED),
                            title = ft.Text("PREMIUM", size=21),
                     ),
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
                             ft.Text("CONTROLE SEUS GANHOS E GASTOS")
                         ]
                     ), 
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
                             ft.Text("DESBLOQUEIE RELATÓRIOS COMPLETOS")
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
                             ft.Text("RELATÓRIOS EXCLUSIVOS")
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
                             ft.Text("SEM PROPAGANDAS")
                         ]
                     ),
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.icons.VERIFIED, color="GREEN"),
+                            ft.Icon(ft.Icons.VERIFIED, color="GREEN"),
                             ft.Text("CANCELE A QUALQUER MOMENTO")
                         ]
                     ),
@@ -241,14 +241,14 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.ACCOUNT_CIRCLE_OUTLINED),
+                        icon=ft.Icon(ft.Icons.ACCOUNT_CIRCLE_OUTLINED),
                         title=ft.Text(my_account_title, size=21),
                     ),
                     ft.Container(
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.icons.ACCOUNT_CIRCLE, size=18),
+                                    content=ft.Icon(ft.Icons.ACCOUNT_CIRCLE, size=18),
                                     padding=ft.padding.all(9),
                                 ),
                                 ft.Text(f"{user_name_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
@@ -257,13 +257,13 @@ def main(page: ft.Page):
                         ),
                     ),
                     ft.Container(
-                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_200)),
                     ),
                     ft.Container(
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.icons.EMAIL_OUTLINED, size=18),
+                                    content=ft.Icon(ft.Icons.EMAIL_OUTLINED, size=18),
                                     padding=ft.padding.all(9),
                                 ),
                                 ft.Text(f"{email_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
@@ -272,13 +272,13 @@ def main(page: ft.Page):
                         ),
                     ),
                     ft.Container(
-                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_200)),
                     ),
                     ft.Container(
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.icons.WORKSPACE_PREMIUM_OUTLINED, size=18),
+                                    content=ft.Icon(ft.Icons.WORKSPACE_PREMIUM_OUTLINED, size=18),
                                     padding=ft.padding.all(9),
                                 ),
                                 ft.Text(f"{account_type_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
@@ -288,13 +288,13 @@ def main(page: ft.Page):
                         ),
                     ),
                     ft.Container(
-                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_200)),
                     ),
                     ft.Container(
                         ft.Row(
                             controls=[
                                 ft.Container(
-                                    content=ft.Icon(ft.icons.DATE_RANGE, size=18),
+                                    content=ft.Icon(ft.Icons.DATE_RANGE, size=18),
                                     padding=ft.padding.all(9),
                                 ),
                                 ft.Text(f"{account_creation_date_label}:", size=15, style=ft.TextStyle(weight=ft.FontWeight.BOLD)),
@@ -303,7 +303,7 @@ def main(page: ft.Page):
                         ),
                     ),
                     ft.Container(
-                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.colors.GREY_200)),
+                        border=ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_200)),
                     ),
                     button_edit,
                     bottom_menu
@@ -473,7 +473,7 @@ def main(page: ft.Page):
                     # Cabeçalho com ícone
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
+                            ft.Icon(ft.Icons.TRENDING_UP, size=24, color="blue"),  # Ícone de tendência
                             ft.Text("Resumo do Objetivo", size=15, weight=ft.FontWeight.BOLD),
                         ],
                         alignment=ft.MainAxisAlignment.START
@@ -536,12 +536,12 @@ def main(page: ft.Page):
             content=ft.Row(
                 controls=[
                     create_big_button(
-                        ft.Icon(ft.icons.EURO, size=39),
+                        ft.Icon(ft.Icons.EURO, size=39),
                         "Despesas",
                         lambda e: page.go("/page_reports_expense")
                     ),
                     create_big_button(
-                        ft.Icon(ft.icons.ADD_TO_HOME_SCREEN, size=36),
+                        ft.Icon(ft.Icons.ADD_TO_HOME_SCREEN, size=36),
                         "Plataforma",
                         lambda e: page.go("/page_reports_fleet")
                     )
@@ -553,12 +553,12 @@ def main(page: ft.Page):
             content=ft.Row(
                 controls=[
                     create_big_button(
-                        ft.Icon(ft.icons.DIRECTIONS_CAR, size=36),
+                        ft.Icon(ft.Icons.DIRECTIONS_CAR, size=36),
                         "Geral",
                         lambda e: page.go("/page_reports_general")
                     ),
                     create_big_button(
-                        ft.Icon(ft.icons.CALENDAR_MONTH, size=36), 
+                        ft.Icon(ft.Icons.CALENDAR_MONTH, size=36), 
                         "Mensal", 
                         lambda e: page.go("/page_reports_monthly")
                     )
@@ -574,7 +574,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.icons.INSERT_CHART_OUTLINED),
+                           icon = ft.Icon(ft.Icons.INSERT_CHART_OUTLINED),
                            title = ft.Text("RELATÓRIOS", size=21),
                     ),
                     panel_reports,
@@ -630,7 +630,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             expand=True,  # Tornando o campo expansível
             suffix=ft.IconButton(
-                icon=ft.icons.CALENDAR_MONTH,
+                icon=ft.Icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, start_date_field),
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
@@ -652,7 +652,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             expand=True,  # Tornando o campo expansível
             suffix=ft.IconButton(
-                icon=ft.icons.CALENDAR_MONTH,
+                icon=ft.Icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, end_date_field),
             )
         )
@@ -882,7 +882,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.EURO),
+                        icon=ft.Icon(ft.Icons.EURO),
                         title=ft.Text("RELATÓRIO DE DESPESAS", size=21),
                     ),
                     ft.Column(
@@ -906,7 +906,7 @@ def main(page: ft.Page):
                                     controls=[
                                         ft.Row(
                                             controls=[
-                                                ft.Icon(ft.icons.RECEIPT_LONG, size=20, color="blue"),
+                                                ft.Icon(ft.Icons.RECEIPT_LONG, size=20, color="blue"),
                                                 ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
                                             ],
                                             alignment=ft.MainAxisAlignment.START,
@@ -982,7 +982,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.icons.BAR_CHART, size=20, color=color),
+                            ft.Icon(ft.Icons.BAR_CHART, size=20, color=color),
                             ft.Text(title, size=15, weight=ft.FontWeight.BOLD),
                         ],
                         alignment=ft.MainAxisAlignment.START,
@@ -1071,7 +1071,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.ADD_TO_HOME_SCREEN),
+                        icon=ft.Icon(ft.Icons.ADD_TO_HOME_SCREEN),
                         title=ft.Text("RELATÓRIO DE PLATAFORMA", size=21),
                     ),
                     metrics_container("Uber", "blue", uber_data),
@@ -1152,7 +1152,7 @@ def main(page: ft.Page):
                 controls=[
                     ft.Row(
                         controls=[
-                            ft.Icon(ft.icons.BAR_CHART, size=20, color=color),
+                            ft.Icon(ft.Icons.BAR_CHART, size=20, color=color),
                             ft.Text(title, size=15, weight=ft.FontWeight.BOLD),
                         ],
                         alignment=ft.MainAxisAlignment.START,
@@ -1227,13 +1227,13 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.DIRECTIONS_CAR),
+                        icon=ft.Icon(ft.Icons.DIRECTIONS_CAR),
                         title=ft.Text("RELATÓRIO GERAL", size=21),
                     ),
                     ft.Column(
                         controls=[
-                            metrics_container2("Uber", ft.colors.BLUE, uber_data),
-                            metrics_container2("Bolt", ft.colors.GREEN, bolt_data),
+                            metrics_container2("Uber", ft.Colors.BLUE, uber_data),
+                            metrics_container2("Bolt", ft.Colors.GREEN, bolt_data),
                         ]
                     ),
                     bottom_menu,
@@ -1377,7 +1377,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.INSERT_CHART_OUTLINED),
+                        icon=ft.Icon(ft.Icons.INSERT_CHART_OUTLINED),
                         title=ft.Text("RELATÓRIO MENSAL", size=21),
                     ),
                     # Texto explicativo com espaçamento adequado
@@ -1459,7 +1459,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
+                        icon=ft.Icon(ft.Icons.SETTINGS_APPLICATIONS_SHARP),
                         title=ft.Text(current_translations.get("settings", "Configurações"), size=21),
                     ),
                     ft.Row(
@@ -1504,7 +1504,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.SETTINGS_APPLICATIONS_SHARP),
+                        icon=ft.Icon(ft.Icons.SETTINGS_APPLICATIONS_SHARP),
                         title=ft.Text(current_translations.get("settings", "Configurações"), size=21),
                     ),
                     ft.Row(
@@ -1825,7 +1825,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             expand=True,
             suffix=ft.IconButton(
-                icon=ft.icons.CALENDAR_MONTH,
+                icon=ft.Icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, goal_start_field),
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
@@ -1848,7 +1848,7 @@ def main(page: ft.Page):
             helper_text="* Data do Fim da Meta",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
-                icon=ft.icons.CALENDAR_MONTH,
+                icon=ft.Icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, goal_end_field)
             )
         )
@@ -2028,7 +2028,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.icons.MORE_TIME),
+                           icon = ft.Icon(ft.Icons.MORE_TIME),
                            title = ft.Text("NOVO OBJETIVO", size=21),
                     ),
                     ft.Container(height=0.9),
@@ -2211,7 +2211,7 @@ def main(page: ft.Page):
             helper_text="* Data da despesa.",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
-                icon=ft.icons.CALENDAR_MONTH,
+                icon=ft.Icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, expense_date),  # Chama pick_date para abrir o DatePicker
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão
@@ -2437,7 +2437,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.MONEY_OFF_SHARP),
+                        icon=ft.Icon(ft.Icons.MONEY_OFF_SHARP),
                         title=ft.Text("NOVA DESPESA", size=21),
                     ),
                     expense_value,
@@ -2501,7 +2501,7 @@ def main(page: ft.Page):
 
         big_button_expense = create_button(
             [
-                ft.Icon(ft.icons.MONEY_OFF_SHARP, size=48),
+                ft.Icon(ft.Icons.MONEY_OFF_SHARP, size=48),
                 ft.Text("Nova Despesa")
             ],
             "/page_expense",
@@ -2510,7 +2510,7 @@ def main(page: ft.Page):
 
         big_button_new_goal = create_button(
             [
-                ft.Icon(ft.icons.ADD_CHART_OUTLINED, size=48),
+                ft.Icon(ft.Icons.ADD_CHART_OUTLINED, size=48),
                 ft.Text("Novo Objetivo")
             ],
             "/page_new_goal",
@@ -2523,7 +2523,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                        icon=ft.Icon(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED),
+                        icon=ft.Icon(ft.Icons.ADD_CIRCLE_OUTLINE_ROUNDED),
                         title=ft.Text("LANÇAMENTOS", size=21)
                     ),
                     ft.Row(
@@ -2752,7 +2752,7 @@ def main(page: ft.Page):
             helper_text="* Data da diária",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
-                icon=ft.icons.CALENDAR_MONTH,
+                icon=ft.Icons.CALENDAR_MONTH,
                 on_click=lambda e: pick_date(e, daily_date_field),
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
@@ -2768,7 +2768,7 @@ def main(page: ft.Page):
             # Verifica se o campo está vazio (campo opcional)
             if not texto:
                 # Não gera erro se o campo for vazio
-                e.control.border_color = ft.colors.TRANSPARENT
+                e.control.border_color = ft.Colors.TRANSPARENT
             else:
                 # Remove tudo o que não for número
                 texto = ''.join(filter(str.isdigit, texto))
@@ -2789,13 +2789,13 @@ def main(page: ft.Page):
                 if len(texto) == 5 and texto[2] == ":" and texto[:2].isdigit() and texto[3:].isdigit():
                     horas, minutos = texto.split(":")
                     if 0 <= int(horas) <= 23 and 0 <= int(minutos) <= 59:
-                        e.control.border_color = ft.colors.GREEN
+                        e.control.border_color = ft.Colors.GREEN
                     else:
                         hour_error = "* 00:00 e 23:59."
-                        e.control.border_color = ft.colors.RED
+                        e.control.border_color = ft.Colors.RED
                 else:
                     hour_error = "* Use HH:MM."
-                    e.control.border_color = ft.colors.RED
+                    e.control.border_color = ft.Colors.RED
 
             # Atualiza a mensagem de erro
             e.control.error_text = hour_error
@@ -2960,7 +2960,7 @@ def main(page: ft.Page):
                 controls=[
                     header,
                     title_app(
-                           icon = ft.Icon(ft.icons.MORE_TIME),
+                           icon = ft.Icon(ft.Icons.MORE_TIME),
                            title = ft.Text(f"DIÁRIA {param.upper()}", size=21),
                     ),
                     ft.Container(height=0.9),
@@ -3013,7 +3013,7 @@ def main(page: ft.Page):
                         content=ft.Row(
                             controls=[
                                 ft.Text(f"Parabéns!!! Você alcançou o último Objetivo. \n Crie um NOVO OBJETIVO!", size=15, weight=ft.FontWeight.BOLD),
-                                ft.Icon(ft.icons.ADD_CIRCLE_OUTLINE_ROUNDED, size=30)  # Ícone após o texto
+                                ft.Icon(ft.Icons.ADD_CIRCLE_OUTLINE_ROUNDED, size=30)  # Ícone após o texto
                             ],
                             alignment=ft.MainAxisAlignment.CENTER,  # Alinha o conteúdo no centro
                             vertical_alignment=ft.CrossAxisAlignment.CENTER,  # Alinha verticalmente no centro
@@ -3129,8 +3129,8 @@ def main(page: ft.Page):
                     padding=ft.Padding(top=3, bottom=6, left=0, right=0), 
                     content=ft.Column(
                         controls=[
-                            ft.Text("OBJETIVO GERAL", size=18, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal_value, size=36, color=ft.colors.BLACK),
+                            ft.Text("OBJETIVO GERAL", size=18, color=ft.Colors.BLACK, weight=ft.FontWeight.BOLD),
+                            ft.Text(goal_value, size=36, color=ft.Colors.BLACK),
                             ft.Text("Valores líquidos sem taxas e impostos", size=9, color="#858585"),
                             ],
                             spacing=0,
@@ -3502,7 +3502,7 @@ def main(page: ft.Page):
                     margin=0,
                     height=30, 
                     border=ft.border.only(
-                        bottom=ft.border.BorderSide(2, ft.colors.BLACK)
+                        bottom=ft.border.BorderSide(2, ft.Colors.BLACK)
                     ),
                     content=ft.Stack(
                         controls=[
@@ -3644,7 +3644,7 @@ def main(page: ft.Page):
                     alignment=ft.MainAxisAlignment.CENTER,  # Centraliza verticalmente
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
                     controls=[
-                        ft.Text("OBJETIVO DIÁRIO", size=18, color=ft.colors.BLACK),
+                        ft.Text("OBJETIVO DIÁRIO", size=18, color=ft.Colors.BLACK),
                         ft.Container(
                             content=ft.Text(
                                 f"€ {daily_value_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
@@ -3835,7 +3835,7 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.IconButton(
-                                icon=ft.icons.ARROW_BACK,
+                                icon=ft.Icons.ARROW_BACK,
                                 icon_size=27,
                                 tooltip="Voltar",
                                 on_click=lambda e: page.go("/")  # substitua "/" pela página anterior real, ex: "/login"
@@ -3858,7 +3858,7 @@ def main(page: ft.Page):
                                     content=ft.Column(
                                         controls=[ 
                                             title_app(
-                                            icon=ft.Icon(ft.icons.PERSON_ADD),
+                                            icon=ft.Icon(ft.Icons.PERSON_ADD),
                                             title=ft.Text("Novo usuário", size=21),
                                             ),
                                         ],
@@ -3957,7 +3957,7 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.IconButton(
-                                icon=ft.icons.ARROW_BACK,
+                                icon=ft.Icons.ARROW_BACK,
                                 icon_size=27,
                                 tooltip="Voltar",
                                 on_click=lambda e: page.go("/")  # substitua "/" pela página anterior real, ex: "/login"
@@ -3978,7 +3978,7 @@ def main(page: ft.Page):
                                     content=ft.Column(
                                         controls=[ 
                                             title_app(
-                                                icon=ft.Icon(ft.icons.LOCK),
+                                                icon=ft.Icon(ft.Icons.LOCK),
                                                 title=ft.Text("Gerar nova senha", size=21),
                                             ),
                                             ft.Container(),
@@ -4086,7 +4086,7 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.IconButton(
-                                icon=ft.icons.ARROW_BACK,
+                                icon=ft.Icons.ARROW_BACK,
                                 icon_size=27,
                                 tooltip="Voltar",
                                 on_click=lambda e: page.go("/")  # substitua "/" pela página anterior real, ex: "/login"
@@ -4109,7 +4109,7 @@ def main(page: ft.Page):
                                     content=ft.Column(
                                         controls=[ 
                                             title_app(
-                                            icon=ft.Icon(ft.icons.LOCK),
+                                            icon=ft.Icon(ft.Icons.LOCK),
                                             title=ft.Text("Criar nova senha", size=21),
                                             ),
                                         ],
