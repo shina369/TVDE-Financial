@@ -3518,7 +3518,7 @@ def main(page: ft.Page):
                                 left=car_position,
                                 padding=ft.padding.only(top=7, right=5),
                                 content=ft.Image(
-                                    src="https://i.ibb.co/27GrFHLV/car.png",
+                                    src="https://i.ibb.co/BHKh6SN3/car.png",
                                 ),
                                 alignment=ft.Alignment(0, 0),
                             ),
