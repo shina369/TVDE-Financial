@@ -3786,7 +3786,6 @@ def main(page: ft.Page):
             button_to_db.update()
 
         def add_in_db(name, surname, email, password, user_id):
-            # Concatenar prefixo e sufixo do telefone
             hash_password = sha256(password.encode()).hexdigest()
             
             # Conectar ao banco de dados    
@@ -3827,7 +3826,7 @@ def main(page: ft.Page):
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password, expand=True)
         
         button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
-                                          on_click=lambda e: add_in_db(name.value, surname.value, email.value, password.value))
+                                          on_click=lambda e: add_in_db(name.value, surname.value, email.value, password.value, user_id=None))
         page.views.append(
             ft.View(
                 "/register",
