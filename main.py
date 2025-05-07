@@ -22,6 +22,24 @@ MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 MYSQLPORT = int(os.getenv("MYSQLPORT"))  
 
+CREDENTIALS_FILE = "user_credentials.json"
+
+def save_credentials(email, password):
+    with open(CREDENTIALS_FILE, "w") as f:
+        json.dump({"email": email, "password": password}, f)
+
+def load_credentials():
+    if os.path.exists(CREDENTIALS_FILE):
+        with open(CREDENTIALS_FILE, "r") as f:
+            data = json.load(f)
+            return data.get("email", ""), data.get("password", "")
+    return "", ""
+
+def clear_credentials():
+    if os.path.exists(CREDENTIALS_FILE):
+        os.remove(CREDENTIALS_FILE)
+
+
 def main(page: ft.Page):
     
     load_dotenv()
@@ -1529,7 +1547,7 @@ def main(page: ft.Page):
 
     def page_login():
         page.views.clear()
-
+        saved_email, saved_password = load_credentials()
         def validate_email(e):
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value):
                 email_login.error_text = None
@@ -1564,6 +1582,7 @@ def main(page: ft.Page):
                 user_id, stored_password = result
                 if hash_password_login == stored_password:
                     print(current_translations.get("login_successful", "Login bem-sucedido!"))
+                    save_credentials(email_login.value, password_login.value)
                     create_user_tables(user_id)
 
                     # Caminho do banco SQLite do usuário
@@ -1601,8 +1620,8 @@ def main(page: ft.Page):
 
 
         global email_login
-        email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email)
-        password_login = ft.TextField(label=current_translations.get("password_label", "Password"), password=True, can_reveal_password=True, border_radius=21)
+        email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email,  value=saved_email)
+        password_login = ft.TextField(label=current_translations.get("password_label", "Password"), password=True, can_reveal_password=True, border_radius=21, value=saved_password)
 
         button_login = ft.ElevatedButton(
             text=current_translations.get("login_button", "LOGIN"),
