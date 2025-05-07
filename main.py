@@ -747,7 +747,6 @@ def main(page: ft.Page):
                 # Obtém todas as categorias dinâmicas de despesas
                 cursor.execute("SELECT DISTINCT expense_name FROM expense")
                 expense_names = [row[0] for row in cursor.fetchall()]
-                print("Despesas encontradas:", expense_names)  # Depuração
 
                 # Monta a consulta dinâmica
                 query = """
@@ -758,7 +757,6 @@ def main(page: ft.Page):
                 """
                 cursor.execute(query, (start_date, end_date))
                 expenses = dict(cursor.fetchall())
-                print("Valores das despesas:", expenses)  # Depuração
 
                 conn.close()
 
@@ -847,7 +845,6 @@ def main(page: ft.Page):
                 return
 
             if user_id is None:
-                print("Erro: user_id não encontrado.")
                 report_message.controls = [ft.Text("Erro: user_id não encontrado.", color="red")]
                 report_message.update()
                 page.update()
@@ -856,7 +853,6 @@ def main(page: ft.Page):
             try:
                 # Verifique se o caminho do banco de dados está correto
                 db_path = f"db_usuarios/db_user_{user_id}.db"
-                print(f"Conectando ao banco de dados: {db_path}")  # Depuração
 
                 conn = sqlite3.connect(db_path)
                 cursor = conn.cursor()
@@ -864,7 +860,6 @@ def main(page: ft.Page):
                 # Obtém todas as categorias dinâmicas de despesas
                 cursor.execute("SELECT DISTINCT expense_name FROM expense")
                 expense_names = [row[0] for row in cursor.fetchall()]
-                print("Despesas encontradas:", expense_names)  # Depuração
 
                 # Monta a consulta dinâmica
                 query = """
@@ -880,7 +875,7 @@ def main(page: ft.Page):
                 conn.close()
 
             except Exception as e:
-                print(f"Erro ao gerar o relatório: {str(e)}")  # Depuração
+                page_error_screen(f"Erro ao gerar o relatório: {str(e)}")  # Depuração
                 report_message.controls = [ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")]
                 report_message.update()
                 page.update()
@@ -1030,7 +1025,7 @@ def main(page: ft.Page):
             }
 
         except Exception as e:
-            print(f"Erro ao buscar dados da tabela {table_name} para o usuário {user_id}:", e)
+            page_error_screen(f"Erro ao buscar dados da tabela {table_name} para o usuário {user_id}:", e)
             return None
 
         finally:
@@ -1155,13 +1150,12 @@ def main(page: ft.Page):
 
     def fetch_fleet_data2(user_id, table_name):
         if user_id is None:
-            print("Erro: user_id não encontrado.")
+            page_error_screen("Erro: user_id não encontrado.")
             return None
 
         try:
             # Conecta ao banco de dados SQLite do usuário
             db_path = f"db_usuarios/db_user_{user_id}.db"
-            print(f"Conectando ao banco de dados: {db_path}")  # Depuração
 
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
@@ -1176,9 +1170,6 @@ def main(page: ft.Page):
                 FROM {table_name}
                 """)
             data = cursor.fetchone()
-
-            # Verificando os dados retornados
-            print(f"Dados recuperados da tabela {table_name}: {data}")  # Depuração
 
             if data:
                 total_rendimento, total_gorjetas, total_reembolso, total_km, total_viagens, = data
@@ -1195,11 +1186,11 @@ def main(page: ft.Page):
                     "total_viagens": total_viagens,
                 }
             else:
-                print(f"Nenhum dado encontrado na tabela {table_name}")
+                page_error_screen(f"Nenhum dado encontrado na tabela {table_name}")
                 return None
 
         except Exception as e:
-            print(f"Erro ao buscar dados da tabela {table_name}:", e)
+            page_error_screen(f"Erro ao buscar dados da tabela {table_name}:", e)
             return None
         finally:
             conn.close()
@@ -1279,9 +1270,6 @@ def main(page: ft.Page):
         uber_data = fetch_fleet_data2("uber")
         bolt_data = fetch_fleet_data2("bolt")
 
-        # Verificar dados recebidos
-        print(f"Uber Data: {uber_data}")
-        print(f"Bolt Data: {bolt_data}")
 
         # Verificar se os dados foram recuperados corretamente
         if uber_data is None:
@@ -1326,9 +1314,7 @@ def main(page: ft.Page):
         if not month_start_num or not month_end_num:
             return 0, 0  # Retorna 0 em caso de mês inválido
 
-        db_path = f"db_usuarios/db_user_{user_id}.db"
-        print(f"Conectando ao banco de dados(LINHA: 1262): {db_path}")  # Depuração
-        # Conecta ao banco de dados
+        db_path = f"db_usuarios/db_user_{user_id}.db" 
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
@@ -1631,13 +1617,11 @@ def main(page: ft.Page):
             else:
                 user_id, stored_password = result
                 if hash_password_login == stored_password:
-                    print(current_translations.get("login_successful", "Login bem-sucedido!"))
                     save_credentials(email_login.value, password_login.value)
                     create_user_tables(user_id)
 
                     # Caminho do banco SQLite do usuário
                     db_path = f"db_usuarios/db_user_{user_id}.db"
-                    print(f"Conectando ao banco de dados SQLite: {db_path}")
 
                     # Conectar ao banco de dados SQLite
                     with sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES) as conn_sqlite:
@@ -3665,18 +3649,12 @@ def main(page: ft.Page):
                     common_entries = cursor.fetchone()[0]
                     common_entries = int(common_entries) if common_entries else 0  # Garantir que seja inteiro
 
-                # Log para depuração
-                print(f"🚗 Registros no Uber: {uber_entries}")
-                print(f"⚡ Registros no Bolt: {bolt_entries}")
-                print(f"🔄 Datas Comuns: {common_entries}")
 
                 # **Agora somamos corretamente os registros, subtraindo as datas comuns**
                 insertions_count = uber_entries + bolt_entries - common_entries  # Subtrai as entradas duplicadas
 
                 # Subtrair os dias de trabalho já registrados
                 days_of_work -= insertions_count
-
-                print(f"⚡⚡⚡ Total de Inserções Contadas: {insertions_count}")
 
                 # Evitar valores inválidos para days_of_work
                 if days_of_work > 0:
@@ -3880,7 +3858,6 @@ def main(page: ft.Page):
                     connection.commit()
                     cursor.close()
                     connection.close()
-                    print("Conexão com o banco de dados fechada com sucesso333.")
                     page.go("/")
                 else:
                     page_error_screen("Houve algum erro. Tente Novamente mais tarde!!!")
@@ -3987,9 +3964,7 @@ def main(page: ft.Page):
             if result:
                 global codigo_temporario
                 # Gerar um código temporário
-                codigo_temporario = ''.join(random.choices(string.ascii_letters + string.digits, k=9))
-                print("E-mail encontrado. Código gerado:", codigo_temporario)
-    
+                codigo_temporario = ''.join(random.choices(string.ascii_letters + string.digits, k=9))    
                 # Aqui, você pode enviar o código por e-mail
                 # Configuração do servidor SMTP
                 remetente = "flavioalmeidamata@gmail.com"
@@ -4006,10 +3981,10 @@ def main(page: ft.Page):
                         page.go("/page_new_password")
             
                 except Exception as e:
-                    print("Erro ao enviar o e-mail:", e)
+                    page_error_screen("Erro ao enviar o e-mail:", e)
                 
             else:
-                print("E-mail não encontrado.")
+                page_error_screen("E-mail não encontrado.")
 
             #Fechar a conexão
             
@@ -4099,7 +4074,7 @@ def main(page: ft.Page):
                         page.go("/page_new_password")
             
                 except mysql.connector.Error as err:
-                    print(f"Erro ao conectar ou executar a consulta: {err}")
+                    page_error_screen(f"Erro ao conectar ou executar a consulta: {err}")
                     page_error_screen(current_translations.get("password_change_error", "Ocorreu um erro ao alterar a senha. Tente novamente mais tarde."))
                     page.go("/page_new_password")
 
