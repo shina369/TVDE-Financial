@@ -39,7 +39,6 @@ def clear_credentials():
     if os.path.exists(CREDENTIALS_FILE):
         os.remove(CREDENTIALS_FILE)
 
-
 def main(page: ft.Page):
     
     load_dotenv()
@@ -132,13 +131,64 @@ def main(page: ft.Page):
                 "/message_screen",
                 controls=[
                     ft.Container(
-                        content=ft.Text(msg, color=ft.Colors.GREEN, size=21)
+                        expand=True,
+                        alignment=ft.alignment.center,
+                        content=ft.Column(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            controls=[
+                                ft.Icon(name=ft.icons.CHECK_CIRCLE, color=ft.colors.GREEN, size=80),
+                                ft.Container(
+                                    content=ft.Text(
+                                        msg,
+                                        color=ft.colors.GREEN,
+                                        size=21,
+                                        weight=ft.FontWeight.BOLD,
+                                        text_align="center"
+                                    ),
+                                    alignment=ft.alignment.center,
+                                )
+                            ]
+                        )
                     )
-                ]  
+                ]
             )
         )
         page.update()
-        time.sleep(3)
+
+
+    def page_error_screen(msg):
+        page.views.clear()
+        page.views.append(
+            ft.View(
+                "/page_error_screen",
+                controls=[
+                    ft.Container(
+                        expand=True,
+                        alignment=ft.alignment.center,
+                        content=ft.Column(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            controls=[
+                                ft.Icon(name=ft.icons.ERROR_OUTLINE, color=ft.colors.RED, size=80),
+                                ft.Container(
+                                    content=ft.Text(
+                                        msg,
+                                        color=ft.colors.RED,
+                                        size=21,
+                                        weight=ft.FontWeight.BOLD,
+                                        text_align="center"
+                                    ),
+                                    alignment=ft.alignment.center,
+                                )
+                            ]
+                        )
+                    )
+                ]
+            )
+        )
+        page.update()
+
 
     def title_app(icon, title):
         return ft.Container(  # Retornando o Container corretamente
@@ -2009,7 +2059,7 @@ def main(page: ft.Page):
                     page_message_screen("Meta cadastrada com sucesso!!!")
                     page.go("/page_parcial")
                 else:
-                    page_message_screen("Houve algum erro. Tente novamente mais tarde!!!")
+                    page_error_screen("Houve algum erro. Tente novamente mais tarde!!!")
                     page.go("/page_new_goal")
 
             except sqlite3.IntegrityError as e:
@@ -2425,7 +2475,7 @@ def main(page: ft.Page):
                 page_message_screen("Despesa cadastrada com sucesso!")
                 page.go("/page_more_date")
             else:
-                page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
+                page_error_screen("Houve algum erro. Tente Novamente mais tarde!!!")
                 page.go("/page_more_date")
            
             conn.commit()
@@ -2862,7 +2912,7 @@ def main(page: ft.Page):
             user_id = get_user_id_from_mysql(email_login.value)
             # Validar o parâmetro
             if param not in ["Bolt", "Uber"]:
-                page_message_screen("Parâmetro inválido!")
+                page_error_screen("Parâmetro inválido!")
                 return
 
             # Coletar os valores dos campos
@@ -2876,7 +2926,7 @@ def main(page: ft.Page):
                 trips_made = int(trips_made_field.value) if trips_made_field.value else 0
                 observation = observation_field.value if observation_field.value else ""
             except ValueError as e:
-                page_message_screen("Erro ao coletar os valores dos campos. Verifique os dados inseridos!")
+                page_error_screen("Erro ao coletar os valores dos campos. Verifique os dados inseridos!")
                 return
 
             # Escolher a tabela com base no parâmetro
@@ -2897,7 +2947,7 @@ def main(page: ft.Page):
                 if cursor.rowcount > 0:
                     page_message_screen(f"Diária {param} cadastrada com sucesso!!")
                 else:
-                    page_message_screen("Houve algum erro. Tente novamente mais tarde!")
+                    page_error_screen("Houve algum erro. Tente novamente mais tarde!")
             except sqlite3.Error as e:
                 snack_bar = ft.SnackBar(
                     content=ft.Container(
@@ -3833,7 +3883,7 @@ def main(page: ft.Page):
                     print("Conexão com o banco de dados fechada com sucesso333.")
                     page.go("/")
                 else:
-                    page_message_screen("Houve algum erro. Tente Novamente mais tarde!!!")
+                    page_error_screen("Houve algum erro. Tente Novamente mais tarde!!!")
                     page.go("/")
             
             cursor.close()
@@ -4045,12 +4095,12 @@ def main(page: ft.Page):
                         page_message_screen(current_translations.get("password_changed_successfully", "Seu password foi alterado com sucesso!"))
                         page.go("/")
                     else:
-                        page_message_screen(current_translations.get("password_change_failed", "Não foi possível alterar o password. Usuário não encontrado."))
+                        page_error_screen(current_translations.get("password_change_failed", "Não foi possível alterar o password. Usuário não encontrado."))
                         page.go("/page_new_password")
             
                 except mysql.connector.Error as err:
                     print(f"Erro ao conectar ou executar a consulta: {err}")
-                    page_message_screen(current_translations.get("password_change_error", "Ocorreu um erro ao alterar a senha. Tente novamente mais tarde."))
+                    page_error_screen(current_translations.get("password_change_error", "Ocorreu um erro ao alterar a senha. Tente novamente mais tarde."))
                     page.go("/page_new_password")
 
                 finally:
@@ -4058,7 +4108,7 @@ def main(page: ft.Page):
                     cursor.close()
                     conn.close()
             else:
-                page_message_screen(current_translations.get("incorrect_code", "Código incorreto. Tente novamente!"))
+                page_error_screen(current_translations.get("incorrect_code", "Código incorreto. Tente novamente!"))
                 page.go("/")
 
         def validate_password(e):
@@ -4167,6 +4217,8 @@ def main(page: ft.Page):
             page_forget_password()
         elif page.route == "/message_screen":
             page_message_screen()
+        elif page.route == "/mensage_erro_screen":
+            page_error_screen()
         elif page.route == "/page_new_password":
             page_new_password()
         elif page.route == "/page_parcial":
