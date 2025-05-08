@@ -3356,7 +3356,7 @@ def main(page: ft.Page):
                         page.update()
                     ),
                     style=ft.ButtonStyle(
-                        color=ft.colors.RED,
+                        color=ft.Colors.RED,
                     ),
                 ),
             ],
