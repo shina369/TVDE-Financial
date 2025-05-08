@@ -903,6 +903,8 @@ def main(page: ft.Page):
             # Atualiza a página
             page.update()
 
+        global user_id
+
         user_id = get_user_id_from_mysql(email_login.value)
 
         # Container que engloba os campos de data lado a lado
@@ -1110,7 +1112,8 @@ def main(page: ft.Page):
     def page_reports_fleet():
         page.views.clear()
         
-        uber_data = fetch_fleet_data("uber") or {
+        user_id = get_user_id_from_mysql(email_login.value)
+        uber_data = fetch_fleet_data(user_id,"uber") or {
             "total_rendimento": 0,
             "rendimento_por_hora": 0,
             "rendimento_por_km": 0,
@@ -1120,7 +1123,7 @@ def main(page: ft.Page):
             "viagens_por_hora": 0
         }
 
-        bolt_data = fetch_fleet_data("bolt") or {
+        bolt_data = fetch_fleet_data(user_id, "bolt") or {
             "total_rendimento": 0,
             "rendimento_por_hora": 0,
             "rendimento_por_km": 0,
@@ -1267,10 +1270,10 @@ def main(page: ft.Page):
 
     def page_reports_general():
         page.views.clear()
-
+        user_id = get_user_id_from_mysql(email_login.value)
         # Recuperar dados para Uber e Bolt
-        uber_data = fetch_fleet_data2("uber")
-        bolt_data = fetch_fleet_data2("bolt")
+        uber_data = fetch_fleet_data2(user_id, "uber")
+        bolt_data = fetch_fleet_data2(user_id, "bolt")
 
 
         # Verificar se os dados foram recuperados corretamente
@@ -1400,8 +1403,9 @@ def main(page: ft.Page):
         result_label = ft.Text("")
 
         def calculate_totals(e):
+            user_id = get_user_id_from_mysql(email_login.value)
             if dropdown1.value and dropdown2.value:
-                total_income, total_expenses = fetch_total_values(dropdown1.value, dropdown2.value)
+                total_income, total_expenses = fetch_total_values(user_id, dropdown1.value, dropdown2.value)
                 result_label.value = f"📈 Total de Receita (Uber + Bolt): € {total_income:.2f} \n \n  📉Total de Gastos: € {total_expenses:.2f}"
                 result_label.color = "green"  # Ajusta a cor do texto para destacar
                 result_label.size = 18  # Aumenta o tamanho do texto
