@@ -137,11 +137,11 @@ def main(page: ft.Page):
                             alignment=ft.MainAxisAlignment.CENTER,
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                             controls=[
-                                ft.Icon(name=ft.icons.CHECK_CIRCLE, color=ft.colors.GREEN, size=80),
+                                ft.Icon(name=ft.Icons.CHECK_CIRCLE, color=ft.Colors.GREEN, size=80),
                                 ft.Container(
                                     content=ft.Text(
                                         msg,
-                                        color=ft.colors.GREEN,
+                                        color=ft.Colors.GREEN,
                                         size=21,
                                         weight=ft.FontWeight.BOLD,
                                         text_align="center"
@@ -170,11 +170,11 @@ def main(page: ft.Page):
                             alignment=ft.MainAxisAlignment.CENTER,
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                             controls=[
-                                ft.Icon(name=ft.icons.ERROR_OUTLINE, color=ft.colors.RED, size=80),
+                                ft.Icon(name=ft.Icons.ERROR_OUTLINE, color=ft.Colors.RED, size=80),
                                 ft.Container(
                                     content=ft.Text(
                                         msg,
-                                        color=ft.colors.RED,
+                                        color=ft.Colors.RED,
                                         size=21,
                                         weight=ft.FontWeight.BOLD,
                                         text_align="center"
@@ -725,7 +725,7 @@ def main(page: ft.Page):
             )
         )
 
-        def generate_report(start_date, end_date, report_message, page, user_id):
+        def generate_report(start_date, end_date, report_message, user_id, page):
             # Verifica se as datas são válidas
             if not start_date or not end_date:
                 report_message.content = ft.Text("Preencha ambas as datas.", color="red")
@@ -813,7 +813,7 @@ def main(page: ft.Page):
                         controls=[
                             ft.ElevatedButton(
                                 text="Gerar Relatório",  # Texto do botão
-                                on_click=lambda e: generate_report(start_date_field.value, end_date_field.value, report_message, page),  # Passando os valores das datas corretamente
+                                on_click=lambda e: generate_report(start_date_field.value, end_date_field.value, report_message, get_user_id_from_mysql(email_login.value), page),  # Passando os valores das datas corretamente
                                 width=200,  # Largura do botão
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=21)  # Botão com borda arredondada
@@ -836,7 +836,7 @@ def main(page: ft.Page):
         total_cubic_meters = 0
         total_expense = 0
         
-        def generate_report(user_id, start_date, end_date, report_message, page):
+        def generate_report(start_date, end_date, report_message, page, user_id):
             # Verifica se as datas são válidas
             if not start_date or not end_date:
                 report_message.controls = [ft.Text("Preencha ambas as datas.", color="red")]
@@ -903,6 +903,8 @@ def main(page: ft.Page):
             # Atualiza a página
             page.update()
 
+        user_id = get_user_id_from_mysql(email_login.value)
+
         # Container que engloba os campos de data lado a lado
         date_range_container = ft.Container(
             expand=True,
@@ -921,7 +923,7 @@ def main(page: ft.Page):
                         controls=[
                             ft.ElevatedButton(
                                 text="Gerar Relatório",  # Texto do botão
-                                on_click=lambda e: generate_report(start_date_field.value, end_date_field.value, report_message, page),  # Passando os valores das datas corretamente
+                                on_click=lambda e: generate_report(start_date_field.value, end_date_field.value, report_message, page, user_id,),  # Passando os valores das datas corretamente
                                 width=200,  # Largura do botão
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=21)  # Botão com borda arredondada
@@ -2457,6 +2459,7 @@ def main(page: ft.Page):
         
             if cursor.rowcount > 0:
                 page_message_screen("Despesa cadastrada com sucesso!")
+                time.sleep(3)
                 page.go("/page_more_date")
             else:
                 page_error_screen("Houve algum erro. Tente Novamente mais tarde!!!")
@@ -2477,10 +2480,12 @@ def main(page: ft.Page):
             # Atualizar a página para refletir a limpeza dos campos
             page.update()
 
+        user_id = get_user_id_from_mysql(email_login.value)
+
         # Criação do botão para adicionar a despesa
         button_add_expense = ft.ElevatedButton(
             text="Cadastrar Despesa", 
-            on_click=lambda e: cadastrar_despesa(),
+            on_click=lambda e: cadastrar_despesa(user_id),
         )
 
         # Adicionando os controles na página
