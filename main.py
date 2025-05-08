@@ -3345,6 +3345,7 @@ def main(page: ft.Page):
                 ],
                 width=page.width * 0.8,  # Largura responsiva (80% da largura da tela)
                 spacing=8,  # Espaçamento entre os itens
+                height=None,  # A altura será ajustada dinamicamente
             ),
             actions=[
                 ft.ElevatedButton(
@@ -3368,6 +3369,10 @@ def main(page: ft.Page):
                 details_popup.content.width = page.width * 0.9
             else:
                 details_popup.content.width = page.width * 0.8
+
+            # Ajusta a altura com base no número de itens
+            details_popup.content.height = len(details_popup.content.controls) * 60  # Aproximadamente 60px por linha de conteúdo
+
             page.update()
 
         # Configura o evento de redimensionamento da tela
