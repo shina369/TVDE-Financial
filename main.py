@@ -3234,31 +3234,146 @@ def main(page: ft.Page):
             alignment=ft.alignment.center,  # Centraliza o botão
         )
 
-        # Criar o conteúdo do pop-up
-        details_content = ft.Column(
-            controls=[
-                ft.Text("Início do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                ft.Text("Data de início: 01/01/2025", size=15),
-                ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
-                ft.Text("10 dias", size=15),
-                ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
-                ft.Text("€ 500,00", size=15),  # Formatação das despesas
-            ],
-            spacing=10,
-        )
+        def get_goal_details_from_db(user_id):
+            user_id = get_user_id_from_mysql(email_login.value)
+            conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
+            cursor = conn.cursor()
 
-       # Criação do AlertDialog
+            try:
+                # Buscar a meta mais recente do usuário
+                cursor.execute("""
+                    SELECT goal_start, goal_end, day_off
+                    FROM goal
+                    ORDER BY id DESC
+                    LIMIT 1
+                """)
+                row = cursor.fetchone()
+
+                if row:
+                    goal_start, goal_end, day_off = row
+
+                    # Ajustar o formato da data conforme salvo no banco
+                    date_format = "%d/%m/%Y"
+                    start_date = datetime.strptime(goal_start, date_format)
+                    end_date = datetime.strptime(goal_end, date_format)
+                    total_days = (end_date - start_date).days + 1
+                    worked_days = total_days - day_off
+
+                    # Calcular despesas no período
+                    cursor.execute("""
+                        SELECT COALESCE(SUM(expense_value), 0)
+                        FROM expense
+                        WHERE expense_date BETWEEN ? AND ?
+                    """, (goal_start, goal_end))
+                    total_expenses = round(cursor.fetchone()[0], 2)
+
+                    return {
+                        "start_date": goal_start,
+                        "end_date": goal_end,
+                        "worked_days": worked_days,
+                        "off_days": day_off,
+                        "total_expenses": total_expenses
+                    }
+
+                else:
+                    return None  # Nenhuma meta encontrada
+
+            finally:
+                conn.close()
+
+
+        details = get_goal_details_from_db(user_id)
+        if details:
+            start_date, end_date, worked_days, off_days, total_expenses = details
+        else:
+            # Tratar caso em que não há meta
+            start_date = end_date = "-"
+            worked_days = off_days = total_expenses = 0
+
+        def close_popup(e):
+            details_popup.open = False
+            page.update()
+
+        goal_data = get_goal_details_from_db(user_id)
+
+        if goal_data:
+            details_content = ft.Column([
+                ft.Text(f"Data de Início: {goal_data['start_date']}"),
+                ft.Text(f"Data de Fim: {goal_data['end_date']}"),
+                ft.Text(f"Dias Trabalhados: {goal_data['worked_days']}"),
+                ft.Text(f"Dias de Folga: {goal_data['off_days']}"),
+                ft.Text(f"Despesas no Período: € {goal_data['total_expenses']:.2f}"),
+            ])
+        else:
+            details_content = ft.Text("Nenhuma meta encontrada.")
+
+        # Ícone para o título
+        popup_icon = ft.Icon(name=ft.icons.INFO_OUTLINED, size=24, color="blue")
+
+        # Criação do AlertDialog com ícones e estilização responsiva
+        # Função para adicionar ícones aos títulos e alinhar valores ao lado dos ":"
+        def create_title_with_icon(text, icon, value):
+            return ft.Row(
+                [
+                    ft.Text(icon, size=15),  # Ícone do título
+                    ft.Text(text, size=15, weight=ft.FontWeight.BOLD),  # Texto do título
+                    ft.Text(f" {value}", size=16),  # Valor ao lado dos ":"
+                ],
+                alignment=ft.MainAxisAlignment.START,
+                spacing=10,
+            )
+
+        # Criação do AlertDialog com ícones e estilização responsiva
         details_popup = ft.AlertDialog(
-            open=False,  # Começa fechado
-            title=ft.Text("Detalhes do Objetivo", size=18, weight=ft.FontWeight.BOLD),
-            content=details_content,  # Conteúdo do pop-up
-            actions=[  # Botão de ação dentro do pop-up
+            open=False,
+            title=ft.Row(
+                [
+                    ft.Text("📊", size=24),  # Ícone no título do popup
+                    ft.Text("Detalhes do Objetivo", size=18, weight=ft.FontWeight.BOLD),
+                ],
+                alignment=ft.MainAxisAlignment.START,
+                spacing=10,
+            ),
+            content=ft.Column(
+                [
+                    # Títulos com ícones e valores ao lado
+                    create_title_with_icon("Data de Início:", "📅", goal_data['start_date']),
+                    create_title_with_icon("Data de Fim:", "🗓️", goal_data['end_date']),
+                    create_title_with_icon("Dias Trabalhados:", "📊", goal_data['worked_days']),
+                    create_title_with_icon("Dias de Folga:", "😌", goal_data['off_days']),
+                    create_title_with_icon("Despesas no Período:", "💸", f"€ {goal_data['total_expenses']:.2f}"),
+                ],
+                width=page.width * 0.8,  # Largura responsiva (80% da largura da tela)
+                spacing=8,  # Espaçamento entre os itens
+            ),
+            actions=[
                 ft.ElevatedButton(
                     text="Fechar",
-                    on_click=lambda e: details_popup.close(),  # Fecha o pop-up
+                    icon=ft.Text("📊"),  # Usar emoji 📊 no lugar do ícone de fechamento
+                    on_click=lambda e: (
+                        setattr(details_popup, "open", False),
+                        page.update()
+                    ),
+                    style=ft.ButtonStyle(
+                        color=ft.colors.RED,
+                    ),
                 ),
             ],
+            actions_alignment=ft.MainAxisAlignment.CENTER,  # Centraliza o botão "Fechar"
         )
+
+        # Responsividade (ajusta conforme o tamanho da tela)
+        def on_resize(e):
+            if page.width < 600:  # Tamanho de tela pequeno
+                details_popup.content.width = page.width * 0.9
+            else:
+                details_popup.content.width = page.width * 0.8
+            page.update()
+
+        # Configura o evento de redimensionamento da tela
+        page.on_resize = on_resize
+
+
         # Registrar adaptadores para datetime
         sqlite3.register_adapter(datetime, lambda x: x.isoformat())
         sqlite3.register_converter("datetime", lambda x: datetime.fromisoformat(x.decode("utf-8")))
