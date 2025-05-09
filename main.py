@@ -3308,7 +3308,7 @@ def main(page: ft.Page):
             details_content = ft.Text("Nenhuma meta encontrada.")
 
         # Ícone para o título
-        popup_icon = ft.Icon(name=ft.icons.INFO_OUTLINED, size=24, color="blue")
+        popup_icon = ft.Icon(name=ft.Icons.INFO_OUTLINED, size=24, color="blue")
 
         # Criação do AlertDialog com ícones e estilização responsiva
         # Função para adicionar ícones aos títulos e alinhar valores ao lado dos ":"
