@@ -11,6 +11,7 @@ import sqlite3
 import json
 import os
 from MYSQL_db_tvde_users_external import connect
+from typing import Optional, Dict, Any, cast
 from SQLite_db_tvde_content_internal import get_user_id_from_mysql, create_user_tables
 from dotenv import load_dotenv
 
@@ -20,7 +21,7 @@ MYSQLHOST = os.getenv("MYSQLHOST")
 MYSQLUSER = os.getenv("MYSQLUSER")
 MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
-MYSQLPORT = int(os.getenv("MYSQLPORT"))  
+MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)  # Default to 3306 if not set
 
 CREDENTIALS_FILE = "user_credentials.json"
 
@@ -51,11 +52,7 @@ def main(page: ft.Page):
     page.title = "FLEX TVDE - FINANCIAL"
     page.scroll = ft.ScrollMode.AUTO
     page.theme = ft.Theme(
-        color_scheme=ft.ColorScheme(
-            primary="black",
-            on_primary="#15CD74",
-            background="red",
-        )
+        color_scheme_seed="black"
     )
 
     
@@ -117,11 +114,11 @@ def main(page: ft.Page):
     )
 
     button_edit = ft.ElevatedButton(
-        text="Editar perfil", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
+        text="Editar perfil", bgcolor="#4CAF50", color="white"
         )
     
     button_premium = ft.ElevatedButton(
-        text="Quero ser PREMIUM", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white"
+        text="Quero ser PREMIUM", bgcolor="#4CAF50", color="white"
         )
 
     def page_message_screen(msg):
@@ -144,7 +141,7 @@ def main(page: ft.Page):
                                         color=ft.Colors.GREEN,
                                         size=21,
                                         weight=ft.FontWeight.BOLD,
-                                        text_align="center"
+                                        text_align=ft.TextAlign.CENTER
                                     ),
                                     alignment=ft.alignment.center,
                                 )
@@ -177,7 +174,7 @@ def main(page: ft.Page):
                                         color=ft.Colors.RED,
                                         size=21,
                                         weight=ft.FontWeight.BOLD,
-                                        text_align="center"
+                                        text_align=ft.TextAlign.CENTER
                                     ),
                                     alignment=ft.alignment.center,
                                 )
@@ -208,11 +205,11 @@ def main(page: ft.Page):
             width=435,
             height=600,
             border_radius=21,
+            border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.Colors.GREY_900)),
             content=ft.Column(
                 controls=[
                     ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
                     ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
-                    ft.border.only(bottom=ft.border.BorderSide(0.3, ft.Colors.GREY_900)),
                     ft.Container(height=90),
                     ft.Text("Nome: "),
                     ft.Text("Email: "),
@@ -220,12 +217,14 @@ def main(page: ft.Page):
                     ft.Container(height=90),
                     ft.Text("Seja PREMIUM agora"),
                     ft.Row(
-                        ft.Text("SEJA \n PREMIUM \n AQUI"),
-                        ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
-                        ft.Text("Desbloqueie relatórios completos..."),
+                        controls=[
+                            ft.Text("SEJA \n PREMIUM \n AQUI"),
+                            ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
+                            ft.Text("Desbloqueie relatórios completos..."),
+                        ],
                     ),
                     ft.ElevatedButton(
-                        text="SAIR", bgcolor={"disabled": "#D00000", "": "#4CAF50"}, color="white"
+                        text="SAIR", bgcolor="#D00000", color="white"
                     )
                 ]
             )
@@ -503,7 +502,10 @@ def main(page: ft.Page):
 
         goal_sum_tips = fetch_goal_sum_tip(goal_start, goal_end)
 
-        expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+        if goal_start is not None and goal_end is not None:
+            expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+        else:
+            expenses = 0.0
 
         if isinstance(goal_value2, str):
             goal_value2 = goal_value2.replace(".", "").replace(",", ".")
@@ -524,7 +526,10 @@ def main(page: ft.Page):
 
         fleet_discount_value = total_gain * (fleet_discount_float / 100)
 
-        total_reimbursement = fetch_total_reimbursement(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+        if goal_start is not None and goal_end is not None:
+            total_reimbursement = fetch_total_reimbursement(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+        else:
+            total_reimbursement = 0.0
 
         total_value = total_gain + goal_sum_tips_float + total_reimbursement
 
@@ -725,23 +730,25 @@ def main(page: ft.Page):
             )
         )
 
-        def generate_report(start_date, end_date, report_message, user_id, page):
+        def generate_report_expense(start_date, end_date, report_message, page, user_id):
             # Verifica se as datas são válidas
             if not start_date or not end_date:
-                report_message.content = ft.Text("Preencha ambas as datas.", color="red")
+                report_message.controls = [ft.Text("Preencha ambas as datas.", color="red")]
                 report_message.update()
                 page.update()
                 return
-            
-            # Verifica se a data de fim não é menor que a data de início
-            if end_date < start_date:
-                report_message.content = ft.Text("A data de fim não pode ser menor que a data de início.", color="red")
+
+            if user_id is None:
+                report_message.controls = [ft.Text("Erro: user_id não encontrado.", color="red")]
                 report_message.update()
                 page.update()
                 return
 
             try:
-                conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
+                # Verifique se o caminho do banco de dados está correto
+                db_path = f"db_usuarios/db_user_{user_id}.db"
+
+                conn = sqlite3.connect(db_path)
                 cursor = conn.cursor()
 
                 # Obtém todas as categorias dinâmicas de despesas
@@ -757,22 +764,19 @@ def main(page: ft.Page):
                 """
                 cursor.execute(query, (start_date, end_date))
                 expenses = dict(cursor.fetchall())
+                print("Valores das despesas:", expenses)  # Depuração
 
                 conn.close()
 
             except Exception as e:
-                report_message.content = ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")
+                page_error_screen(f"Erro ao gerar o relatório: {str(e)}")  # Depuração
+                report_message.controls = [ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")]
                 report_message.update()
                 page.update()
                 return
 
-            # Se report_message for um Text, manipule diretamente o texto
-            if isinstance(report_message, ft.Text):
-                report_message.content = ft.Text("Relatório gerado com sucesso!", color="green")
-                report_message.update()
-
             # Se report_message for um Column, adicione as linhas ao conteúdo
-            elif isinstance(report_message.content, ft.Column):
+            if isinstance(report_message, ft.Column):
                 # Lista para armazenar as linhas do relatório
                 report_rows = []
                 for expense_name in expense_names:
@@ -786,9 +790,10 @@ def main(page: ft.Page):
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         )
                     )
-                # Substitui o conteúdo por novas linhas
-                report_message.content.controls = report_rows
-                report_message.content.update()
+                # Atualiza o conteúdo do Column corretamente
+                report_message.controls.clear()
+                report_message.controls.extend(report_rows)
+                report_message.update()
 
             # Atualiza a página
             page.update()
@@ -925,7 +930,7 @@ def main(page: ft.Page):
                         controls=[
                             ft.ElevatedButton(
                                 text="Gerar Relatório",  # Texto do botão
-                                on_click=lambda e: generate_report(start_date_field.value, end_date_field.value, report_message, page, user_id,),  # Passando os valores das datas corretamente
+                                on_click=lambda e: generate_report_expense(start_date_field.value, end_date_field.value, report_message, page, user_id,),  # Passando os valores das datas corretamente
                                 width=200,  # Largura do botão
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=21)  # Botão com borda arredondada
@@ -1029,7 +1034,7 @@ def main(page: ft.Page):
             }
 
         except Exception as e:
-            page_error_screen(f"Erro ao buscar dados da tabela {table_name} para o usuário {user_id}:", e)
+            page_error_screen(f"Erro ao buscar dados da tabela {table_name} para o usuário {user_id}: {e}")
             return None
 
         finally:
@@ -1195,7 +1200,7 @@ def main(page: ft.Page):
                 return None
 
         except Exception as e:
-            page_error_screen(f"Erro ao buscar dados da tabela {table_name}:", e)
+            page_error_screen(f"Erro ao buscar dados da tabela {table_name}: {e}")
             return None
         finally:
             conn.close()
@@ -1409,7 +1414,7 @@ def main(page: ft.Page):
                 result_label.value = f"📈 Total de Receita (Uber + Bolt): € {total_income:.2f} \n \n  📉Total de Gastos: € {total_expenses:.2f}"
                 result_label.color = "green"  # Ajusta a cor do texto para destacar
                 result_label.size = 18  # Aumenta o tamanho do texto
-                result_label.text_align = "center"  # Centraliza o texto
+                result_label.text_align = ft.TextAlign.CENTER  # Centraliza o texto
                 page.update()
 
         calculate_button = ft.ElevatedButton(
@@ -1449,7 +1454,7 @@ def main(page: ft.Page):
                     # Linha para os dropdowns com espaçamento
                     ft.Row(  
                         controls=[dropdown1, dropdown2],
-                        alignment="center",  # Centraliza os dropdowns
+                        alignment=ft.MainAxisAlignment.CENTER,  # Centraliza os dropdowns
                         spacing=20  # Espaço entre os dropdowns
                     ),
                     # Botão centralizado
@@ -1527,7 +1532,7 @@ def main(page: ft.Page):
                             ft.Text(current_translations.get("language", "Idioma"), size=16),
                             language_dropdown
                         ],
-                        alignment="start",
+                        alignment=ft.MainAxisAlignment.START,
                         spacing=10
                     ),
                     ft.Text(current_translations.get("theme", "Tema")),
@@ -1572,7 +1577,7 @@ def main(page: ft.Page):
                             ft.Text(current_translations.get("language", "Idioma"), size=16),
                             language_dropdown
                         ],
-                        alignment="start",
+                        alignment=ft.MainAxisAlignment.START,
                         spacing=10
                     ),
                     ft.Text(current_translations.get("theme", "Tema")),
@@ -1591,7 +1596,7 @@ def main(page: ft.Page):
         page.views.clear()
         saved_email, saved_password = load_credentials()
         def validate_email(e):
-            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value):
+            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value or ""):
                 email_login.error_text = None
             else:
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
@@ -1665,7 +1670,7 @@ def main(page: ft.Page):
 
         button_login = ft.ElevatedButton(
             text=current_translations.get("login_button", "LOGIN"),
-            bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"},
+            bgcolor="#4CAF50",
             color="white",
             on_click=lambda e: valid_email_password(email_login, password_login)
         )
@@ -1719,33 +1724,39 @@ def main(page: ft.Page):
             valid = True
 
             try:
+                # Inicializa as variáveis para evitar UnboundLocalError
+                start_date = None
+                end_date = None
+
                 # Verifica se o campo de início tem um valor válido
-                if goal_start_field.value.strip():
+                if goal_start_field.value is not None and goal_start_field.value.strip():
                     start_date = datetime.strptime(goal_start_field.value.strip(), "%d/%m/%Y")
                 else:
                     start_date_error = "Use DD/MM/AAAA."
                     valid = False
 
                 # Verifica se o campo de fim tem um valor válido
-                if goal_end_field.value.strip():
+                if goal_end_field.value and goal_end_field.value.strip():
                     end_date = datetime.strptime(goal_end_field.value.strip(), "%d/%m/%Y")
                 else:
                     end_date_error = "Use DD/MM/AAAA."
                     valid = False
 
                 # Verifica se as datas são válidas e comparáveis
-                if valid and start_date >= end_date:
-                    start_date_error = "Data Início < Data Fim "
-                    end_date_error = "Data de fim > data de início"
-                    valid = False
+                if valid and start_date is not None and end_date is not None:
+                    if start_date >= end_date:
+                        start_date_error = "Data Início < Data Fim "
+                        end_date_error = "Data de fim > data de início"
+                        valid = False
 
             except ValueError:
                 # Define mensagens de erro para valores inválidos
-                if goal_start_field.value.strip():
+                if goal_start_field.value and goal_start_field.value.strip():
                     start_date_error = "Use DD/MM/AAAA."
-                if goal_end_field.value.strip():
+                if goal_end_field.value and goal_end_field.value.strip():
                     end_date_error = "Use DD/MM/AAAA."
                 valid = False
+
 
             # Atualiza os campos com mensagens de erro
             goal_start_field.error_text = start_date_error
@@ -1876,7 +1887,7 @@ def main(page: ft.Page):
                 size=14,          # Tamanho opcional
             ),
             on_change=validate_date,
-            width=page.width * 0.47,
+            width=(page.width if page.width is not None else 435) * 0.47,
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
@@ -1899,7 +1910,7 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=14,          # Tamanho opcional
             ),
-            width=page.width * 0.47,
+            width=(page.width if page.width is not None else 435) * 0.47,
             border_radius=21,
             expand=True,
             text_size=18,
@@ -1992,15 +2003,16 @@ def main(page: ft.Page):
             global goal_end
             global fleet_discount
             # Coletar os valores dos campos
-            goal = float(goal_field.value.replace('.', '').replace(',', '.'))
+            goal_value_str = goal_field.value if goal_field.value is not None else "0"
+            goal = float(goal_value_str.replace('.', '').replace(',', '.'))
             goal_start = goal_start_field.value
             goal_end = goal_end_field.value
-            day_off = int(day_off_field.value)
-            fleet_discount = float(fleet_discount_field.value)
-            tax_discount = float(tax_discount_field.value)
+            day_off = int(day_off_field.value) if day_off_field.value not in (None, "") else 0
+            fleet_discount = float(fleet_discount_field.value) if fleet_discount_field.value not in (None, "") else 0.0
+            tax_discount = float(tax_discount_field.value) if tax_discount_field.value not in (None, "") else 0.0
 
             # Verifica se o campo de desconto de imposto não está vazio antes de converter
-            tax_discount_value = tax_discount_field.value.strip()  # Remove espaços em branco
+            tax_discount_value = tax_discount_field.value.strip() if tax_discount_field.value is not None else ""  # Remove espaços em branco
             if tax_discount_value:  # Verifica se não está vazio
                 tax_discount = float(tax_discount_value)
             else:
@@ -2078,7 +2090,7 @@ def main(page: ft.Page):
 
         user_id = get_user_id_from_mysql(email_login.value)
         button_salve = ft.ElevatedButton(
-        text="SALVAR", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", on_click=lambda e: save_goal(e, user_id),)
+        text="SALVAR", bgcolor="#4CAF50", color="white", on_click=lambda e: save_goal(e, user_id),)
 
         page.overlay.append(date_picker)
         page.views.append(
@@ -2113,7 +2125,7 @@ def main(page: ft.Page):
 
         def validate_date():
             # Obtém o valor do campo de data
-            input_date = expense_date.value.strip()
+            input_date = expense_date.value.strip() if expense_date.value else ""
             try:
                 parsed_date = datetime.strptime(input_date, "%d/%m/%Y")
                 expense_date.value = parsed_date.strftime("%d/%m/%Y")
@@ -2147,7 +2159,7 @@ def main(page: ft.Page):
                 e.control.value = ""
                 e.control.update()
     
-        def on_date_selected(e):
+        def on_expense_date_selected(e):
         # Atualiza o campo de data com a seleção do DatePicker
             if date_picker2.value:
                 parsed_date = date_picker2.value
@@ -2217,7 +2229,7 @@ def main(page: ft.Page):
         # Verifica se todos os campos obrigatórios estão válidos
             return (
                 validate_date() and
-                expense_value.value.strip() and  # Valor preenchido
+                (expense_value.value is not None and expense_value.value.strip()) and  # Valor preenchido
                 not expense_date.error_text and  # Data válida
                 expense_name.value  # Nome da despesa selecionado
             )
@@ -2243,7 +2255,7 @@ def main(page: ft.Page):
                 page.update()
 
         # Criação do DatePicker
-        date_picker2 = ft.DatePicker(on_change=on_date_selected)
+        date_picker2 = ft.DatePicker(on_change=on_expense_date_selected)
         global expense_date
         global expense_value
         expense_value = ft.TextField(label="Valor da despesa", prefix_text="€ ",
@@ -2321,32 +2333,32 @@ def main(page: ft.Page):
             # Alterar a cor de fundo e do texto dependendo da seleção
             if e.control.value == "Manutenção":
                 expense_name.bgcolor = "#E0E0E0"  # Cor de fundo quando "Opção 1" é selecionada
-                expense_name.style = ft.TextStyle(color="#FF5722")  # Cor do texto para "Opção 1"
+                expense_name.text_style = ft.TextStyle(color="#FF5722")  # Cor do texto para "Opção 1"
             elif e.control.value == "Gasolina":
                 expense_amount_liters.visible = True
                 expense_name.bgcolor = "#FFEB3B"  # Cor de fundo quando "Opção 2" é selecionada
-                expense_name.style = ft.TextStyle(color="#000000")  # Cor do texto para "Opção 2"
+                expense_name.text_style = ft.TextStyle(color="#000000")  # Cor do texto para "Opção 2"
             elif e.control.value == "Gasóleo":
                 expense_name.bgcolor = "#B25900"  # Cor de fundo quando "Opção 3" é selecionada
                 expense_amount_liters.visible = True
-                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+                expense_name.text_style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "GNV":
                 expense_name.bgcolor = "#4CAF50"  # Cor de fundo quando "Opção 3" é selecionada
                 expense_amount_cubic_meters.visible = True
-                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+                expense_name.text_style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "Recarga Bateria":
                 expense_name.bgcolor = "#B200B2"  # Cor de fundo quando "Opção 3" é selecionada
                 expense_amount_energy.visible = True
-                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+                expense_name.text_style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "Alimentação":
                 expense_name.bgcolor = "#FF7F00"  # Cor de fundo quando "Opção 3" é selecionada
-                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+                expense_name.text_style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             elif e.control.value == "Seguro":
                 expense_name.bgcolor = "#007FFF"  # Cor de fundo quando "Opção 3" é selecionada
-                expense_name.style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
+                expense_name.text_style = ft.TextStyle(color="#FFFFFF")  # Cor do texto para "Opção 3"
             else:
                 expense_name.bgcolor = "#00B200"  # Cor de fundo quando "Opção 4" é selecionada
-                expense_name.style = ft.TextStyle(color="#CCCCCC")  # Cor do texto para "Opção 4"
+                expense_name.text_style = ft.TextStyle(color="#CCCCCC")  # Cor do texto para "Opção 4"
             # Atualizar a página após a mudança
             page.update()
 
@@ -2354,7 +2366,10 @@ def main(page: ft.Page):
         def cadastrar_despesa(user_id):
             all_fields_valid()
             # Limpar mensagens de erro anteriores e bordas
-            page.controls = [control for control in page.controls if not isinstance(control, ft.Text) or control.color != "red"]
+            if page.controls is None:
+                page.controls = []
+            else:
+                page.controls = [control for control in page.controls if not isinstance(control, ft.Text) or control.color != "red"]
 
             # Verificar se os campos obrigatórios estão preenchidos
             error_messages = []
@@ -2363,7 +2378,7 @@ def main(page: ft.Page):
             # Verificar o campo `expense_value`
             try:
                 # Converte o valor para float removendo os símbolos (€ e separadores)
-                expense_value_text = expense_value.value.replace("€", "").replace(".", "").replace(",", ".").strip()
+                expense_value_text = (expense_value.value or "").replace("€", "").replace(".", "").replace(",", ".").strip()
                 expense_value_number = float(expense_value_text)
                 
                 # Valida se o valor é maior que zero
@@ -2416,15 +2431,15 @@ def main(page: ft.Page):
             if error_messages:
                 # Organizar as mensagens abaixo dos campos correspondentes
                 for i, (message, control) in enumerate(error_messages):
-                    # Adicionar a mensagem abaixo do campo
-                    page.add(ft.Text(message, color="red"), top=control.top + control.height + 10)
+                    # Adicionar a mensagem de erro à página (exemplo: adicionar ao final da página)
+                    page.add(ft.Text(message, color="red"))
                 
                 # Atualizar a página imediatamente após adicionar as mensagens
                 page.update()
                 return  # Impede o cadastro se houver erro
 
             # Obter os valores dos campos
-            expense_value_text = expense_value.value.replace("€", "").replace(".", "").replace(",", ".")
+            expense_value_text = (expense_value.value or "").replace("€", "").replace(".", "").replace(",", ".")
             expense_date_text = expense_date.value
             observation_expense_value = observation_expense.value
             expense_name_text = expense_name.value
@@ -2443,9 +2458,9 @@ def main(page: ft.Page):
                 expense_amount_energy_value = expense_amount_energy.value
 
             
-            expense_amount_liters_value = expense_amount_liters.value.replace("€", "").replace(".", "").replace(",", ".").strip()
-            expense_amount_cubic_meters_value = expense_amount_cubic_meters.value.replace("€", "").replace(".", "").replace(",", ".").strip()
-            expense_amount_energy_value = expense_amount_energy.value.replace("€", "").replace(".", "").replace(",", ".").strip()
+            expense_amount_liters_value = expense_amount_liters.value.replace("€", "").replace(".", "").replace(",", ".").strip() if expense_amount_liters.value else ""
+            expense_amount_cubic_meters_value = expense_amount_cubic_meters.value.replace("€", "").replace(".", "").replace(",", ".").strip() if expense_amount_cubic_meters.value else ""
+            expense_amount_energy_value = expense_amount_energy.value.replace("€", "").replace(".", "").replace(",", ".").strip() if expense_amount_energy.value else ""
             
         
 
@@ -2531,12 +2546,12 @@ def main(page: ft.Page):
                 expand=1,
                 height=160,
                 on_click=lambda e: page.go(route),
-                gradient=ft.LinearGradient(
-                    begin=ft.alignment.top_left,
-                    end=ft.alignment.bottom_right,
-                    colors=gradient_colors
-                ),
-                content=ft.Column(
+              gradient=ft.LinearGradient(
+                begin=ft.alignment.top_left,
+                end=ft.alignment.bottom_right,
+                colors=gradient_colors
+            ),
+              content=ft.Column(
                     controls=content,
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
@@ -3095,53 +3110,58 @@ def main(page: ft.Page):
         # Navegar para a próxima página ou executar outro código
         page.go("/next_page")
 
-        def search_user_name(email_login):
-            # Conectar ao banco de dados    
-            # Conectar ao banco de dados    
+        def search_user_name(email_login: str) -> Optional[Dict[str, Any]]:
+            # Conectar ao banco de dados
             conn = mysql.connector.connect(
                 host=MYSQLHOST,
                 user=MYSQLUSER,
                 password=MYSQLPASSWORD,
                 database="db_tvde_users_external",
-                port=MYSQLPORT     
+                port=MYSQLPORT
             )
-            cursor = conn.cursor()
+            # Cursor com dicionário ativado
+            cursor = conn.cursor(dictionary=True)
 
-            cursor.execute("SELECT name, surname, email, account_type, date_start FROM users WHERE email = %s", (email_login,))
+            cursor.execute(
+                "SELECT name, surname, email, account_type, date_start FROM users WHERE email = %s",
+                (email_login,)
+            )
             resultado = cursor.fetchone()
-
-            cursor.fetchall() 
 
             cursor.close()
             conn.close()
 
-            if resultado:
-                return  {
-                    "name": resultado[0],
-                    "account_type": resultado[3],
-                    "surname": resultado[1],
-                    "date_start": resultado[4]
-                }  # Resultado[0] contém o nome do usuário...
-            else:
-                return None 
-            
+            # Força o tipo para evitar erro do Pylance
+            return cast(Optional[Dict[str, Any]], resultado)
+
+        # ==========================
+
+        # Variáveis globais
         global user_name
         global account_type
         global date_start
         global surname
         global formatted_date
 
-        user_details = search_user_name(email_login.value)
+        # Busca os dados do usuário
+        user_details = search_user_name(email_login.value if email_login.value is not None else "")
 
-        user_name = user_details["name"]
-        surname = user_details["surname"]
-        account_type = user_details["account_type"]
-        date_start = user_details["date_start"]
+        if user_details:
+            user_name = user_details["name"]
+            surname = user_details["surname"]
+            account_type = user_details["account_type"]
+            date_start = user_details["date_start"]
 
-        date_obj = datetime.strptime(date_start, "%Y-%m-%d")
-        formatted_date = date_obj.strftime("%d-%m-%Y")
-        
-        
+            # Garante que date_start é string antes de converter
+            date_obj = datetime.strptime(str(date_start), "%Y-%m-%d")
+            formatted_date = date_obj.strftime("%d-%m-%Y")
+        else:
+            user_name = ""
+            surname = ""
+            account_type = ""
+            date_start = ""
+            formatted_date = ""
+
         message_welcome = ft.Row(
             alignment=ft.MainAxisAlignment.CENTER,
             controls=[
@@ -3196,7 +3216,7 @@ def main(page: ft.Page):
                             ft.Text("Valores líquidos sem taxas e impostos", size=9, color="#858585"),
                             ],
                             spacing=0,
-                            alignment=ft.alignment.center,
+                            alignment=ft.MainAxisAlignment.CENTER,
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # Centraliza horizontalmente
                     ),
                     alignment=ft.alignment.center,
@@ -3324,17 +3344,8 @@ def main(page: ft.Page):
             )
 
         # Criação do AlertDialog com ícones e estilização responsiva
-        details_popup = ft.AlertDialog(
-            open=False,
-            title=ft.Row(
-                [
-                    ft.Text("📊", size=24),  # Ícone no título do popup
-                    ft.Text("Detalhes do Objetivo", size=18, weight=ft.FontWeight.BOLD),
-                ],
-                alignment=ft.MainAxisAlignment.START,
-                spacing=10,
-            ),
-            content=ft.Column(
+        if goal_data:
+            details_popup_content = ft.Column(
                 [
                     # Títulos com ícones e valores ao lado
                     create_title_with_icon("Data de Início:", "📅", goal_data['start_date']),
@@ -3346,11 +3357,31 @@ def main(page: ft.Page):
                 width=page.width * 0.8,  # Largura responsiva (80% da largura da tela)
                 spacing=8,  # Espaçamento entre os itens
                 height=None,  # A altura será ajustada dinamicamente
+            )
+        else:
+            details_popup_content = ft.Column(
+                [
+                    ft.Text("Nenhuma meta encontrada."),
+                ],
+                width=page.width * 0.8,
+                spacing=8,
+                height=None,
+            )
+
+        details_popup = ft.AlertDialog(
+            open=False,
+            title=ft.Row(
+                [
+                    ft.Text("📊", size=24),  # Ícone no título do popup
+                    ft.Text("Detalhes do Objetivo", size=18, weight=ft.FontWeight.BOLD),
+                ],
+                alignment=ft.MainAxisAlignment.START,
+                spacing=10,
             ),
+            content=details_popup_content,
             actions=[
                 ft.ElevatedButton(
-                    text="Fechar",
-                    icon=ft.Text("📊"),  # Usar emoji 📊 no lugar do ícone de fechamento
+                    text="📊 Fechar",  # Emoji incluído no texto
                     on_click=lambda e: (
                         setattr(details_popup, "open", False),
                         page.update()
@@ -3365,14 +3396,31 @@ def main(page: ft.Page):
 
         # Responsividade (ajusta conforme o tamanho da tela)
         def on_resize(e):
-            if page.width < 600:  # Tamanho de tela pequeno
-                details_popup.content.width = page.width * 0.9
+            # Recrie o conteúdo do popup com a nova largura
+            if goal_data:
+                new_width = page.width * 0.9 if page.width < 600 else page.width * 0.8
+                details_popup.content = ft.Column(
+                    [
+                        create_title_with_icon("Data de Início:", "📅", goal_data['start_date']),
+                        create_title_with_icon("Data de Fim:", "🗓️", goal_data['end_date']),
+                        create_title_with_icon("Dias Trabalhados:", "📊", goal_data['worked_days']),
+                        create_title_with_icon("Dias de Folga:", "😌", goal_data['off_days']),
+                        create_title_with_icon("Despesas no Período:", "💸", f"€ {goal_data['total_expenses']:.2f}"),
+                    ],
+                    width=new_width,
+                    spacing=8,
+                    height=None,
+                )
             else:
-                details_popup.content.width = page.width * 0.8
-
-            # Ajusta a altura com base no número de itens
-            details_popup.content.height = len(details_popup.content.controls) * 60  # Aproximadamente 60px por linha de conteúdo
-
+                new_width = page.width * 0.9 if page.width < 600 else page.width * 0.8
+                details_popup.content = ft.Column(
+                    [
+                        ft.Text("Nenhuma meta encontrada."),
+                    ],
+                    width=new_width,
+                    spacing=8,
+                    height=None,
+                )
             page.update()
 
         # Configura o evento de redimensionamento da tela
@@ -3428,13 +3476,19 @@ def main(page: ft.Page):
                     return result[0] if result else 0.0
 
                 # Consultar despesas entre goal_start e goal_end
-                expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+                if goal_start is not None and goal_end is not None:
+                    expenses = fetch_expenses(goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+                else:
+                    expenses = 0.0
 
                 # Consultar Uber entre goal_start e goal_end
-                uber_data = fetch_daily_values(cursor, "uber", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
-
-                # Consultar Bolt entre goal_start e goal_end
-                bolt_data = fetch_daily_values(cursor, "bolt", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+                if goal_start is not None and goal_end is not None:
+                    uber_data = fetch_daily_values(cursor, "uber", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+                    # Consultar Bolt entre goal_start e goal_end
+                    bolt_data = fetch_daily_values(cursor, "bolt", goal_start.strftime('%Y-%m-%d'), goal_end.strftime('%Y-%m-%d'))
+                else:
+                    uber_data = []
+                    bolt_data = []
 
                 # Somar os valores diários
                 uber_gain = sum(float(row[0]) for row in uber_data if row[0])
@@ -3452,14 +3506,22 @@ def main(page: ft.Page):
                     UPDATE goal 
                     SET total_gain = ? 
                     WHERE goal_start = ? AND goal_end = ?
-                """, (total_gain, goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
+                """, (
+                    total_gain,
+                    goal_start.strftime('%d/%m/%Y') if goal_start else "",
+                    goal_end.strftime('%d/%m/%Y') if goal_end else ""
+                ))
                 
                 # Caso não exista um registro com essas datas, você pode usar um INSERT para garantir que o valor seja armazenado
                 if cursor.rowcount == 0:  # Se não encontrou o registro para atualizar
                     cursor.execute("""
                         INSERT INTO goal (goal_start, goal_end, total_gain)
                         VALUES (?, ?, ?)
-                    """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y'), total_gain))
+                    """, (
+                        goal_start.strftime('%d/%m/%Y') if goal_start else "",
+                        goal_end.strftime('%d/%m/%Y') if goal_end else "",
+                        total_gain
+                    ))
 
                 # Verificar se o total_gain é maior ou igual ao goal_gross
                 if total_gain >= goal_gross:
@@ -3468,7 +3530,10 @@ def main(page: ft.Page):
                         UPDATE goal 
                         SET goal_successful = 'positivo' 
                         WHERE goal_start = ? AND goal_end = ?
-                    """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
+                    """, (
+                        goal_start.strftime('%d/%m/%Y') if goal_start else "",
+                        goal_end.strftime('%d/%m/%Y') if goal_end else ""
+                    ))
 
 
                 else:
@@ -3477,7 +3542,10 @@ def main(page: ft.Page):
                         UPDATE goal 
                         SET goal_successful = 'negativo' 
                         WHERE goal_start = ? AND goal_end = ?
-                    """, (goal_start.strftime('%d/%m/%Y'), goal_end.strftime('%d/%m/%Y')))
+                    """, (
+                        goal_start.strftime('%d/%m/%Y') if goal_start else "",
+                        goal_end.strftime('%d/%m/%Y') if goal_end else ""
+                    ))
 
                 # Confirma as alterações
                 conn.commit()
@@ -3491,7 +3559,10 @@ def main(page: ft.Page):
 
         global days_of_work
         # Agora podemos calcular o número de dias de trabalho corretamente
-        days_of_work = (goal_end - goal_start).days + 1
+        if goal_end is not None and goal_start is not None:
+            days_of_work = (goal_end - goal_start).days + 1
+        else:
+            days_of_work = 0
 
         days_of_work -= int(day_off)
 
@@ -3499,48 +3570,49 @@ def main(page: ft.Page):
 
 
 
-        # Formatação e exibição dos dados
-        details_goal = ft.Row(
-            height=0,
-            controls=[
-                ft.Container(  
-                    ft.Column(
-                        width=193,
-                        height=99,
-                        controls=[
-                            ft.Text("Início do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal_start.strftime("%d/%m/%Y") if goal_start else "Data não encontrada", size=15),
-                            ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(str(days_of_work), size=15),
-                            ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(f"€ {expenses:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=15)  # Formatação das despesas
-                        ],
-                        spacing=0, 
+         # Formatação e exibição dos dados
+        def details_goal_summary(e=None):
+            return ft.Row(
+                height=0,
+                controls=[
+                    ft.Container(  
+                        ft.Column(
+                            width=193,
+                            height=99,
+                            controls=[
+                                ft.Text("Início do Objetivo", size=15, weight=ft.FontWeight.BOLD),
+                                ft.Text(goal_start.strftime("%d/%m/%Y") if goal_start else "Data não encontrada", size=15),
+                                ft.Text("Dias de Trabalho", size=15, weight=ft.FontWeight.BOLD),
+                                ft.Text(str(days_of_work), size=15),
+                                ft.Text("Despesas", size=15, weight=ft.FontWeight.BOLD),
+                                ft.Text(f"€ {expenses:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=15)  # Formatação das despesas
+                            ],
+                            spacing=0, 
+                        ),
+                        alignment=ft.alignment.center,
+                        expand=True, 
                     ),
-                    alignment=ft.alignment.center,
-                    expand=True, 
-                ),
-                ft.Container(
-                    ft.Column(
-                        width=193,
-                        height=99,
-                        horizontal_alignment=ft.CrossAxisAlignment.END,
-                        controls=[
-                            ft.Text("Fim do Objetivo", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(goal_end.strftime("%d/%m/%Y") if goal_end else "Data não encontrada", size=15),
-                            ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(str(day_off), size=15),  # Folgas: valor de day_off
-                            ft.Text("Ganhos até agora", size=15, weight=ft.FontWeight.BOLD),
-                            ft.Text(f"€ {total_gain:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=15)  # Formatação dos ganhos
-                        ],
-                        spacing=0, 
+                    ft.Container(
+                        ft.Column(
+                            width=193,
+                            height=99,
+                            horizontal_alignment=ft.CrossAxisAlignment.END,
+                            controls=[
+                                ft.Text("Fim do Objetivo", size=15, weight=ft.FontWeight.BOLD),
+                                ft.Text(goal_end.strftime("%d/%m/%Y") if goal_end else "Data não encontrada", size=15),
+                                ft.Text("Folgas", size=15, weight=ft.FontWeight.BOLD),
+                                ft.Text(str(day_off), size=15),  # Folgas: valor de day_off
+                                ft.Text("Ganhos até agora", size=15, weight=ft.FontWeight.BOLD),
+                                ft.Text(f"€ {total_gain:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), size=15)  # Formatação dos ganhos
+                            ],
+                            spacing=0, 
+                        ),
+                        alignment=ft.alignment.center,
+                        expand=True,
                     ),
-                    alignment=ft.alignment.center,
-                    expand=True,
-                ),
-            ]
-        )
-        
+                ]
+            )
+       
         def fetch_goal_from_db2(user_id):
             # Conectando ao banco SQLite
             conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
@@ -3570,7 +3642,9 @@ def main(page: ft.Page):
 
         # Se a meta e os dias restantes foram encontrados
         if goal_value is not None:
-            remaining_text = remaining_days - int(day_off)
+            safe_remaining_days = remaining_days if remaining_days is not None else 0
+            safe_day_off = int(day_off) if day_off is not None else 0
+            remaining_text = safe_remaining_days - safe_day_off
         else:
             remaining_text = "XX"
 
@@ -3583,6 +3657,11 @@ def main(page: ft.Page):
                 remaining_text = 0
 
         # Agora, subtraímos day_off de remaining_text
+        if not isinstance(remaining_text, int):
+            try:
+                remaining_text = int(remaining_text)
+            except Exception:
+                remaining_text = 0
         remaining_text += 2
             
         remaining_text2 = ft.Text(
@@ -3723,8 +3802,8 @@ def main(page: ft.Page):
                     bgcolor="black",
                 ),
             ],
-            horizontal_alignment="center",
-            alignment=ft.alignment.center,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.CENTER,
             expand=True,
         )
             
@@ -3883,7 +3962,7 @@ def main(page: ft.Page):
                     hourglass,
                     goal,
                     button_bolt_uber,
-                    details_goal,
+                    # details_goal,  # Removed function reference from controls
                     button_container,
                     details_popup
                     
@@ -3896,7 +3975,7 @@ def main(page: ft.Page):
         page.views.clear()
 
         def validate_name(e):
-            if len(name.value) > 3:
+            if len(name.value or "") > 3:
                 name.error_text = None
             else:
                 name.error_text = "O nome deve ter mais de 4 caracteres."
@@ -3904,7 +3983,7 @@ def main(page: ft.Page):
             validate_form()
 
         def validate_surname(e):
-            if len(surname.value) > 3:
+            if len(surname.value or "") > 3:
                 surname.error_text = None
             else:
                 surname.error_text = "O nome deve ter mais de 4 caracteres."
@@ -3913,7 +3992,7 @@ def main(page: ft.Page):
            
         def validate_email(e):
             global email_exist
-            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value):
+            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value or ""):
                 try:
                     # Conectar ao banco de dados    
                     conn = mysql.connector.connect(
@@ -3954,8 +4033,8 @@ def main(page: ft.Page):
             validate_form()
 
         def validate_form():
-            if (len(name.value) > 4 and len(surname.value) > 4 and
-                re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value) and
+            if (len(name.value or "") > 4 and len(surname.value or "") > 4 and
+                re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email.value or "") and
                 password.value == password_confirm.value and password.value != "" and password_confirm.value != "" and not email_exist):
                 button_to_db.disabled = False
             else:
@@ -4001,8 +4080,13 @@ def main(page: ft.Page):
         password = ft.TextField(label="Password", password=True, can_reveal_password=True, border_radius=21, expand=True)
         password_confirm = ft.TextField(label="Password confirm", password=True, can_reveal_password=True, border_radius=21, on_change=validate_password, expand=True)
         
-        button_to_db = ft.ElevatedButton(text="REGISTER", bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, color="white", disabled=True,
-                                          on_click=lambda e: add_in_db(name.value, surname.value, email.value, password.value, user_id=None))
+        button_to_db = ft.ElevatedButton(
+            text="REGISTER",
+            bgcolor="#4CAF50",
+            color="white",
+            disabled=True,
+            on_click=lambda e: add_in_db(name.value, surname.value, email.value, password.value, user_id=None)
+        )
         page.views.append(
             ft.View(
                 "/register",
@@ -4065,7 +4149,7 @@ def main(page: ft.Page):
         page.views.clear()
         
         def validate_email(e):
-            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', field_email.value):
+            if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', field_email.value or ""):
                 field_email.error_text = None
             else:
                 field_email.error_text = "O email digitado não é válido."
@@ -4110,7 +4194,7 @@ def main(page: ft.Page):
                         page.go("/page_new_password")
             
                 except Exception as e:
-                    page_error_screen("Erro ao enviar o e-mail:", e)
+                    page_error_screen(f"Erro ao enviar o e-mail: {e}")
                 
             else:
                 page_error_screen("E-mail não encontrado.")
@@ -4238,15 +4322,13 @@ def main(page: ft.Page):
                 button_updated_password.disabled = True
             button_updated_password.update()
 
-        codigo_temporario
-        field_email
         title = ft.Text(current_translations.get("create_new_password", "Criar novo password"))
         field_code = ft.TextField(label=current_translations.get("code_label", "Code"), border_radius=21, on_change=validate_field_code)
         new_password = ft.TextField(label=current_translations.get("new_password_label", "Novo password"), border_radius=21, password=True, can_reveal_password=True)
         confirm_new_password = ft.TextField(label=current_translations.get("confirm_new_password_label", "Confirme o novo password"), border_radius=21, password=True, can_reveal_password=True, on_change=validate_password)
         button_updated_password = ft.ElevatedButton(
             text=current_translations.get("update_password_button", "Alterar Passoword"), 
-            bgcolor={"disabled": "#d3d3d3", "": "#4CAF50"}, 
+            bgcolor="#4CAF50", 
             color="white", 
             disabled=True, 
             on_click=lambda e: verify_code_email(field_code.value, new_password.value, field_email.value, codigo_temporario)
@@ -4320,9 +4402,9 @@ def main(page: ft.Page):
         elif page.route == "/forget_password":
             page_forget_password()
         elif page.route == "/message_screen":
-            page_message_screen()
+            page_message_screen("Mensagem padrão")  # Substitua por uma mensagem apropriada
         elif page.route == "/mensage_erro_screen":
-            page_error_screen()
+            page_error_screen("Ocorreu um erro.")
         elif page.route == "/page_new_password":
             page_new_password()
         elif page.route == "/page_parcial":
@@ -4330,7 +4412,7 @@ def main(page: ft.Page):
         elif page.route == "/page_expense":
             page_expense()
         elif page.route == "/page_daily":
-            page_daily()
+            page_daily("Desconhecido")
         elif page.route == "/page_menu":
             page_menu()
         elif page.route == "/page_premium":
