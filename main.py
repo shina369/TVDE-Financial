@@ -4444,4 +4444,4 @@ def main(page: ft.Page):
     # Definindo a rota inicial
     page.go("/")
 
-ft.app(target=main)
+ft.app(target=main, view=ft.AppView.WEB_BROWSER)
