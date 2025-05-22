@@ -41,6 +41,32 @@ def clear_credentials():
         os.remove(CREDENTIALS_FILE)
 
 def main(page: ft.Page):
+
+    import asyncio
+
+    async def load_app():
+        # Simula carregamento por 2 segundos
+        await asyncio.sleep(6)
+        # Trocar para a página principal depois de 2 segundos
+        page.views.clear()
+        page.views.append(ft.View("/"))
+        page.update()
+
+    # Splash screen personalizada
+    splash = ft.Column(
+        [
+            ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png", width=150, height=150),
+            ft.Text("Carregando...", size=20),
+        ],
+        alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+    )
+
+    page.views.append(ft.View("/", [splash]))
+    page.update()
+
+    # Simula carregamento
+    page.run_task(load_app)
     
     load_dotenv()
     connect()
