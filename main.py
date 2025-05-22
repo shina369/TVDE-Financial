@@ -46,7 +46,7 @@ def main(page: ft.Page):
 
     async def load_app():
         # Simula carregamento por 2 segundos
-        await asyncio.sleep(6)
+        await asyncio.sleep(9)
         # Trocar para a página principal depois de 2 segundos
         page.views.clear()
         page.views.append(ft.View("/"))
