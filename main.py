@@ -1647,6 +1647,11 @@ def main(page: ft.Page):
                         cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
                         meta_count = cursor_sqlite.fetchone()[0]
 
+                    if remember_password_checkbox.value:
+                        save_credentials(email_login.value, password_login.value)
+                    else:
+                        clear_credentials()
+
                     # Redirecionamento com base nas metas
                     if meta_count > 0 and goal_successful == "negativo":
                         page.go("/page_parcial")
@@ -1664,7 +1669,8 @@ def main(page: ft.Page):
             conn.close()
 
 
-        global email_login
+        global email_login,  remember_password_checkbox
+        remember_password_checkbox = ft.Checkbox(label="Lembrar senha", value=True)
         email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email,  value=saved_email)
         password_login = ft.TextField(label=current_translations.get("password_label", "Password"), password=True, can_reveal_password=True, border_radius=21, value=saved_password)
 
@@ -1690,7 +1696,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Container(
                                     content=ft.Column(
-                                        controls=[email_login, password_login, button_login],
+                                        controls=[email_login, password_login, remember_password_checkbox, button_login],
                                     ),
                                 ),
                                 ft.Container(
