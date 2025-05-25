@@ -56,6 +56,7 @@ def main(page: ft.Page):
     splash = ft.Column(
         [
             ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png", width=150, height=150),
+            ft.Text("Carregando...", size=20),
         ],
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
