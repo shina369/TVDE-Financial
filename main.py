@@ -82,16 +82,19 @@ def main(page: ft.Page):
     )
 
     # Barra de Navegação na Row
-    header = ft.Row(
-        controls=[
-            pb,  # Menu à esquerda
-            ft.Image(
-                src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
-                width=154,
-                height=72,
-            ),  # Logo à direita
-        ],
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,  # Distribui entre as extremidades
+    header = ft.Container(
+        content=ft.Row(
+            controls=[
+                ft.Image(
+                    src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
+                    width=154,
+                    height=72,
+                ),
+                pb  # Logo à direita
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        ),
+        margin=ft.margin.only(top=20),  # Ajuste esse valor para o quanto quiser "abaixar"
     )
 
     
