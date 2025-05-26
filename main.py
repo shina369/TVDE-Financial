@@ -1594,7 +1594,11 @@ def main(page: ft.Page):
 
     def page_login():
         page.views.clear()
-        saved_email, saved_password = load_credentials()
+
+        # Carregar credenciais salvas localmente (se existirem)
+        saved_email = page.client_storage.get("saved_email") or ""
+        saved_password = page.client_storage.get("saved_password") or ""
+
         def validate_email(e):
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value or ""):
                 email_login.error_text = None
@@ -1613,7 +1617,6 @@ def main(page: ft.Page):
                 database="db_tvde_users_external",
                 port=MYSQLPORT
             )
-
             cursor = conn.cursor(buffered=True)
 
             # Verificar se o email existe no banco de dados e obter o user_id
@@ -1628,8 +1631,15 @@ def main(page: ft.Page):
             else:
                 user_id, stored_password = result
                 if hash_password_login == stored_password:
-                    save_credentials(email_login.value, password_login.value)
                     create_user_tables(user_id)
+
+                    # ⬇️ Armazenar ou limpar credenciais com base no checkbox
+                    if remember_password_checkbox.value:
+                        page.client_storage.set("saved_email", email_login.value)
+                        page.client_storage.set("saved_password", password_login.value)
+                    else:
+                        page.client_storage.remove("saved_email")
+                        page.client_storage.remove("saved_password")
 
                     # Caminho do banco SQLite do usuário
                     db_path = f"db_usuarios/db_user_{user_id}.db"
@@ -1647,11 +1657,6 @@ def main(page: ft.Page):
                         cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
                         meta_count = cursor_sqlite.fetchone()[0]
 
-                    if remember_password_checkbox.value:
-                        save_credentials(email_login.value, password_login.value)
-                    else:
-                        clear_credentials()
-
                     # Redirecionamento com base nas metas
                     if meta_count > 0 and goal_successful == "negativo":
                         page.go("/page_parcial")
@@ -1668,10 +1673,9 @@ def main(page: ft.Page):
             cursor.close()
             conn.close()
 
-
-        global email_login,  remember_password_checkbox
-        remember_password_checkbox = ft.Checkbox(label="Lembrar senha", value=True)
-        email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email,  value=saved_email)
+        global email_login, remember_password_checkbox
+        remember_password_checkbox = ft.Checkbox(label=current_translations.get("remember_password", "Lembrar senha"), value=True)
+        email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email, value=saved_email)
         password_login = ft.TextField(label=current_translations.get("password_label", "Password"), password=True, can_reveal_password=True, border_radius=21, value=saved_password)
 
         button_login = ft.ElevatedButton(
@@ -1680,7 +1684,7 @@ def main(page: ft.Page):
             color="white",
             on_click=lambda e: valid_email_password(email_login, password_login)
         )
-        
+
         page.views.append(
             ft.View(
                 "/",
@@ -1718,6 +1722,7 @@ def main(page: ft.Page):
             )
         )
         page.update()
+
 
 
     def page_new_goal():
