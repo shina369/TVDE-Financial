@@ -87,8 +87,8 @@ def main(page: ft.Page):
             controls=[
                 ft.Image(
                     src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
-                    width=132,
-                    height=66,
+                    width=120,
+                    height=54,
                 ),
                 pb  # Logo à direita
             ],
