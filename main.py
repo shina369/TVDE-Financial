@@ -64,7 +64,7 @@ def main(page: ft.Page):
         icon=ft.Icons.MENU,
         shadow_color=ft.Colors.GREEN_300,
         bgcolor="#F1F1F1",
-        icon_size=33,
+        icon_size=39,
         items=[
                 ft.PopupMenuItem(text="MENU"),
                 ft.PopupMenuItem(icon=ft.Icons.DATA_EXPLORATION_OUTLINED, text="Parciais", on_click=lambda _: page.go("/page_parcial")),
