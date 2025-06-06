@@ -1649,6 +1649,7 @@ def main(page: ft.Page):
 
         async def valid_email_password_async(email_login, password_login):
             loading.visible = True
+            time.sleep(6)
             page.update()
 
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
