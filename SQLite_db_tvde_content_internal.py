@@ -1,6 +1,7 @@
 import sqlite3
 import mysql.connector
 import os
+from typing import Optional, Dict, Any, cast
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,10 +11,10 @@ MYSQLHOST = os.getenv("MYSQLHOST")
 MYSQLUSER = os.getenv("MYSQLUSER")
 MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
-MYSQLPORT = int(os.getenv("MYSQLPORT"))
+MYSQLPORT = int(os.getenv("MYSQLPORT", "3306"))  # Porta padrão 3306
 
 # Obtém o ID do usuário pelo e-mail
-def get_user_id_from_mysql(email):
+def get_user_id_from_mysql(email: str) -> Optional[int]:
     conn = mysql.connector.connect(
         host=MYSQLHOST,
         user=MYSQLUSER,
@@ -21,24 +22,39 @@ def get_user_id_from_mysql(email):
         database="db_tvde_users_external",
         port=MYSQLPORT
     )
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
-    result = cursor.fetchone()
+    result = cast(Optional[Dict[str, Any]], cursor.fetchone())
     cursor.close()
     conn.close()
 
-    return result[0] if result else None
+    if result and "id" in result:
+        user_id = result["id"]
+        print("User id from DB:", user_id, type(user_id))  # para debug
+        # Se user_id for do tipo Decimal, converta para int:
+        if hasattr(user_id, 'to_integral_value'):
+            user_id = int(user_id)
+        elif isinstance(user_id, (int, float)):
+            user_id = int(user_id)
+        else:
+            # caso user_id já seja int ou string numérica, converter direto
+            try:
+                user_id = int(user_id)
+            except Exception:
+                # aqui levante erro ou retorne None se não for possível converter
+                return None
+        return user_id
 
 # Cria a pasta onde ficarão os bancos SQLite
 os.makedirs("db_usuarios", exist_ok=True)
 
 # Retorna conexão com o banco de dados SQLite do usuário
-def get_user_db_connection(user_id):
+def get_user_db_connection(user_id: int) -> sqlite3.Connection:
     db_path = f"db_usuarios/db_user_{user_id}.db"
     return sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES)
 
 # Cria as tabelas no banco de dados do usuário
-def create_user_tables(user_id):
+def create_user_tables(user_id) -> None:
     with get_user_db_connection(user_id) as conn:
         cursor = conn.cursor()
 
@@ -93,7 +109,7 @@ def create_user_tables(user_id):
         print(f"Tabelas criadas para o usuário {user_id}")
 
 # Função principal que integra tudo
-def preparar_banco_usuario(email):
+def preparar_banco_usuario(email: str) -> None:
     user_id = get_user_id_from_mysql(email)
 
     if user_id is not None:

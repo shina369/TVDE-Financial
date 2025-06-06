@@ -384,6 +384,10 @@ def main(page: ft.Page):
         page.update()
 
     def page_reports(user_id):
+        if not email_login.value:
+            print("E-mail não informado.")
+            return
+
         user_id = get_user_id_from_mysql(email_login.value)
         page.views.clear()
 
@@ -820,11 +824,17 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.ElevatedButton(
-                                text="Gerar Relatório",  # Texto do botão
-                                on_click=lambda e: generate_report(start_date_field.value, end_date_field.value, report_message, get_user_id_from_mysql(email_login.value), page),  # Passando os valores das datas corretamente
-                                width=200,  # Largura do botão
+                                text="Gerar Relatório",
+                                on_click=lambda e: generate_report(
+                                    start_date_field.value,
+                                    end_date_field.value,
+                                    report_message,
+                                    get_user_id_from_mysql(email_login.value or ""),  # Força string vazia se None
+                                    page
+                                ),
+                                width=200,
                                 style=ft.ButtonStyle(
-                                    shape=ft.RoundedRectangleBorder(radius=21)  # Botão com borda arredondada
+                                    shape=ft.RoundedRectangleBorder(radius=21)
                                 )
                             ),
                         ],
@@ -912,6 +922,10 @@ def main(page: ft.Page):
             page.update()
 
         global user_id
+
+        if not email_login.value:
+            print("E-mail não informado.")
+            return
 
         user_id = get_user_id_from_mysql(email_login.value)
 
@@ -1120,6 +1134,10 @@ def main(page: ft.Page):
     def page_reports_fleet():
         page.views.clear()
         
+        if not email_login.value:
+            print("E-mail não informado.")
+            return
+
         user_id = get_user_id_from_mysql(email_login.value)
         uber_data = fetch_fleet_data(user_id,"uber") or {
             "total_rendimento": 0,
@@ -1278,6 +1296,10 @@ def main(page: ft.Page):
 
     def page_reports_general():
         page.views.clear()
+        if not email_login.value:
+            print("E-mail não informado.")
+            return
+
         user_id = get_user_id_from_mysql(email_login.value)
         # Recuperar dados para Uber e Bolt
         uber_data = fetch_fleet_data2(user_id, "uber")
@@ -1411,6 +1433,10 @@ def main(page: ft.Page):
         result_label = ft.Text("")
 
         def calculate_totals(e):
+            if not email_login.value:
+                print("E-mail não informado.")
+                return
+
             user_id = get_user_id_from_mysql(email_login.value)
             if dropdown1.value and dropdown2.value:
                 total_income, total_expenses = fetch_total_values(user_id, dropdown1.value, dropdown2.value)
@@ -2102,6 +2128,10 @@ def main(page: ft.Page):
             tax_discount_field.value = ""
             page.update()
 
+        if not email_login.value:
+            print("E-mail não informado.")
+            return
+
         user_id = get_user_id_from_mysql(email_login.value)
         button_salve = ft.ElevatedButton(
         text="SALVAR", bgcolor="#4CAF50", color="white", on_click=lambda e: save_goal(e, user_id),)
@@ -2512,6 +2542,10 @@ def main(page: ft.Page):
 
             # Atualizar a página para refletir a limpeza dos campos
             page.update()
+
+        if not email_login.value:
+            print("E-mail não informado.")
+            return
 
         user_id = get_user_id_from_mysql(email_login.value)
 
@@ -2931,6 +2965,10 @@ def main(page: ft.Page):
         )
 
         def save_daily_bolt_uber(param, user_id):
+            if not email_login.value:
+                print("E-mail não informado.")
+                return
+
             user_id = get_user_id_from_mysql(email_login.value)
             # Validar o parâmetro
             if param not in ["Bolt", "Uber"]:
@@ -3018,12 +3056,20 @@ def main(page: ft.Page):
             page.update()
         
         def handle_bolt_click(e):
+            if not email_login.value:
+                print("E-mail não informado.")
+                return
+
             user_id = get_user_id_from_mysql(email_login.value) 
             validate_fields()
             if not btn_bolt.disabled:
                 save_daily_bolt_uber("Bolt", user_id)
 
         def handle_uber_click(e):
+            if not email_login.value:
+                print("E-mail não informado.")
+                return
+
             user_id = get_user_id_from_mysql(email_login.value) 
             validate_fields()
             if not btn_uber.disabled:
@@ -3075,6 +3121,10 @@ def main(page: ft.Page):
         page.update()
 
     def page_parcial(page, user_id):
+        if not email_login.value:
+            print("E-mail não informado.")
+            return
+
         user_id = get_user_id_from_mysql(email_login.value)
         conn_sqlite = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
         cursor_sqlite = conn_sqlite.cursor()
@@ -3269,6 +3319,10 @@ def main(page: ft.Page):
         )
 
         def get_goal_details_from_db(user_id):
+            if not email_login.value:
+                print("E-mail não informado.")
+                return
+
             user_id = get_user_id_from_mysql(email_login.value)
             conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
             cursor = conn.cursor()
