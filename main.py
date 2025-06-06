@@ -7,6 +7,8 @@ from hashlib import sha256
 import smtplib
 import random
 import string
+import asyncio
+import anyio
 import sqlite3
 import json
 import os
@@ -1621,12 +1623,22 @@ def main(page: ft.Page):
         page.update()
 
 
-    def page_login():
+    def page_login(page: ft.Page):
+
         page.views.clear()
 
-        # Carregar credenciais salvas localmente (se existirem)
         saved_email = page.client_storage.get("saved_email") or ""
         saved_password = page.client_storage.get("saved_password") or ""
+
+        loading = ft.Container(
+        content=ft.Column([
+            ft.ProgressRing(),
+        ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+        alignment=ft.alignment.center,
+        expand=True,  # ocupa toda a tela
+        bgcolor="rgba(0,0,0,0.6)",  # fundo preto semi-transparente
+        visible=False
+        )
 
         def validate_email(e):
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value or ""):
@@ -1635,74 +1647,86 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
-        def valid_email_password(email_login, password_login):
+        async def valid_email_password_async(email_login, password_login):
+            loading.visible = True
+            page.update()
+
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
 
-            # Conectar ao banco de dados MySQL
-            conn = mysql.connector.connect(
-                host=MYSQLHOST,
-                user=MYSQLUSER,
-                password=MYSQLPASSWORD,
-                database="db_tvde_users_external",
-                port=MYSQLPORT
-            )
-            cursor = conn.cursor(buffered=True)
+            def blocking_db_operations():
+                conn = mysql.connector.connect(
+                    host=MYSQLHOST,
+                    user=MYSQLUSER,
+                    password=MYSQLPASSWORD,
+                    database="db_tvde_users_external",
+                    port=MYSQLPORT
+                )
+                cursor = conn.cursor(buffered=True)
+                cursor.execute("SELECT id, password FROM users WHERE email = %s", (email_login.value,))
+                result = cursor.fetchone()
+                cursor.close()
+                conn.close()
+                return result
 
-            # Verificar se o email existe no banco de dados e obter o user_id
-            cursor.execute("SELECT id, password FROM users WHERE email = %s", (email_login.value,))
-            result = cursor.fetchone()
-
-            get_user_id_from_mysql(email_login.value)
+            result = await asyncio.to_thread(blocking_db_operations)
 
             if result is None:
                 email_login.error_text = current_translations.get("email_not_found", "Email não encontrado")
                 email_login.update()
+                loading.visible = False
+                page.update()
+                return
+
+            user_id, stored_password = result
+
+            if hash_password_login != stored_password:
+                password_login.error_text = current_translations.get("password_incorrect", "Senha incorreta")
+                password_login.update()
+                loading.visible = False
+                page.update()
+                return
+
+            # Senha correta
+            # Criar tabelas do usuário e manipular SQLite em thread separado
+            def sqlite_operations():
+                create_user_tables(user_id)  # sua função atual
+                db_path = f"db_usuarios/db_user_{user_id}.db"
+                with sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES) as conn_sqlite:
+                    cursor_sqlite = conn_sqlite.cursor()
+                    cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
+                    goal_successful = cursor_sqlite.fetchone()
+                    goal_successful = goal_successful[0] if goal_successful else "default_value"
+                    cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
+                    meta_count = cursor_sqlite.fetchone()[0]
+                    return goal_successful, meta_count
+
+            goal_successful, meta_count = await asyncio.to_thread(sqlite_operations)
+
+            # Armazenar ou limpar credenciais com base no checkbox
+            if remember_password_checkbox.value:
+                page.client_storage.set("saved_email", email_login.value)
+                page.client_storage.set("saved_password", password_login.value)
             else:
-                user_id, stored_password = result
-                if hash_password_login == stored_password:
-                    create_user_tables(user_id)
+                page.client_storage.remove("saved_email")
+                page.client_storage.remove("saved_password")
 
-                    # ⬇️ Armazenar ou limpar credenciais com base no checkbox
-                    if remember_password_checkbox.value:
-                        page.client_storage.set("saved_email", email_login.value)
-                        page.client_storage.set("saved_password", password_login.value)
-                    else:
-                        page.client_storage.remove("saved_email")
-                        page.client_storage.remove("saved_password")
+            loading.visible = False
+            page.update()
 
-                    # Caminho do banco SQLite do usuário
-                    db_path = f"db_usuarios/db_user_{user_id}.db"
+            # Navega conforme metas
+            if meta_count > 0 and goal_successful == "negativo":
+                page.go("/page_parcial")
+            elif meta_count > 0 and goal_successful == "positivo":
+                page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
 
-                    # Conectar ao banco de dados SQLite
-                    with sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES) as conn_sqlite:
-                        cursor_sqlite = conn_sqlite.cursor()
-
-                        # Buscar goal_successful
-                        cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
-                        goal_successful = cursor_sqlite.fetchone()
-                        goal_successful = goal_successful[0] if goal_successful else "default_value"
-
-                        # Contar metas
-                        cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
-                        meta_count = cursor_sqlite.fetchone()[0]
-
-                    # Redirecionamento com base nas metas
-                    if meta_count > 0 and goal_successful == "negativo":
-                        page.go("/page_parcial")
-                    elif meta_count > 0 and goal_successful == "positivo":
-                        page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
-                        time.sleep(3)
-                        page.go("/page_new_goal")
-                    else:
-                        page.go("/page_new_goal")
-                else:
-                    password_login.error_text = current_translations.get("password_incorrect", "Senha incorreta")
-                    password_login.update()
-
-            cursor.close()
-            conn.close()
+                # Usar temporizador async para aguardar 3 segundos sem bloquear
+                await asyncio.sleep(3)
+                page.go("/page_new_goal")
+            else:
+                page.go("/page_new_goal")
 
         global email_login, remember_password_checkbox
+
         remember_password_checkbox = ft.Checkbox(label=current_translations.get("remember_password", "Lembrar senha"), value=True)
         email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email, value=saved_email)
         password_login = ft.TextField(label=current_translations.get("password_label", "Password"), password=True, can_reveal_password=True, border_radius=21, value=saved_password)
@@ -1711,7 +1735,7 @@ def main(page: ft.Page):
             text=current_translations.get("login_button", "LOGIN"),
             bgcolor="#4CAF50",
             color="white",
-            on_click=lambda e: valid_email_password(email_login, password_login)
+            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login)
         )
 
         page.views.append(
@@ -1729,7 +1753,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Container(
                                     content=ft.Column(
-                                        controls=[email_login, password_login, remember_password_checkbox, button_login],
+                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading],
                                     ),
                                 ),
                                 ft.Container(
@@ -2594,7 +2618,7 @@ def main(page: ft.Page):
                 expand=1,
                 height=160,
                 on_click=lambda e: page.go(route),
-              gradient=ft.LinearGradient(
+                gradient=ft.LinearGradient(
                 begin=ft.alignment.top_left,
                 end=ft.alignment.bottom_right,
                 colors=gradient_colors
@@ -2969,7 +2993,6 @@ def main(page: ft.Page):
                 print("E-mail não informado.")
                 return
 
-            user_id = get_user_id_from_mysql(email_login.value)
             # Validar o parâmetro
             if param not in ["Bolt", "Uber"]:
                 page_error_screen("Parâmetro inválido!")
@@ -3059,8 +3082,7 @@ def main(page: ft.Page):
             if not email_login.value:
                 print("E-mail não informado.")
                 return
-
-            user_id = get_user_id_from_mysql(email_login.value) 
+            
             validate_fields()
             if not btn_bolt.disabled:
                 save_daily_bolt_uber("Bolt", user_id)
@@ -3069,8 +3091,7 @@ def main(page: ft.Page):
             if not email_login.value:
                 print("E-mail não informado.")
                 return
-
-            user_id = get_user_id_from_mysql(email_login.value) 
+            
             validate_fields()
             if not btn_uber.disabled:
                 save_daily_bolt_uber("Uber", user_id)
@@ -3322,8 +3343,6 @@ def main(page: ft.Page):
             if not email_login.value:
                 print("E-mail não informado.")
                 return
-
-            user_id = get_user_id_from_mysql(email_login.value)
             conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
             cursor = conn.cursor()
 
@@ -4462,7 +4481,7 @@ def main(page: ft.Page):
 
     def route_change(route):
         if page.route == "/":
-            page_login()
+            page_login(page)
         elif page.route == "/register":
             page_register()
         elif page.route == "/page_new_goal":

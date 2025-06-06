@@ -30,7 +30,7 @@ def get_user_id_from_mysql(email: str) -> Optional[int]:
 
     if result and "id" in result:
         user_id = result["id"]
-        print("User id from DB:", user_id, type(user_id))  # para debug
+        print("User id from D333B:", user_id, type(user_id))  # para debug
         # Se user_id for do tipo Decimal, converta para int:
         if hasattr(user_id, 'to_integral_value'):
             user_id = int(user_id)
