@@ -16,6 +16,8 @@ from MYSQL_db_tvde_users_external import connect
 from typing import Optional, Dict, Any, cast
 from SQLite_db_tvde_content_internal import get_user_id_from_mysql, create_user_tables
 from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
 
 load_dotenv()
 
@@ -26,6 +28,12 @@ MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)  # Default to 3306 if not set
 
 CREDENTIALS_FILE = "user_credentials.json"
+
+app = FastAPI()
+
+@app.get("/app-ads.txt", include_in_schema=False)
+async def app_ads():
+    return FileResponse("app-ads.txt", media_type="text/plain")
 
 def save_credentials(email, password):
     with open(CREDENTIALS_FILE, "w") as f:
