@@ -34,8 +34,6 @@ app = FastAPI()
 
 @app.get("/app-ads.txt", include_in_schema=False)
 async def serve_ads_txt():
-    file_path = os.path.join(os.path.dirname(__file__), "app-ads.txt")
-    return FileResponse(file_path, media_type="text/plain")
     return FileResponse("app-ads.txt", media_type="text/plain")
 
 def save_credentials(email, password):
