@@ -18,6 +18,7 @@ from SQLite_db_tvde_content_internal import get_user_id_from_mysql, create_user_
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
+import os
 
 load_dotenv()
 
@@ -32,7 +33,9 @@ CREDENTIALS_FILE = "user_credentials.json"
 app = FastAPI()
 
 @app.get("/app-ads.txt", include_in_schema=False)
-async def app_ads():
+async def serve_ads_txt():
+    file_path = os.path.join(os.path.dirname(__file__), "app-ads.txt")
+    return FileResponse(file_path, media_type="text/plain")
     return FileResponse("app-ads.txt", media_type="text/plain")
 
 def save_credentials(email, password):
