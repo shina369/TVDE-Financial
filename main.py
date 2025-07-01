@@ -33,12 +33,9 @@ CREDENTIALS_FILE = "user_credentials.json"
 
 app = FastAPI()
 
-# Montar a pasta pública em uma rota dedicada
-app.mount("/public", StaticFiles(directory="public"), name="public")
-
 @app.get("/app-ads.txt", include_in_schema=False)
 async def serve_ads_txt():
-    return FileResponse("public/app-ads.txt", media_type="text/plain")
+    return FileResponse("app-ads.txt", media_type="text/plain")
 
 
 def save_credentials(email, password):
