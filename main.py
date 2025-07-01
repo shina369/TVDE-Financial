@@ -17,7 +17,7 @@ from typing import Optional, Dict, Any, cast
 from SQLite_db_tvde_content_internal import get_user_id_from_mysql, create_user_tables
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 import os
 
 load_dotenv()
@@ -32,9 +32,15 @@ CREDENTIALS_FILE = "user_credentials.json"
 
 app = FastAPI()
 
+# Serve o arquivo app-ads.txt corretamente
 @app.get("/app-ads.txt", include_in_schema=False)
 async def serve_ads_txt():
     return FileResponse("app-ads.txt", media_type="text/plain")
+
+# Esta rota genérica deve vir por último
+@app.get("/{full_path:path}")
+async def catch_all(full_path: str):
+    return HTMLResponse("<h1>App principal</h1>")
 
 def save_credentials(email, password):
     with open(CREDENTIALS_FILE, "w") as f:
