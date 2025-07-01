@@ -38,7 +38,8 @@ app.mount("/public", StaticFiles(directory="public"), name="public")
 
 @app.get("/app-ads.txt", include_in_schema=False)
 async def serve_ads_txt():
-    return StaticFiles(directory="public").lookup_path("app-ads.txt")[0]
+    return FileResponse("public/app-ads.txt", media_type="text/plain")
+
 
 def save_credentials(email, password):
     with open(CREDENTIALS_FILE, "w") as f:
