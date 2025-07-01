@@ -1,3 +1,4 @@
+from fastapi.staticfiles import StaticFiles
 import flet as ft
 import re
 import mysql.connector
@@ -32,15 +33,8 @@ CREDENTIALS_FILE = "user_credentials.json"
 
 app = FastAPI()
 
-# Serve o arquivo app-ads.txt corretamente
-@app.get("/app-ads.txt", include_in_schema=False)
-async def serve_ads_txt():
-    return FileResponse("app-ads.txt", media_type="text/plain")
-
-# Esta rota genérica deve vir por último
-@app.get("/{full_path:path}")
-async def catch_all(full_path: str):
-    return HTMLResponse("<h1>App principal</h1>")
+# Monta a pasta static na raiz
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 def save_credentials(email, password):
     with open(CREDENTIALS_FILE, "w") as f:
