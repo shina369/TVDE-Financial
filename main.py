@@ -33,9 +33,6 @@ CREDENTIALS_FILE = "user_credentials.json"
 
 app = FastAPI()
 
-# Servir a pasta 'static' (se tiver)
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
 # Servir o app-ads.txt corretamente
 @app.get("/app-ads.txt", include_in_schema=False)
 async def serve_ads_txt():
