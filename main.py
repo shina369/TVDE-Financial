@@ -29,7 +29,7 @@ MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)  # Default to 3306 if not set
 
-CREDENTIALS_FILE = "user_credentials.json"
+CREDENTIALS_FILE = "user_credentials.json" 
 
 app = FastAPI()
 
