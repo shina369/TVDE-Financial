@@ -33,10 +33,18 @@ CREDENTIALS_FILE = "user_credentials.json"
 
 app = FastAPI()
 
+# Servir a pasta 'static' (se tiver)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Servir o app-ads.txt corretamente
 @app.get("/app-ads.txt", include_in_schema=False)
 async def serve_ads_txt():
-    file_path = os.path.join(os.path.dirname(__file__), "app-ads.txt")
-    return FileResponse(path=file_path, media_type="text/plain")
+    return FileResponse("app-ads.txt", media_type="text/plain")
+
+# Rota principal (ex: frontend)
+@app.get("/", include_in_schema=False)
+async def root():
+    return {"message": "TVDE Financial backend ativo"}
 
 
 def save_credentials(email, password):
