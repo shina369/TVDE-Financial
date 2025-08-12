@@ -140,9 +140,11 @@ def main(page: ft.Page):
         )
     
     button_premium = ft.ElevatedButton(
-        text="Quero ser PREMIUM", bgcolor="#4CAF50", color="white"
-        )
-
+        text="Assinar Premium",
+        icon=ft.icons.WORKSPACE_PREMIUM_OUTLINED,
+        on_click=lambda e: page.launch_url("app://comprar_premium")
+    )
+    
     def page_message_screen(msg):
         page.views.clear()
         page.views.append(
