@@ -44,6 +44,27 @@ async def root():
     return {"message": "TVDE Financial backend ativo"}
 
 
+def update_account_premium(user_id):
+    try:
+        conn = mysql.connector.connect(
+            host=MYSQLHOST,
+            user=MYSQLUSER,
+            password=MYSQLPASSWORD,
+            database=MYSQL_DATABASE
+        )
+        cursor = conn.cursor()
+
+        sql = "UPDATE db_tvde_users_external SET account_type = %s WHERE id = %s"
+        cursor.execute(sql, ("Premium", user_id))
+        conn.commit()
+
+        print(f"Usuário {user_id} atualizado para Premium.")
+    except Exception as e:
+        print(f"Erro ao atualizar conta para Premium: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
 def save_credentials(email, password):
     with open(CREDENTIALS_FILE, "w") as f:
         json.dump({"email": email, "password": password}, f)
