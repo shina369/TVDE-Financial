@@ -20,6 +20,9 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, HTMLResponse
 import os
+import json
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
 
 load_dotenv()
 
@@ -29,56 +32,107 @@ MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)  # Default to 3306 if not set
 
-CREDENTIALS_FILE = "user_credentials.json" 
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import mysql.connector
+import logging
 
+# =========================
+# Configurações de logging
+# =========================
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("upgrade_service")
+
+# =========================
+# Variáveis de ambiente e Google Play
+# =========================
+MYSQLHOST = os.getenv("MYSQLHOST")
+MYSQLUSER = os.getenv("MYSQLUSER")
+MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
+MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)
+
+PLAY_PACKAGE_NAME = os.getenv("PLAY_PACKAGE_NAME")
+PLAY_PRODUCT_ID = os.getenv("PLAY_PRODUCT_ID")
+
+service_account_info = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
+credentials = service_account.Credentials.from_service_account_info(
+    service_account_info,
+    scopes=["https://www.googleapis.com/auth/androidpublisher"]
+)
+play_service = build("androidpublisher", "v3", credentials=credentials, cache_discovery=False)
+
+# =========================
+# FastAPI app
+# =========================
 app = FastAPI()
 
-# Servir o app-ads.txt corretamente
-@app.get("/app-ads.txt", include_in_schema=False)
-async def serve_ads_txt():
-    return FileResponse("app-ads.txt", media_type="text/plain")
+# =========================
+# Modelo de requisição
+# =========================
+class UpgradeRequest(BaseModel):
+    email: str
+    purchaseToken: str
 
-# Rota principal (ex: frontend)
-@app.get("/", include_in_schema=False)
-async def root():
-    return {"message": "TVDE Financial backend ativo"}
+# =========================
+# Endpoint /upgrade
+# =========================
+@app.post("/upgrade")
+def upgrade(req: UpgradeRequest):
+    # ====== Validação do token ======
+    try:
+        result = play_service.purchases().products().get(
+            packageName=PLAY_PACKAGE_NAME,
+            productId=PLAY_PRODUCT_ID,
+            token=req.purchaseToken
+        ).execute()
+        logger.info(f"Resultado do token: {result}")
+    except Exception as e:
+        logger.error(f"Erro ao validar token: {e}")
+        raise HTTPException(status_code=400, detail="Erro ao validar token")
 
+    if result.get("purchaseState") != 0:
+        logger.warning(f"Compra inválida ou não concluída para token {req.purchaseToken}")
+        raise HTTPException(status_code=400, detail="Compra inválida ou não concluída")
 
-def update_account_premium(user_id):
+    # ====== Atualizar usuário no MySQL ======
+    conn = None
+    cursor = None
     try:
         conn = mysql.connector.connect(
             host=MYSQLHOST,
             user=MYSQLUSER,
             password=MYSQLPASSWORD,
-            database=MYSQL_DATABASE
+            database=MYSQL_DATABASE,
+            port=MYSQLPORT
         )
         cursor = conn.cursor()
 
-        sql = "UPDATE db_tvde_users_external SET account_type = %s WHERE id = %s"
-        cursor.execute(sql, ("Premium", user_id))
+        # Verificar se usuário existe
+        cursor.execute("SELECT id FROM users WHERE email=%s", (req.email,))
+        if cursor.fetchone() is None:
+            logger.warning(f"Usuário não encontrado: {req.email}")
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+        # Atualizar tipo de conta
+        cursor.execute(
+            "UPDATE users SET account_type='Premium' WHERE email=%s",
+            (req.email,)
+        )
         conn.commit()
-
-        print(f"Usuário {user_id} atualizado para Premium.")
+        logger.info(f"Usuário {req.email} atualizado para Premium")
+    except HTTPException:
+        raise  # relança exceções HTTP
     except Exception as e:
-        print(f"Erro ao atualizar conta para Premium: {e}")
+        logger.error(f"Erro ao atualizar usuário: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao atualizar usuário")
     finally:
-        cursor.close()
-        conn.close()
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
-def save_credentials(email, password):
-    with open(CREDENTIALS_FILE, "w") as f:
-        json.dump({"email": email, "password": password}, f)
-
-def load_credentials():
-    if os.path.exists(CREDENTIALS_FILE):
-        with open(CREDENTIALS_FILE, "r") as f:
-            data = json.load(f)
-            return data.get("email", ""), data.get("password", "")
-    return "", ""
-
-def clear_credentials():
-    if os.path.exists(CREDENTIALS_FILE):
-        os.remove(CREDENTIALS_FILE)
+    return {"status": "success", "account_type": "Premium", "message": "Usuário atualizado para Premium"}
 
 def main(page: ft.Page):
     
