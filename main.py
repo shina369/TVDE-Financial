@@ -4043,7 +4043,7 @@ def main(page: ft.Page):
                                 left=car_position,
                                 padding=ft.padding.only(top=7, right=5),
                                 content=ft.Image(
-                                    src="https://lxmove.com/img_flex/car.png",
+                                    src="https://lxmove.com/img_flex/car.png"
                                 ),
                                 alignment=ft.Alignment(0, 0),
                             ),
@@ -4053,6 +4053,7 @@ def main(page: ft.Page):
                                 width=finish_width,
                                 content=ft.Image(
                                     src="https://lxmove.com/img_flex/finish-line-5-stars.png"
+                            ),
                             ),
                         ],
                     ),
