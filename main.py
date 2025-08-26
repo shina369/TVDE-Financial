@@ -4035,7 +4035,7 @@ def main(page: ft.Page):
                             ft.Container(
                                 left=0,
                                 content=ft.Image(
-                                    src="https://srv1814-files.hstgr.io/8a57ad350e6aaca4/api/preview/big/public_html/img_flex/flag.png?auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJsb2NhbGUiOiJwdF9QVCIsInZpZXdNb2RlIjoibGlzdCIsInNpbmdsZUNsaWNrIjpmYWxzZSwicGVybSI6eyJhZG1pbiI6ZmFsc2UsImV4ZWN1dGUiOmZhbHNlLCJjcmVhdGUiOnRydWUsInJlbmFtZSI6dHJ1ZSwibW9kaWZ5Ijp0cnVlLCJkZWxldGUiOnRydWUsInNoYXJlIjpmYWxzZSwiZG93bmxvYWQiOnRydWV9LCJjb21tYW5kcyI6W10sImxvY2tQYXNzd29yZCI6dHJ1ZSwiaGlkZURvdGZpbGVzIjpmYWxzZSwiZGF0ZUZvcm1hdCI6ZmFsc2V9LCJpc3MiOiJGaWxlIEJyb3dzZXIiLCJleHAiOjE3NTYyNDMxMDIsImlhdCI6MTc1NjIzNTkwMn0.k9bfXgtX9To5wx_4r_bj69F5wpqP88B_idrZrjqUgPA&inline=true&key=1756235712981",
+                                    src="https://lxmove.com/img_flex/flag.png"
                                 ),
                             ),
                             # Carro com posição dinâmica
@@ -4043,7 +4043,7 @@ def main(page: ft.Page):
                                 left=car_position,
                                 padding=ft.padding.only(top=7, right=5),
                                 content=ft.Image(
-                                    src="https://srv1814-files.hstgr.io/8a57ad350e6aaca4/api/preview/big/public_html/img_flex/car.png?auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJsb2NhbGUiOiJwdF9QVCIsInZpZXdNb2RlIjoibGlzdCIsInNpbmdsZUNsaWNrIjpmYWxzZSwicGVybSI6eyJhZG1pbiI6ZmFsc2UsImV4ZWN1dGUiOmZhbHNlLCJjcmVhdGUiOnRydWUsInJlbmFtZSI6dHJ1ZSwibW9kaWZ5Ijp0cnVlLCJkZWxldGUiOnRydWUsInNoYXJlIjpmYWxzZSwiZG93bmxvYWQiOnRydWV9LCJjb21tYW5kcyI6W10sImxvY2tQYXNzd29yZCI6dHJ1ZSwiaGlkZURvdGZpbGVzIjpmYWxzZSwiZGF0ZUZvcm1hdCI6ZmFsc2V9LCJpc3MiOiJGaWxlIEJyb3dzZXIiLCJleHAiOjE3NTYyNDI4OTAsImlhdCI6MTc1NjIzNTY5MH0.4oNkbvipXV2nPRzb93iMhYZqjGh1AwGF5W1h4eFdpVA&inline=true&key=1756235712981",
+                                    src="https://lxmove.com/img_flex/car.png",
                                 ),
                                 alignment=ft.Alignment(0, 0),
                             ),
@@ -4052,8 +4052,7 @@ def main(page: ft.Page):
                                 right=0,
                                 width=finish_width,
                                 content=ft.Image(
-                                    src="https://srv1814-files.hstgr.io/8a57ad350e6aaca4/api/preview/big/public_html/img_flex/finish-line-5-stars.png?auth=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJsb2NhbGUiOiJwdF9QVCIsInZpZXdNb2RlIjoibGlzdCIsInNpbmdsZUNsaWNrIjpmYWxzZSwicGVybSI6eyJhZG1pbiI6ZmFsc2UsImV4ZWN1dGUiOmZhbHNlLCJjcmVhdGUiOnRydWUsInJlbmFtZSI6dHJ1ZSwibW9kaWZ5Ijp0cnVlLCJkZWxldGUiOnRydWUsInNoYXJlIjpmYWxzZSwiZG93bmxvYWQiOnRydWV9LCJjb21tYW5kcyI6W10sImxvY2tQYXNzd29yZCI6dHJ1ZSwiaGlkZURvdGZpbGVzIjpmYWxzZSwiZGF0ZUZvcm1hdCI6ZmFsc2V9LCJpc3MiOiJGaWxlIEJyb3dzZXIiLCJleHAiOjE3NTYyNDI5NzgsImlhdCI6MTc1NjIzNTc3OH0.lqC3eRtP0kxb34M78hY6PawzOnyzf71foTHJ69JEUkc&inline=true&key=1756235712979",
-                                ),
+                                    src="https://lxmove.com/img_flex/finish-line-5-stars.png"
                             ),
                         ],
                     ),
