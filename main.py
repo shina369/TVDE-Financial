@@ -4040,13 +4040,13 @@ def main(page: ft.Page):
                             ),
                             # Carro com posição dinâmica
                             ft.Container(
-                            left=car_position,
-                            padding=ft.padding.only(top=7, right=5),
-                            content=ft.Icon(
-                                ft.icons.AIRPORT_SHUTTLE_ROUNDED,  # ícone escolhido
-                                size=40,
-                                color=ft.colors.PINK_300
-                            ),
+                                left=car_position,
+                                padding=ft.padding.only(top=7, right=5),
+                                content=ft.Icon(
+                                    ft.icons.AIRPORT_SHUTTLE_ROUNDED,  # ícone escolhido
+                                    size=40,
+                                    color=ft.colors.PINK_300
+                                ),
                             alignment=ft.Alignment(0, 0),
                             ),
                             # Linha de chegada à direita
