@@ -135,6 +135,38 @@ def upgrade(req: UpgradeRequest):
 
     return {"status": "success", "account_type": "Premium", "message": "Usuário atualizado para Premium"}
 
+@app.get("/user_status")
+def get_status_usuario(email: str):
+    conn = None
+    cursor = None
+    try:
+        conn = mysql.connector.connect(
+            host=MYSQLHOST,
+            user=MYSQLUSER,
+            password=MYSQLPASSWORD,
+            database=MYSQL_DATABASE,
+            port=MYSQLPORT
+        )
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT account_type FROM users WHERE email=%s", (email,))
+        user = cursor.fetchone()
+        if not user:
+            return {"account_type": "Básico"}
+        # Ensure user is a dictionary before accessing key
+        if isinstance(user, dict):
+            return {"account_type": user["account_type"]}
+        else:
+            # If user is a tuple, get the first element
+            return {"account_type": user[0]}
+    except Exception as e:
+        logger.error(f"Erro ao buscar status do usuário: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no servidor")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 def main(page: ft.Page):
     
     load_dotenv()
