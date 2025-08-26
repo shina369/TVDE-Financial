@@ -38,9 +38,9 @@ from pydantic import BaseModel
 import mysql.connector
 import logging
 
-# =========================
+# ========================
 # Configurações de logging
-# =========================
+# ========================
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("upgrade_service")
 
