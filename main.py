@@ -4053,7 +4053,7 @@ def main(page: ft.Page):
                                 width=finish_width,
                                 content=ft.Image(
                                     src="https://lxmove.com/img_flex/finish-line-5-stars.png"
-                            ),
+                                ),
                             ),
                         ],
                     ),
