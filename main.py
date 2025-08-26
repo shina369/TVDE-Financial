@@ -23,6 +23,7 @@ import os
 import json
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from typing import Optional, Dict
 
 load_dotenv()
 
@@ -190,6 +191,44 @@ def main(page: ft.Page):
         ),
         margin=ft.margin.only(top=20),  # Ajuste esse valor para o quanto quiser "abaixar"
     )
+
+    def check_user_premium(email: str) -> bool:
+            
+            """
+            Verifica no MySQL se o usuário tem conta 'premium'.
+            Retorna True se for premium, False caso contrário.
+            """
+            connection = None
+            cursor = None
+            try:
+                # Conexão com o banco
+                connection = mysql.connector.connect(
+                    host=MYSQLHOST,
+                    user=MYSQLUSER,
+                    password=MYSQLPASSWORD,
+                    database="db_tvde_users_external"
+                )
+
+                if connection.is_connected():
+                    cursor = connection.cursor(dictionary=True)
+                    cursor.execute("SELECT account_type FROM users WHERE email = %s", (email,))
+                    user_row = cursor.fetchone()  # pode ser Dict[str, Any] ou None
+                    user: Optional[Dict[str, str]] = user_row if user_row is None else dict(user_row)  # type: ignore
+
+                    if user and str(user["account_type"]).lower() == "premium":  # acessa por chave
+                        return True
+                    return False
+            except Exception as e:
+                print(f"Erro ao verificar usuário: {e}")
+                return False
+
+            finally:
+                # Fecha o cursor e a conexão
+                if cursor:
+                    cursor.close()
+                if connection and connection.is_connected():
+                    connection.close()
+            return False  # Garante retorno booleano em todos os caminhos
 
     
     def on_change(e):
@@ -705,7 +744,6 @@ def main(page: ft.Page):
             )
         )
 
-
         primeira = ft.Container(
             content=ft.Row(
                 controls=[
@@ -763,181 +801,192 @@ def main(page: ft.Page):
 
 
     def page_reports_expense():
-        page.views.clear()
 
-        selected_date_range = ft.Container(
-            expand=True,  # Defina o tamanho do contêiner conforme necessário
-            alignment=ft.alignment.center,  # Centraliza o texto dentro do contêiner
-            content=ft.Text(
-                "Selecione um intervalo de datas:",
-                size=15,
-                weight=ft.FontWeight.BOLD,
-            ),
-        )
+        if is_premium == False:
+            snack_bar = ft.SnackBar(content=ft.Text("🚫 Disponível apenas para usuários Premium"))
+            page.overlay.append(snack_bar)
+            snack_bar.open = True
+            page.update()
+            page.go("/page_premium") 
+            return  # bloqueia o acesso
+        
+        else:
 
-        # Criando o DatePicker
-        date_picker = ft.DatePicker(on_change=None)  # on_change será atribuído dinamicamente
+            page.views.clear()
 
-        # Função para abrir o DatePicker ao clicar no ícone de calendário
-        def pick_date(e, field):
-            date_picker.on_change = lambda e: on_date_selected(e, field)
-            page.open(date_picker)
+            selected_date_range = ft.Container(
+                expand=True,  # Defina o tamanho do contêiner conforme necessário
+                alignment=ft.alignment.center,  # Centraliza o texto dentro do contêiner
+                content=ft.Text(
+                    "Selecione um intervalo de datas:",
+                    size=15,
+                    weight=ft.FontWeight.BOLD,
+                ),
+            )
 
-        # Função para tratar a seleção da data
-        def on_date_selected(e, field):
-            if date_picker.value:
-                field.value = date_picker.value.strftime("%d/%m/%Y")
-                page.update()
+            # Criando o DatePicker
+            date_picker = ft.DatePicker(on_change=None)  # on_change será atribuído dinamicamente
 
-        # Campos para seleção de data com 'expand' ativado para torná-los expansíveis
-        start_date_field = ft.TextField(
-            label="Data de Início",
-            label_style=ft.TextStyle(
-                color="#AAAAAA",  # Cor do label
-                size=14,          # Tamanho opcional
-            ),
-            on_change=None,  # A validação de data será feita dinamicamente
-            width=140,       # Ajustando a largura para se ajustarem lado a lado
-            border_radius=21,
-            text_size=18,
-            keyboard_type=ft.KeyboardType.DATETIME,
-            content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
-            expand=True,  # Tornando o campo expansível
-            suffix=ft.IconButton(
-                icon=ft.Icons.CALENDAR_MONTH,
-                on_click=lambda e: pick_date(e, start_date_field),
-                style=ft.ButtonStyle(
-                    shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
+            # Função para abrir o DatePicker ao clicar no ícone de calendário
+            def pick_date(e, field):
+                date_picker.on_change = lambda e: on_date_selected(e, field)
+                page.open(date_picker)
+
+            # Função para tratar a seleção da data
+            def on_date_selected(e, field):
+                if date_picker.value:
+                    field.value = date_picker.value.strftime("%d/%m/%Y")
+                    page.update()
+
+            # Campos para seleção de data com 'expand' ativado para torná-los expansíveis
+            start_date_field = ft.TextField(
+                label="Data de Início",
+                label_style=ft.TextStyle(
+                    color="#AAAAAA",  # Cor do label
+                    size=14,          # Tamanho opcional
+                ),
+                on_change=None,  # A validação de data será feita dinamicamente
+                width=140,       # Ajustando a largura para se ajustarem lado a lado
+                border_radius=21,
+                text_size=18,
+                keyboard_type=ft.KeyboardType.DATETIME,
+                content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+                expand=True,  # Tornando o campo expansível
+                suffix=ft.IconButton(
+                    icon=ft.Icons.CALENDAR_MONTH,
+                    on_click=lambda e: pick_date(e, start_date_field),
+                    style=ft.ButtonStyle(
+                        shape=ft.RoundedRectangleBorder(radius=21)  # Estilizando o botão para que ele acompanhe o arredondamento
+                    )
                 )
             )
-        )
 
-        end_date_field = ft.TextField(
-            label="Data de Fim",
-            label_style=ft.TextStyle(
-                color="#AAAAAA",  # Cor do label
-                size=14,          # Tamanho opcional
-            ),
-            on_change=None,  # A validação de data será feita dinamicamente
-            width=140,       # Ajustando a largura para se ajustarem lado a lado
-            border_radius=21,
-            text_size=18,
-            keyboard_type=ft.KeyboardType.DATETIME,
-            content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
-            expand=True,  # Tornando o campo expansível
-            suffix=ft.IconButton(
-                icon=ft.Icons.CALENDAR_MONTH,
-                on_click=lambda e: pick_date(e, end_date_field),
+            end_date_field = ft.TextField(
+                label="Data de Fim",
+                label_style=ft.TextStyle(
+                    color="#AAAAAA",  # Cor do label
+                    size=14,          # Tamanho opcional
+                ),
+                on_change=None,  # A validação de data será feita dinamicamente
+                width=140,       # Ajustando a largura para se ajustarem lado a lado
+                border_radius=21,
+                text_size=18,
+                keyboard_type=ft.KeyboardType.DATETIME,
+                content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
+                expand=True,  # Tornando o campo expansível
+                suffix=ft.IconButton(
+                    icon=ft.Icons.CALENDAR_MONTH,
+                    on_click=lambda e: pick_date(e, end_date_field),
+                )
             )
-        )
 
-        def generate_report_expense(start_date, end_date, report_message, page, user_id):
-            # Verifica se as datas são válidas
-            if not start_date or not end_date:
-                report_message.controls = [ft.Text("Preencha ambas as datas.", color="red")]
-                report_message.update()
+            def generate_report_expense(start_date, end_date, report_message, page, user_id):
+                # Verifica se as datas são válidas
+                if not start_date or not end_date:
+                    report_message.controls = [ft.Text("Preencha ambas as datas.", color="red")]
+                    report_message.update()
+                    page.update()
+                    return
+
+                if user_id is None:
+                    report_message.controls = [ft.Text("Erro: user_id não encontrado.", color="red")]
+                    report_message.update()
+                    page.update()
+                    return
+
+                try:
+                    # Verifique se o caminho do banco de dados está correto
+                    db_path = f"db_usuarios/db_user_{user_id}.db"
+
+                    conn = sqlite3.connect(db_path)
+                    cursor = conn.cursor()
+
+                    # Obtém todas as categorias dinâmicas de despesas
+                    cursor.execute("SELECT DISTINCT expense_name FROM expense")
+                    expense_names = [row[0] for row in cursor.fetchall()]
+
+                    # Monta a consulta dinâmica
+                    query = """
+                    SELECT expense_name, COALESCE(SUM(expense_value), 0) AS total_expense
+                    FROM expense
+                    WHERE expense_date BETWEEN ? AND ?
+                    GROUP BY expense_name
+                    """
+                    cursor.execute(query, (start_date, end_date))
+                    expenses = dict(cursor.fetchall())
+                    print("Valores das despesas:", expenses)  # Depuração
+
+                    conn.close()
+
+                except Exception as e:
+                    page_error_screen(f"Erro ao gerar o relatório: {str(e)}")  # Depuração
+                    report_message.controls = [ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")]
+                    report_message.update()
+                    page.update()
+                    return
+
+                # Se report_message for um Column, adicione as linhas ao conteúdo
+                if isinstance(report_message, ft.Column):
+                    # Lista para armazenar as linhas do relatório
+                    report_rows = []
+                    for expense_name in expense_names:
+                        total = expenses.get(expense_name, 0.0)
+                        report_rows.append(
+                            ft.Row(
+                                controls=[
+                                    ft.Text(f"{expense_name}:", size=12),
+                                    ft.Text(f"€ {total:.2f}", size=12),
+                                ],
+                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                            )
+                        )
+                    # Atualiza o conteúdo do Column corretamente
+                    report_message.controls.clear()
+                    report_message.controls.extend(report_rows)
+                    report_message.update()
+
+                # Atualiza a página
                 page.update()
-                return
 
-            if user_id is None:
-                report_message.controls = [ft.Text("Erro: user_id não encontrado.", color="red")]
-                report_message.update()
-                page.update()
-                return
 
-            try:
-                # Verifique se o caminho do banco de dados está correto
-                db_path = f"db_usuarios/db_user_{user_id}.db"
 
-                conn = sqlite3.connect(db_path)
-                cursor = conn.cursor()
-
-                # Obtém todas as categorias dinâmicas de despesas
-                cursor.execute("SELECT DISTINCT expense_name FROM expense")
-                expense_names = [row[0] for row in cursor.fetchall()]
-
-                # Monta a consulta dinâmica
-                query = """
-                SELECT expense_name, COALESCE(SUM(expense_value), 0) AS total_expense
-                FROM expense
-                WHERE expense_date BETWEEN ? AND ?
-                GROUP BY expense_name
-                """
-                cursor.execute(query, (start_date, end_date))
-                expenses = dict(cursor.fetchall())
-                print("Valores das despesas:", expenses)  # Depuração
-
-                conn.close()
-
-            except Exception as e:
-                page_error_screen(f"Erro ao gerar o relatório: {str(e)}")  # Depuração
-                report_message.controls = [ft.Text(f"Erro ao gerar o relatório: {str(e)}", color="red")]
-                report_message.update()
-                page.update()
-                return
-
-            # Se report_message for um Column, adicione as linhas ao conteúdo
-            if isinstance(report_message, ft.Column):
-                # Lista para armazenar as linhas do relatório
-                report_rows = []
-                for expense_name in expense_names:
-                    total = expenses.get(expense_name, 0.0)
-                    report_rows.append(
+            # Container que engloba os campos de data lado a lado
+            date_range_container = ft.Container(
+                width=390,
+                alignment=ft.alignment.center,
+                content=ft.Column(
+                    controls=[
+                        ft.Row(  # Usando Row para colocar os campos lado a lado
+                            controls=[
+                                start_date_field,
+                                end_date_field,
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER  # Ajustado para alinhar corretamente os campos
+                        ),
+                        # Centralizando o botão
                         ft.Row(
                             controls=[
-                                ft.Text(f"{expense_name}:", size=12),
-                                ft.Text(f"€ {total:.2f}", size=12),
-                            ],
-                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                        )
-                    )
-                # Atualiza o conteúdo do Column corretamente
-                report_message.controls.clear()
-                report_message.controls.extend(report_rows)
-                report_message.update()
-
-            # Atualiza a página
-            page.update()
-
-
-
-        # Container que engloba os campos de data lado a lado
-        date_range_container = ft.Container(
-            width=390,
-            alignment=ft.alignment.center,
-            content=ft.Column(
-                controls=[
-                    ft.Row(  # Usando Row para colocar os campos lado a lado
-                        controls=[
-                            start_date_field,
-                            end_date_field,
-                        ],
-                        alignment=ft.MainAxisAlignment.CENTER  # Ajustado para alinhar corretamente os campos
-                    ),
-                    # Centralizando o botão
-                    ft.Row(
-                        controls=[
-                            ft.ElevatedButton(
-                                text="Gerar Relatório",
-                                on_click=lambda e: generate_report(
-                                    start_date_field.value,
-                                    end_date_field.value,
-                                    report_message,
-                                    get_user_id_from_mysql(email_login.value or ""),  # Força string vazia se None
-                                    page
+                                ft.ElevatedButton(
+                                    text="Gerar Relatório",
+                                    on_click=lambda e: generate_report(
+                                        start_date_field.value,
+                                        end_date_field.value,
+                                        report_message,
+                                        get_user_id_from_mysql(email_login.value or ""),  # Força string vazia se None
+                                        page
+                                    ),
+                                    width=200,
+                                    style=ft.ButtonStyle(
+                                        shape=ft.RoundedRectangleBorder(radius=21)
+                                    )
                                 ),
-                                width=200,
-                                style=ft.ButtonStyle(
-                                    shape=ft.RoundedRectangleBorder(radius=21)
-                                )
-                            ),
-                        ],
-                        alignment=ft.MainAxisAlignment.CENTER  # Alinhando o botão ao centro dentro do Row
-                    ),
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-            ),
-        )
+                            ],
+                            alignment=ft.MainAxisAlignment.CENTER  # Alinhando o botão ao centro dentro do Row
+                        ),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+            )
 
 
         # Variável para armazenar a mensagem do relatório
@@ -1226,50 +1275,61 @@ def main(page: ft.Page):
 
     # Atualizar a página com os dados das tabelas Uber e Bolt
     def page_reports_fleet():
-        page.views.clear()
+
+        if is_premium == False:
+            snack_bar = ft.SnackBar(content=ft.Text("🚫 Disponível apenas para usuários Premium"))
+            page.overlay.append(snack_bar)
+            snack_bar.open = True
+            page.update()
+            page.go("/page_premium") 
+            return  # bloqueia o acesso
         
-        if not email_login.value:
-            print("E-mail não informado.")
-            return
+        else:
+    
+            page.views.clear()
+            
+            if not email_login.value:
+                print("E-mail não informado.")
+                return
 
-        user_id = get_user_id_from_mysql(email_login.value)
-        uber_data = fetch_fleet_data(user_id,"uber") or {
-            "total_rendimento": 0,
-            "rendimento_por_hora": 0,
-            "rendimento_por_km": 0,
-            "rendimento_por_viagem": 0,
-            "gorjetas_por_viagem": 0,
-            "distancia_media_por_viagem": 0,
-            "viagens_por_hora": 0
-        }
+            user_id = get_user_id_from_mysql(email_login.value)
+            uber_data = fetch_fleet_data(user_id,"uber") or {
+                "total_rendimento": 0,
+                "rendimento_por_hora": 0,
+                "rendimento_por_km": 0,
+                "rendimento_por_viagem": 0,
+                "gorjetas_por_viagem": 0,
+                "distancia_media_por_viagem": 0,
+                "viagens_por_hora": 0
+            }
 
-        bolt_data = fetch_fleet_data(user_id, "bolt") or {
-            "total_rendimento": 0,
-            "rendimento_por_hora": 0,
-            "rendimento_por_km": 0,
-            "rendimento_por_viagem": 0,
-            "gorjetas_por_viagem": 0,
-            "distancia_media_por_viagem": 0,
-            "viagens_por_hora": 0
-        }
+            bolt_data = fetch_fleet_data(user_id, "bolt") or {
+                "total_rendimento": 0,
+                "rendimento_por_hora": 0,
+                "rendimento_por_km": 0,
+                "rendimento_por_viagem": 0,
+                "gorjetas_por_viagem": 0,
+                "distancia_media_por_viagem": 0,
+                "viagens_por_hora": 0
+            }
 
-        page.views.append(
-            ft.View(
-                "/page_reports_fleet",
-                controls=[
-                    header,
-                    title_app(
-                        icon=ft.Icon(ft.Icons.ADD_TO_HOME_SCREEN),
-                        title=ft.Text("RELATÓRIO DE PLATAFORMA", size=21),
-                    ),
-                    metrics_container("Uber", "blue", uber_data),
-                    metrics_container("Bolt", "green", bolt_data),
-                    bottom_menu,
-                ],
+            page.views.append(
+                ft.View(
+                    "/page_reports_fleet",
+                    controls=[
+                        header,
+                        title_app(
+                            icon=ft.Icon(ft.Icons.ADD_TO_HOME_SCREEN),
+                            title=ft.Text("RELATÓRIO DE PLATAFORMA", size=21),
+                        ),
+                        metrics_container("Uber", "blue", uber_data),
+                        metrics_container("Bolt", "green", bolt_data),
+                        bottom_menu,
+                    ],
+                )
             )
-        )
 
-        page.update()
+            page.update()
 
 
 
@@ -1389,44 +1449,54 @@ def main(page: ft.Page):
 
 
     def page_reports_general():
-        page.views.clear()
-        if not email_login.value:
-            print("E-mail não informado.")
-            return
 
-        user_id = get_user_id_from_mysql(email_login.value)
-        # Recuperar dados para Uber e Bolt
-        uber_data = fetch_fleet_data2(user_id, "uber")
-        bolt_data = fetch_fleet_data2(user_id, "bolt")
+        if is_premium == False:
+            snack_bar = ft.SnackBar(content=ft.Text("🚫 Disponível apenas para usuários Premium"))
+            page.overlay.append(snack_bar)
+            snack_bar.open = True
+            page.update()
+            page.go("/page_premium") 
+            return  # bloqueia o acesso
+        
+        else:
+            page.views.clear()
+            if not email_login.value:
+                print("E-mail não informado.")
+                return
+
+            user_id = get_user_id_from_mysql(email_login.value)
+            # Recuperar dados para Uber e Bolt
+            uber_data = fetch_fleet_data2(user_id, "uber")
+            bolt_data = fetch_fleet_data2(user_id, "bolt")
 
 
-        # Verificar se os dados foram recuperados corretamente
-        if uber_data is None:
-            uber_data = {"total_rendimento": 0, "total_gorjetas": 0, "total_reembolso": 0, "total_km": 0, "total_viagens": 0}
-        if bolt_data is None:
-            bolt_data = {"total_rendimento": 0, "total_gorjetas": 0, "total_reembolso": 0, "total_km": 0, "total_viagens": 0}
+            # Verificar se os dados foram recuperados corretamente
+            if uber_data is None:
+                uber_data = {"total_rendimento": 0, "total_gorjetas": 0, "total_reembolso": 0, "total_km": 0, "total_viagens": 0}
+            if bolt_data is None:
+                bolt_data = {"total_rendimento": 0, "total_gorjetas": 0, "total_reembolso": 0, "total_km": 0, "total_viagens": 0}
 
-        page.views.append(
-            ft.View(
-                "/page_reports_general",
-                controls=[
-                    header,
-                    title_app(
-                        icon=ft.Icon(ft.Icons.DIRECTIONS_CAR),
-                        title=ft.Text("RELATÓRIO GERAL", size=21),
-                    ),
-                    ft.Column(
-                        controls=[
-                            metrics_container2("Uber", ft.Colors.BLUE, uber_data),
-                            metrics_container2("Bolt", ft.Colors.GREEN, bolt_data),
-                        ]
-                    ),
-                    bottom_menu,
-                ],
+            page.views.append(
+                ft.View(
+                    "/page_reports_general",
+                    controls=[
+                        header,
+                        title_app(
+                            icon=ft.Icon(ft.Icons.DIRECTIONS_CAR),
+                            title=ft.Text("RELATÓRIO GERAL", size=21),
+                        ),
+                        ft.Column(
+                            controls=[
+                                metrics_container2("Uber", ft.Colors.BLUE, uber_data),
+                                metrics_container2("Bolt", ft.Colors.GREEN, bolt_data),
+                            ]
+                        ),
+                        bottom_menu,
+                    ],
+                )
             )
-        )
 
-        page.update()
+            page.update()
 
     def fetch_total_values(user_id, month_start, month_end):
         # Mapeamento dos meses em português para números
@@ -1503,92 +1573,102 @@ def main(page: ft.Page):
         return total_income, expense_total
 
     def page_reports_monthly():
-        months = [
-            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-        ]
 
-        dropdown1 = ft.Dropdown(
-            label="Selecione o mês inicial",
-            options=[ft.dropdown.Option(month) for month in months],
-            width=180,
-            text_size=21,
-            border_radius=21  # Corrigido: define borda arredondada com um valor numérico
-        )
+        if is_premium == False:
+            snack_bar = ft.SnackBar(content=ft.Text("🚫 Disponível apenas para usuários Premium"))
+            page.overlay.append(snack_bar)
+            snack_bar.open = True
+            page.update()
+            page.go("/page_premium") 
+            return  # bloqueia o acesso
+        
+        else:
+            months = [
+                "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+                "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+            ]
 
-        dropdown2 = ft.Dropdown(
-            label="Selecione o mês final",
-            options=[ft.dropdown.Option(month) for month in months],
-            width=180,
-            text_size=21,
-            border_radius=21  # Corrigido: define borda arredondada com um valor numérico
-        )
-
-        result_label = ft.Text("")
-
-        def calculate_totals(e):
-            if not email_login.value:
-                print("E-mail não informado.")
-                return
-
-            user_id = get_user_id_from_mysql(email_login.value)
-            if dropdown1.value and dropdown2.value:
-                total_income, total_expenses = fetch_total_values(user_id, dropdown1.value, dropdown2.value)
-                result_label.value = f"📈 Total de Receita (Uber + Bolt): € {total_income:.2f} \n \n  📉Total de Gastos: € {total_expenses:.2f}"
-                result_label.color = "green"  # Ajusta a cor do texto para destacar
-                result_label.size = 18  # Aumenta o tamanho do texto
-                result_label.text_align = ft.TextAlign.CENTER  # Centraliza o texto
-                page.update()
-
-        calculate_button = ft.ElevatedButton(
-            text="Calcular Totais",
-            on_click=calculate_totals
-        )
-
-        # Envolvendo o botão em um Container para centralização
-        centered_button = ft.Container(
-            content=calculate_button,
-            alignment=ft.alignment.center,
-            padding=ft.padding.only(top=15) 
-        )
-
-        centered_result = ft.Container(
-            content=result_label,
-            alignment=ft.alignment.center,  # Centraliza o texto de resultado
-            padding=ft.padding.symmetric(vertical=20)  # Espaçamento vertical
-        )
-
-        page.views.clear()
-        page.views.append(
-            ft.View(
-                "/page_reports_monthly",
-                controls=[
-                    header,
-                    title_app(
-                        icon=ft.Icon(ft.Icons.INSERT_CHART_OUTLINED),
-                        title=ft.Text("RELATÓRIO MENSAL", size=21),
-                    ),
-                    # Texto explicativo com espaçamento adequado
-                    ft.Container(
-                        content=ft.Text("Selecione as datas para buscar", size=21),
-                        padding=ft.padding.only(bottom=9),  # Espaçamento no topo do container
-                        alignment=ft.alignment.center  # Centraliza o texto
-                    ),
-                    # Linha para os dropdowns com espaçamento
-                    ft.Row(  
-                        controls=[dropdown1, dropdown2],
-                        alignment=ft.MainAxisAlignment.CENTER,  # Centraliza os dropdowns
-                        spacing=20  # Espaço entre os dropdowns
-                    ),
-                    # Botão centralizado
-                    centered_button,
-                    # Resultado centralizado
-                    centered_result,
-                    bottom_menu
-                ]
+            dropdown1 = ft.Dropdown(
+                label="Selecione o mês inicial",
+                options=[ft.dropdown.Option(month) for month in months],
+                width=180,
+                text_size=21,
+                border_radius=21  # Corrigido: define borda arredondada com um valor numérico
             )
-        )
-        page.update()
+
+            dropdown2 = ft.Dropdown(
+                label="Selecione o mês final",
+                options=[ft.dropdown.Option(month) for month in months],
+                width=180,
+                text_size=21,
+                border_radius=21  # Corrigido: define borda arredondada com um valor numérico
+            )
+
+            result_label = ft.Text("")
+
+            def calculate_totals(e):
+                if not email_login.value:
+                    print("E-mail não informado.")
+                    return
+
+                user_id = get_user_id_from_mysql(email_login.value)
+                if dropdown1.value and dropdown2.value:
+                    total_income, total_expenses = fetch_total_values(user_id, dropdown1.value, dropdown2.value)
+                    result_label.value = f"📈 Total de Receita (Uber + Bolt): € {total_income:.2f} \n \n  📉Total de Gastos: € {total_expenses:.2f}"
+                    result_label.color = "green"  # Ajusta a cor do texto para destacar
+                    result_label.size = 18  # Aumenta o tamanho do texto
+                    result_label.text_align = ft.TextAlign.CENTER  # Centraliza o texto
+                    page.update()
+
+            calculate_button = ft.ElevatedButton(
+                text="Calcular Totais",
+                on_click=calculate_totals
+            )
+
+            # Envolvendo o botão em um Container para centralização
+            centered_button = ft.Container(
+                content=calculate_button,
+                alignment=ft.alignment.center,
+                padding=ft.padding.only(top=15) 
+            )
+
+            centered_result = ft.Container(
+                content=result_label,
+                alignment=ft.alignment.center,  # Centraliza o texto de resultado
+                padding=ft.padding.symmetric(vertical=20)  # Espaçamento vertical
+            )
+
+            page.views.clear()
+            page.views.append(
+                ft.View(
+                    "/page_reports_monthly",
+                    controls=[
+                        header,
+                        title_app(
+                            icon=ft.Icon(ft.Icons.INSERT_CHART_OUTLINED),
+                            title=ft.Text("RELATÓRIO MENSAL", size=21),
+                        ),
+                        # Texto explicativo com espaçamento adequado
+                        ft.Container(
+                            content=ft.Text("Selecione as datas para buscar", size=21),
+                            padding=ft.padding.only(bottom=9),  # Espaçamento no topo do container
+                            alignment=ft.alignment.center  # Centraliza o texto
+                        ),
+                        # Linha para os dropdowns com espaçamento
+                        ft.Row(  
+                            controls=[dropdown1, dropdown2],
+                            alignment=ft.MainAxisAlignment.CENTER,  # Centraliza os dropdowns
+                            spacing=20  # Espaço entre os dropdowns
+                        ),
+                        # Botão centralizado
+                        centered_button,
+                        # Resultado centralizado
+                        centered_result,
+                        bottom_menu
+                    ]
+                )
+            )
+            page.update()
 
 
     # Função para carregar os textos conforme o idioma selecionado
@@ -1730,7 +1810,6 @@ def main(page: ft.Page):
         expand=True,  # ocupa toda a tela
         bgcolor="rgba(0,0,0,0.6)",  # fundo preto semi-transparente
         visible=False
-   
         )
 
         def validate_email(e):
@@ -1818,7 +1897,7 @@ def main(page: ft.Page):
             else:
                 page.go("/page_new_goal")
 
-        global email_login, remember_password_checkbox
+        global email_login, remember_password_checkbox, is_premium
 
         remember_password_checkbox = ft.Checkbox(label=current_translations.get("remember_password", "Lembrar senha"), value=True)
         email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email, value=saved_email)
@@ -1830,6 +1909,8 @@ def main(page: ft.Page):
             color="white",
             on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login)
         )
+
+        is_premium = check_user_premium(email_login.value or "")
 
         page.views.append(
             ft.View(
