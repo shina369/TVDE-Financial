@@ -4047,7 +4047,7 @@ def main(page: ft.Page):
                                 ),
                                 alignment=ft.Alignment(0, 0),
                             ),
-                            # Linha de chegada à direita
+                            # Linha de chegada à direitaa
                             ft.Container(
                                 right=0,
                                 width=finish_width,
