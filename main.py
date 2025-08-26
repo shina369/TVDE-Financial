@@ -4048,7 +4048,7 @@ def main(page: ft.Page):
                                 color=ft.colors.PINK_300
                             ),
                             alignment=ft.Alignment(0, 0),
-                        ),
+                            ),
                             # Linha de chegada à direita
                             ft.Container(
                                 right=0,
