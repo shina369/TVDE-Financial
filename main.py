@@ -803,7 +803,7 @@ def main(page: ft.Page):
     def page_reports_expense():
 
         if is_premium == False:
-            snack_bar = ft.SnackBar(content=ft.Text("🚫🚫🚫\n Desculpe, O relatório completo de despesas é disponível apenas para usuários Premium!!! \n SEJA PREMIUM AGORA!!!"))
+            snack_bar = ft.SnackBar(content=ft.Text("🚫 O relatório completo é disponível apenas para usuários Premium!!!"))
             page.overlay.append(snack_bar)
             page.overlay.append(snack_bar)
             snack_bar.open = True
@@ -1278,7 +1278,7 @@ def main(page: ft.Page):
     def page_reports_fleet():
 
         if is_premium == False:
-            snack_bar = ft.SnackBar(content=ft.Text("🚫🚫🚫\n Desculpe, O relatório completo da Bolt e Uber é disponível apenas para usuários Premium!!! \n SEJA PREMIUM AGORA!!!"))
+            snack_bar = ft.SnackBar(content=ft.Text("🚫 O relatório completo é disponível apenas para usuários Premium!!!"))
             page.overlay.append(snack_bar)
             page.overlay.append(snack_bar)
             snack_bar.open = True
@@ -1453,7 +1453,7 @@ def main(page: ft.Page):
     def page_reports_general():
 
         if is_premium == False:
-            snack_bar = ft.SnackBar(content=ft.Text("🚫🚫🚫\n Desculpe, O relatório completo é disponível apenas para usuários Premium!!! \n SEJA PREMIUM AGORA!!!"))
+            snack_bar = ft.SnackBar(content=ft.Text("🚫 O relatório completo é disponível apenas para usuários Premium!!!"))
             page.overlay.append(snack_bar)
             page.overlay.append(snack_bar)
             snack_bar.open = True
@@ -1578,7 +1578,7 @@ def main(page: ft.Page):
     def page_reports_monthly():
 
         if is_premium == False:
-            snack_bar = ft.SnackBar(content=ft.Text("🚫🚫🚫\n Desculpe, O relatório mensal completo é disponível apenas para usuários Premium!!! \n SEJA PREMIUM AGORA!!!"))
+            snack_bar = ft.SnackBar(content=ft.Text("🚫 O relatório completo é disponível apenas para usuários Premium!!!"))
             page.overlay.append(snack_bar)
             snack_bar.open = True
             page.update()
