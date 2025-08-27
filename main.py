@@ -286,7 +286,7 @@ def main(page: ft.Page):
         )
     
     button_premium = ft.ElevatedButton(
-        text="Quero ser PREMIUM", bgcolor="#4CAF50", color="white",  on_click=lambda e: page.launch_url("app://comprar_premium")
+        text="Quero PREMIUM", bgcolor="#4CAF50", color="white",  on_click=lambda e: page.launch_url("app://comprar_premium")
         )
 
     def page_message_screen(msg):
@@ -2379,7 +2379,7 @@ def main(page: ft.Page):
 
         user_id = get_user_id_from_mysql(email_login.value)
         button_salve = ft.ElevatedButton(
-        text="SALVAR", bgcolor="#4CAF50", color="white", on_click=lambda e: save_goal(e, user_id),)
+        text="INICIAR OBJETIVO", bgcolor="#4CAF50", color="white", on_click=lambda e: save_goal(e, user_id),)
 
         page.overlay.append(date_picker)
         page.views.append(
@@ -2856,7 +2856,7 @@ def main(page: ft.Page):
                 ft.Text("Diária Bolt")
             ],
             "/page_daily?param=Bolt",
-            ["#00C853", "#B2FF59"]  # verde limão degradê
+            ["#00C853", "#FFFFFF"]  # verde limão degradê
         )
 
         big_button_uber = create_button(
@@ -2865,7 +2865,7 @@ def main(page: ft.Page):
                 ft.Text("Diária Uber")
             ],
             "/page_daily?param=Uber",
-            ["#424242", "#BDBDBD"]  # cinza escuro para claro
+            ["#00C853", "#FFFFFF"]  # cinza escuro para claro
         )
 
         big_button_expense = create_button(
@@ -2874,7 +2874,7 @@ def main(page: ft.Page):
                 ft.Text("Nova Despesa")
             ],
             "/page_expense",
-            ["#FF6F00", "#FFD54F"]  # laranja para amarelo
+            ["#00C853", "#FFFFFF"]  # laranja para amarelo
         )
 
         big_button_new_goal = create_button(
@@ -2883,7 +2883,7 @@ def main(page: ft.Page):
                 ft.Text("Novo Objetivo")
             ],
             "/page_new_goal",
-            ["#2962FF", "#82B1FF"]  # azul intenso para azul claro
+            ["#00C853", "#FFFFFF"]  # azul intenso para azul claro
         )
 
         page.views.append(
@@ -3322,12 +3322,15 @@ def main(page: ft.Page):
 
         btn_bolt = ft.ElevatedButton(
             text="Cadastrar Bolt",
+            bgcolor="#4CAF50", color="white",
             on_click=handle_bolt_click,
             disabled=False
         )
 
         btn_uber = ft.ElevatedButton(
             text="Cadastrar Uber",
+            bgcolor="#000000", 
+            color="white",
             on_click=handle_uber_click,
             disabled=False
         )
