@@ -2849,10 +2849,10 @@ def main(page: ft.Page):
                 )
             )
 
-
+        
         big_button_bolt = create_button(
             [
-                ft.Image(src="assets/icon-bolt51x51.png", width=51, height=51),
+                ft.Image(src="./assets/icon-bolt51x51.png", width=51, height=51),
                 ft.Text("Diária Bolt")
             ],
             "/page_daily?param=Bolt",
@@ -2861,7 +2861,7 @@ def main(page: ft.Page):
 
         big_button_uber = create_button(
             [
-                ft.Image(src="assets/icon-uber51x51.png", width=51, height=51),
+                ft.Image(src="./assets/icon-bolt51x51.png", width=51, height=51),
                 ft.Text("Diária Uber")
             ],
             "/page_daily?param=Uber",
