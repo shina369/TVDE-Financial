@@ -213,7 +213,7 @@ def main(page: ft.Page):
         content=ft.Row(
             controls=[
                 ft.Image(
-                    src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
+                    src="https://i.ibb.co/sJ1hV2Lg/Logo-tvde-financial-oficial.png",
                     width=120,
                     height=54,
                 ),
@@ -376,7 +376,7 @@ def main(page: ft.Page):
             border=ft.border.only(bottom=ft.border.BorderSide(0.3, ft.Colors.GREY_900)),
             content=ft.Column(
                 controls=[
-                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
+                    ft.Image(src="https://i.ibb.co/sJ1hV2Lg/Logo-tvde-financial-oficial.png"),
                     ft.Text(f"Hi {user_name}, good luck today! :)", size=15, weight=ft.FontWeight.BOLD,  text_align=ft.TextAlign.CENTER),
                     ft.Container(height=90),
                     ft.Text("Nome: "),
@@ -387,7 +387,7 @@ def main(page: ft.Page):
                     ft.Row(
                         controls=[
                             ft.Text("SEJA \n PREMIUM \n AQUI"),
-                            ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
+                            ft.Image(src="https://i.ibb.co/sJ1hV2Lg/Logo-tvde-financial-oficial.png"),
                             ft.Text("Desbloqueie relatórios completos..."),
                         ],
                     ),
@@ -1957,7 +1957,7 @@ def main(page: ft.Page):
                             horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                             controls=[
                                 ft.Container(
-                                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
+                                    ft.Image(src="https://i.ibb.co/sJ1hV2Lg/Logo-tvde-financial-oficial.png"),
                                     padding=90,
                                 ),
                                 ft.Container(
@@ -2852,7 +2852,7 @@ def main(page: ft.Page):
         
         big_button_bolt = create_button(
             [
-                ft.Image(src="./assets/icon-bolt51x51.png", width=51, height=51),
+                ft.Image(src="https://i.ibb.co/4Z0Z6fMc/icon-uber51x51.png", width=51, height=51),
                 ft.Text("Diária Bolt")
             ],
             "/page_daily?param=Bolt",
@@ -2861,7 +2861,7 @@ def main(page: ft.Page):
 
         big_button_uber = create_button(
             [
-                ft.Image(src="./assets/icon-bolt51x51.png", width=51, height=51),
+                ft.Image(src="https://i.ibb.co/Rpd7K5GJ/icon-bolt51x51.png", width=51, height=51),
                 ft.Text("Diária Uber")
             ],
             "/page_daily?param=Uber",
@@ -4032,7 +4032,7 @@ def main(page: ft.Page):
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                 controls=[
                                     ft.Image(
-                                        src="https://i.ibb.co/93ps7s5/hourglass.png",
+                                        src="https://i.ibb.co/GfS27gSw/hourglass.png",
                                         height=33,
                                         width=27
                                     ),
@@ -4078,7 +4078,7 @@ def main(page: ft.Page):
                             ft.Container(
                                 left=0,
                                 content=ft.Image(
-                                    src="https://lxmove.com/img_flex/flag.png"
+                                    src="https://i.ibb.co/VW63fy4J/flag.png"
                                 ),
                             ),
                             # Carro com posição dinâmica
@@ -4086,7 +4086,7 @@ def main(page: ft.Page):
                                 left=car_position,
                                 padding=ft.padding.only(top=7, right=5),
                                   content=ft.Image(
-                                    src="https://lxmove.com/img_flex/car.png",
+                                    src="https://i.ibb.co/3Yzh55Rt/car.png",
                                     width=49,
                                     height=21,
                                     fit=ft.ImageFit.CONTAIN,
@@ -4098,7 +4098,7 @@ def main(page: ft.Page):
                                 right=0,
                                 width=finish_width,
                                 content=ft.Image(
-                                    src="https://lxmove.com/img_flex/finish-line-5-stars.png",
+                                    src="https://i.ibb.co/1JLdHp1V/finish-line-5-stars.png",
                                     width=38,
                                     height=33,
                                     fit=ft.ImageFit.CONTAIN,
@@ -4240,7 +4240,7 @@ def main(page: ft.Page):
                         controls=[
                             ft.Container(
                                 content=ft.Image(
-                                    src="assets/button-bolt.png",
+                                    src="https://i.ibb.co/Zv6KmNM/button-bolt.png",
                                     width=154,
                                     height=51,
                                 ),
@@ -4248,7 +4248,7 @@ def main(page: ft.Page):
                             ),
                             ft.Container(
                                 content=ft.Image(
-                                    src="assets/button-uber.png",
+                                    src="https://i.ibb.co/LDw7wvvT/button-uber.png",
                                     width=154,
                                     height=51,
                                 ),
@@ -4420,7 +4420,7 @@ def main(page: ft.Page):
                             horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                             controls=[
                                  ft.Container(
-                                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
+                                    ft.Image(src="https://i.ibb.co/sJ1hV2Lg/Logo-tvde-financial-oficial.png",
                                         fit=ft.ImageFit.CONTAIN  # garante que a imagem se ajuste proporcionalmente),
                                     ),
                                     padding=ft.Padding(top=30, left=90, right=90, bottom=30),
@@ -4540,7 +4540,7 @@ def main(page: ft.Page):
                             horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                             controls=[
                                 ft.Container(
-                                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png"),
+                                    ft.Image(src="https://i.ibb.co/sJ1hV2Lg/Logo-tvde-financial-oficial.png"),
                                     padding=ft.Padding(top=30, left=90, right=90, bottom=30),
                                 ),
                                 ft.Container(
@@ -4667,7 +4667,7 @@ def main(page: ft.Page):
                             horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
                             controls=[
                                  ft.Container(
-                                    ft.Image(src="https://i.ibb.co/FLBSF3xx/Logo-tvde-financial-oficial.png",
+                                    ft.Image(src="https://i.ibb.co/sJ1hV2Lg/Logo-tvde-financial-oficial.png",
                                         fit=ft.ImageFit.CONTAIN  # garante que a imagem se ajuste proporcionalmente),
                                     ),
                                     padding=ft.Padding(top=30, left=90, right=90, bottom=30),
