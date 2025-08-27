@@ -3335,7 +3335,7 @@ def main(page: ft.Page):
             disabled=False
         )
 
-        configure_buttons()
+        configure_buttons(param)
 
         
         page.overlay.append(date_picker)
