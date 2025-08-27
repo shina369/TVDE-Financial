@@ -3329,13 +3329,11 @@ def main(page: ft.Page):
         
         def handle_bolt_click(e):            
             validate_fields()
-            if not btn_bolt.disabled:
-                save_daily_bolt_uber("Bolt", user_id)
+            save_daily_bolt_uber("Bolt", user_id)
 
         def handle_uber_click(e):            
             validate_fields()
-            if not btn_uber.disabled:
-                save_daily_bolt_uber("Uber", user_id)
+            save_daily_bolt_uber("Uber", user_id)
 
         btn_bolt = ft.ElevatedButton(
             text="Cadastrar Bolt",
