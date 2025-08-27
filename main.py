@@ -4067,7 +4067,10 @@ def main(page: ft.Page):
                             ft.Container(
                                 left=0,
                                 content=ft.Image(
-                                    src="https://lxmove.com/img_flex/flag.png"
+                                    src="https://lxmove.com/img_flex/flag.png",
+                                    width=23,
+                                    height=34,
+                                    fit=ft.ImageFit.CONTAIN,
                                 ),
                             ),
                             # Carro com posição dinâmica
@@ -4075,7 +4078,10 @@ def main(page: ft.Page):
                                 left=car_position,
                                 padding=ft.padding.only(top=7, right=5),
                                 content=ft.Image(
-                                    src="https://lxmove.com/img_flex/car.png"
+                                    src="https://lxmove.com/img_flex/car.png",
+                                    width=49,
+                                    height=21,
+                                    fit=ft.ImageFit.CONTAIN,
                                 ),
                                 alignment=ft.Alignment(0, 0),
                             ),
@@ -4084,7 +4090,10 @@ def main(page: ft.Page):
                                 right=0,
                                 width=finish_width,
                                 content=ft.Image(
-                                    src="https://lxmove.com/img_flex/finish-line-5-stars.png"
+                                    src="https://lxmove.com/img_flex/finish-line-5-stars.png",
+                                    width=38,
+                                    height=33,
+                                    fit=ft.ImageFit.CONTAIN,
                                 ),
                             ),
                         ],
