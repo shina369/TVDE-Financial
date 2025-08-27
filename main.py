@@ -4214,7 +4214,7 @@ def main(page: ft.Page):
                             ),
                             shadow=ft.BoxShadow(color="#15CD74", blur_radius=180)  # Sombra no valor
                         ),
-                        ft.Text("valores brutos", size=15, color="#B0B0B0"),
+                        ft.Text("Valores brutos", size=15, color="#B0B0B0"),
                     ]
                 )
             )
