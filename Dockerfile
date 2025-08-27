@@ -1,26 +1,32 @@
-# Usa uma imagem base completa e estável do Python
-FROM python:3.9 
+# Usa uma imagem base leve e estável do Python
+FROM python:3.9-slim-bookworm
 
-# Define o diretório de trabalho dentro do contêiner
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Atualiza os repositórios e instala dependências do sistema
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Instala dependências do sistema
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     python3-dev pkg-config gcc libmariadb-dev curl && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copia os arquivos do projeto para o contêiner
+# Cria usuário não-root
+RUN useradd -m appuser
+
+# Cria ambiente virtual e instala dependências
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+
+# Copia o restante do código
 COPY . .
 
-# Cria um ambiente virtual e ativa
-RUN python -m venv /opt/venv
+# Define usuário não-root
+USER appuser
 
-# Instala as dependências no ambiente virtual
-RUN /opt/venv/bin/pip install --upgrade pip
-RUN /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
-
-# Expõe a porta que o Flet vai usar (geralmente a porta 8551 para Flet, mas use 52230 conforme sua configuração)
+# Expõe a porta configurada
 EXPOSE 52230
 
-# Define o comando para rodar o app com Flet no ambiente virtual
-CMD ["/opt/venv/bin/python", "main.py"]
+# Comando de inicialização
+CMD ["python", "main.py"]
