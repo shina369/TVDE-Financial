@@ -655,7 +655,7 @@ def main(page: ft.Page):
             return ft.Container(
                 expand=True,
                 height=111,
-                bgcolor="#EFEFEF",
+                bgcolor="#00C853",
                 border_radius=21,
                 margin=ft.Margin(top=3, bottom=3, left=12, right=9),
                 on_click=on_click_action,
@@ -782,10 +782,10 @@ def main(page: ft.Page):
                     create_big_button(
                         ft.Icon(ft.Icons.EURO, size=39),
                         "Despesas",
-                        lambda e: page.go("/page_reports_expense")
+                        lambda e: page.go("/page_reports_expense", color="white")
                     ),
                     create_big_button(
-                        ft.Icon(ft.Icons.ADD_TO_HOME_SCREEN, size=36),
+                        ft.Icon(ft.Icons.ADD_TO_HOME_SCREEN, size=36, color="white"),
                         "Plataforma",
                         lambda e: page.go("/page_reports_fleet")
                     )
@@ -797,12 +797,12 @@ def main(page: ft.Page):
             content=ft.Row(
                 controls=[
                     create_big_button(
-                        ft.Icon(ft.Icons.DIRECTIONS_CAR, size=36),
+                        ft.Icon(ft.Icons.DIRECTIONS_CAR, size=36, color="white"),
                         "Geral",
                         lambda e: page.go("/page_reports_general")
                     ),
                     create_big_button(
-                        ft.Icon(ft.Icons.CALENDAR_MONTH, size=36), 
+                        ft.Icon(ft.Icons.CALENDAR_MONTH, size=36, color="white"), 
                         "Mensal", 
                         lambda e: page.go("/page_reports_monthly")
                     )
@@ -2856,7 +2856,7 @@ def main(page: ft.Page):
                 ft.Text("Diária Bolt")
             ],
             "/page_daily?param=Bolt",
-            ["#00C853", "#FFFFFF"]  # verde limão degradê
+            ["#00C853", "#9AD396"]  # verde limão degradê
         )
 
         big_button_uber = create_button(
@@ -2865,25 +2865,25 @@ def main(page: ft.Page):
                 ft.Text("Diária Uber")
             ],
             "/page_daily?param=Uber",
-            ["#00C853", "#FFFFFF"]  # cinza escuro para claro
+            ["#00C853", "#9AD396"]  # cinza escuro para claro
         )
 
         big_button_expense = create_button(
             [
-                ft.Icon(ft.Icons.MONEY_OFF_SHARP, size=48),
+                ft.Icon(ft.Icons.MONEY_OFF_SHARP, size=48, color="white"),
                 ft.Text("Nova Despesa")
             ],
             "/page_expense",
-            ["#00C853", "#FFFFFF"]  # laranja para amarelo
+            ["#00C853", "#9AD396"]  # laranja para amarelo
         )
 
         big_button_new_goal = create_button(
             [
-                ft.Icon(ft.Icons.ADD_CHART_OUTLINED, size=48),
+                ft.Icon(ft.Icons.ADD_CHART_OUTLINED, size=48, color="white"),
                 ft.Text("Novo Objetivo")
             ],
             "/page_new_goal",
-            ["#00C853", "#FFFFFF"]  # azul intenso para azul claro
+            ["#00C853", "#9AD396"]  # azul intenso para azul claro
         )
 
         page.views.append(
