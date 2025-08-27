@@ -655,7 +655,7 @@ def main(page: ft.Page):
             return ft.Container(
                 expand=True,
                 height=111,
-                bgcolor="#00C853",
+                bgcolor="#299C59",
                 border_radius=21,
                 margin=ft.Margin(top=3, bottom=3, left=12, right=9),
                 on_click=on_click_action,
@@ -780,9 +780,9 @@ def main(page: ft.Page):
             content=ft.Row(
                 controls=[
                     create_big_button(
-                        ft.Icon(ft.Icons.EURO, size=39),
+                        ft.Icon(ft.Icons.EURO, size=39, color="white"),
                         "Despesas",
-                        lambda e: page.go("/page_reports_expense", color="white")
+                        lambda e: page.go("/page_reports_expense")
                     ),
                     create_big_button(
                         ft.Icon(ft.Icons.ADD_TO_HOME_SCREEN, size=36, color="white"),
@@ -2852,7 +2852,7 @@ def main(page: ft.Page):
         
         big_button_bolt = create_button(
             [
-                ft.Image(src="https://i.ibb.co/4Z0Z6fMc/icon-uber51x51.png", width=51, height=51),
+                ft.Image(src="https://i.ibb.co/Rpd7K5GJ/icon-bolt51x51.png", width=51, height=51),
                 ft.Text("Diária Bolt")
             ],
             "/page_daily?param=Bolt",
@@ -2861,7 +2861,7 @@ def main(page: ft.Page):
 
         big_button_uber = create_button(
             [
-                ft.Image(src="https://i.ibb.co/Rpd7K5GJ/icon-bolt51x51.png", width=51, height=51),
+                ft.Image(src="https://i.ibb.co/4Z0Z6fMc/icon-uber51x51.png", width=51, height=51),
                 ft.Text("Diária Uber")
             ],
             "/page_daily?param=Uber",
