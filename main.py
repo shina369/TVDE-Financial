@@ -4078,27 +4078,27 @@ def main(page: ft.Page):
                             ft.Container(
                                 left=0,
                                 content=ft.Image(
-                                    src="assets/flag.png"
+                                    src="https://lxmove.com/img_flex/flag.png"
                                 ),
                             ),
                             # Carro com posição dinâmica
                             ft.Container(
                                 left=car_position,
                                 padding=ft.padding.only(top=7, right=5),
-                                content=ft.Image(
-                                    src="assets/car.png",
+                                  content=ft.Image(
+                                    src="https://lxmove.com/img_flex/car.png",
                                     width=49,
                                     height=21,
                                     fit=ft.ImageFit.CONTAIN,
                                 ),
-                                alignment=ft.Alignment(0, 0),
+                              alignment=ft.Alignment(0, 0),
                             ),
                             # Linha de chegada à direitaa
                             ft.Container(
                                 right=0,
                                 width=finish_width,
                                 content=ft.Image(
-                                    src="assets/finish-line-5-stars.png",
+                                    src="https://lxmove.com/img_flex/finish-line-5-stars.png",
                                     width=38,
                                     height=33,
                                     fit=ft.ImageFit.CONTAIN,
