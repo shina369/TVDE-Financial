@@ -3234,7 +3234,7 @@ def main(page: ft.Page):
                 trips_made = int(trips_made_field.value) if trips_made_field.value else 0
                 observation = observation_field.value if observation_field.value else ""
             except ValueError as e:
-                page_error_screen("Erro ao coletar os valores dos campos. Verifique os dados inseridos!")
+                page_error_screen("Errro ao coletar os valores dos campos. Verifique os dados inseridos!")
                 return
 
             # Escolher a tabela com base no parâmetro
