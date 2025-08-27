@@ -3523,7 +3523,7 @@ def main(page: ft.Page):
                         controls=[
                             ft.Text("OBJETIVO GERAL", size=18, color=ft.Colors.BLACK, weight=ft.FontWeight.BOLD),
                             ft.Text(goal_value, size=36, color=ft.Colors.BLACK),
-                            ft.Text("Valores líquidos sem taxas e impostos", size=9, color="#858585"),
+                            ft.Text("Valores líquidos a receber", size=9, color="#858585"),
                             ],
                             spacing=0,
                             alignment=ft.MainAxisAlignment.CENTER,
@@ -4251,7 +4251,7 @@ def main(page: ft.Page):
                             ),
                             ft.Container(
                                 content=ft.Image(
-                                    src="https://i.ibb.co/LDw7wvvT/button-uber.png",
+                                    src="https://i.ibb.co/zH81fZ7K/button-uber.png",
                                     width=154,
                                     height=51,
                                 ),
