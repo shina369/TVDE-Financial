@@ -24,6 +24,7 @@ import json
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from typing import Optional, Dict
+import base64
 
 load_dotenv()
 
@@ -4015,6 +4016,16 @@ def main(page: ft.Page):
         # Calcular a posição do carro baseado no progresso
         car_position = start_position + (total_gain_car_position / 100) * (end_position - start_position)
 
+        with open("assets/car.png", "rb") as f:
+            car_base64 = base64.b64encode(f.read()).decode()
+
+        with open("assets/flag.png", "rb") as f:
+            flag_base64 = base64.b64encode(f.read()).decode()
+
+        with open("assets/finish-line-5-stars.png", "rb") as f:
+            star_base64 = base64.b64encode(f.read()).decode()
+
+
         # Criar a interface
         hourglass = ft.Column(
             controls=[
@@ -4078,7 +4089,7 @@ def main(page: ft.Page):
                             ft.Container(
                                 left=0,
                                 content=ft.Image(
-                                    src="https://lxmove.com/img_flex/flag.png"
+                                    src=flag_base64
                                 ),
                             ),
                             # Carro com posição dinâmica
@@ -4086,7 +4097,7 @@ def main(page: ft.Page):
                                 left=car_position,
                                 padding=ft.padding.only(top=7, right=5),
                                   content=ft.Image(
-                                    src="https://lxmove.com/img_flex/car.png",
+                                    src=car_base64,
                                     width=49,
                                     height=21,
                                     fit=ft.ImageFit.CONTAIN,
@@ -4098,7 +4109,7 @@ def main(page: ft.Page):
                                 right=0,
                                 width=finish_width,
                                 content=ft.Image(
-                                    src="https://lxmove.com/img_flex/finish-line-5-stars.png",
+                                    src=star_base64,
                                     width=38,
                                     height=33,
                                     fit=ft.ImageFit.CONTAIN,
