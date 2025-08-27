@@ -11,7 +11,7 @@ colorama
 cookiecutter
 cycler
 fastapi
-flet
+flet[all]==0.28.3
 flet-core
 flet-runtime
 fonttools
