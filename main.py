@@ -3327,20 +3327,12 @@ def main(page: ft.Page):
             # Atualiza a página para refletir as mudanças
             page.update()
         
-        def handle_bolt_click(e):
-            if not email_login.value:
-                print("E-mail não informado.")
-                return
-            
+        def handle_bolt_click(e):            
             validate_fields()
             if not btn_bolt.disabled:
                 save_daily_bolt_uber("Bolt", user_id)
 
-        def handle_uber_click(e):
-            if not email_login.value:
-                print("E-mail não informado.")
-                return
-            
+        def handle_uber_click(e):            
             validate_fields()
             if not btn_uber.disabled:
                 save_daily_bolt_uber("Uber", user_id)
