@@ -3273,6 +3273,7 @@ def main(page: ft.Page):
 
                 if cursor.rowcount > 0:
                     page_message_screen(f"Diária {param} cadastrada com sucesso!!")
+                    page.go("/page_parcial")
                 else:
                     page_error_screen("Houve algum erro. Tente novamente mais tarde!")
 
@@ -3308,8 +3309,6 @@ def main(page: ft.Page):
             observation_field.value = ""
             page.update()
 
-            # Ir para a página parcial
-            page.go("/page_parcial")
 
         def configure_buttons(param):
             # Verifica o valor de 'param' e ajusta a visibilidade
@@ -3338,20 +3337,16 @@ def main(page: ft.Page):
         btn_bolt = ft.ElevatedButton(
             text="Cadastrar Bolt",
             bgcolor="#4CAF50", color="white",
-            on_click=handle_bolt_click,
-            disabled=False
+            on_click=handle_bolt_click
         )
         btn_uber = ft.ElevatedButton(
             text="Cadastrar Uber",
             bgcolor="#000000", 
             color="white",
-            on_click=handle_uber_click,
-            disabled=False
+            on_click=handle_uber_click
         )
 
-        configure_buttons("Bolt")
-
-        configure_buttons("Uber")
+        configure_buttons(param)
 
         
         page.overlay.append(date_picker)
