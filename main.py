@@ -3242,29 +3242,30 @@ def main(page: ft.Page):
             # Conectar ao banco e inserir os dados
             try:
                 conn = mysql.connector.connect(
-                    host=MYSQLHOST,       # Ex: "localhost" ou endereço da sua VPS
-                    user=MYSQLUSER,    # Usuário do MySQL
-                    password=MYSQLPASSWORD,  # Senha do MySQL
-                    database="db_tvde_users_external"  # Nome do banco
+                    host=MYSQLHOST,
+                    user=MYSQLUSER,
+                    password=MYSQLPASSWORD,
+                    database="db_tvde_users_external",
+                    port=MYSQLPORT   
                 )
                 cursor = conn.cursor()
 
                 sql = f"""
-                INSERT INTO {table_name} 
-                (user_id, daily_value, daily_value_tips, daily_date, working_hours, distance_traveled, trips_made, observation, daily_reimbursement)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                """
+                    INSERT INTO {param} 
+                    (user_id, daily_value, daily_value_tips, daily_date, working_hours, distance_traveled, trips_made, observation, daily_reimbursement)
+                    VALUES (?,?,?,?,?,?,?,?,?)
+                    """
 
                 valores = (
+                    user_id,
                     daily_value,
                     daily_value_tips,
-                    daily_reimbursement,
                     daily_date,
                     working_hours,
                     distance_traveled,
                     trips_made,
                     observation,
-                    user_id  # importante: manter referência ao usuário
+                    daily_reimbursement,
                 )
 
                 cursor.execute(sql, valores)
