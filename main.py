@@ -2849,9 +2849,10 @@ def main(page: ft.Page):
                 )
             )
 
+
         big_button_bolt = create_button(
             [
-                ft.Image(src="assets/icon-bolt51x51.png"),
+                ft.Image(src="assets/icon-bolt51x51.png", width=51, height=51),
                 ft.Text("Diária Bolt")
             ],
             "/page_daily?param=Bolt",
@@ -2860,7 +2861,7 @@ def main(page: ft.Page):
 
         big_button_uber = create_button(
             [
-                ft.Image(src="assets/icon-uber51x51.png"),
+                ft.Image(src="assets/icon-uber51x51.png", width=51, height=51),
                 ft.Text("Diária Uber")
             ],
             "/page_daily?param=Uber",
@@ -3046,10 +3047,6 @@ def main(page: ft.Page):
             e.value = formatted_value
             e.update()
 
-
-
-
-
         def validate_date(e):
             # Chama a validação sempre que a data mudar
             validate_fields()
@@ -3113,6 +3110,7 @@ def main(page: ft.Page):
                 page.update()
         
         daily_date_field = ft.TextField(
+            width=(page.width if page.width is not None else 435) * 0.47,
             label=f"Data da diária da {param}",
             on_change=validate_date,
             border_radius=21,
@@ -3195,6 +3193,7 @@ def main(page: ft.Page):
         )
 
         trips_made_field = ft.TextField(
+            width=(page.width if page.width is not None else 435) * 0.47,
             label="Viagens realizadas",
             keyboard_type=ft.KeyboardType.NUMBER,
             border_radius=21,
@@ -4016,12 +4015,6 @@ def main(page: ft.Page):
         # Calcular a posição do carro baseado no progresso
         car_position = start_position + (total_gain_car_position / 100) * (end_position - start_position)
 
-        # Use the file path as a string for the image source
-        flag_path = "assets/flag.png"
-        car_path = "assets/car.png"
-        finish_path = "assets/finish-line.png"
-  
-
         # Criar a interface
         hourglass = ft.Column(
             controls=[
@@ -4085,10 +4078,7 @@ def main(page: ft.Page):
                             ft.Container(
                                 left=0,
                                 content=ft.Image(
-                                    src=flag_path,
-                                    width=23,
-                                    height=34,
-                                    fit=ft.ImageFit.CONTAIN,
+                                    src="assets/flag.png"
                                 ),
                             ),
                             # Carro com posição dinâmica
@@ -4096,7 +4086,7 @@ def main(page: ft.Page):
                                 left=car_position,
                                 padding=ft.padding.only(top=7, right=5),
                                 content=ft.Image(
-                                    src=car_path,
+                                    src="assets/car.png",
                                     width=49,
                                     height=21,
                                     fit=ft.ImageFit.CONTAIN,
@@ -4108,7 +4098,7 @@ def main(page: ft.Page):
                                 right=0,
                                 width=finish_width,
                                 content=ft.Image(
-                                    src=finish_path,
+                                    src="assets/finish-line-5-stars.png",
                                     width=38,
                                     height=33,
                                     fit=ft.ImageFit.CONTAIN,
