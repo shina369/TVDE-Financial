@@ -3251,7 +3251,7 @@ def main(page: ft.Page):
                 cursor = conn.cursor()
 
                 sql = f"""
-                    INSERT INTO {param} 
+                    INSERT INTO {table_name} 
                     (user_id, daily_value, daily_value_tips, daily_date, working_hours, distance_traveled, trips_made, observation, daily_reimbursement)
                     VALUES (?,?,?,?,?,?,?,?,?)
                     """
