@@ -3932,7 +3932,7 @@ def main(page: ft.Page):
             cursor.execute("SELECT goal, goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
             result = cursor.fetchone()
 
-            conn.close()  # Fecha a conexão com o banco de dados
+            conn.close()  # Fecha a conexão com o bannco de dados
 
             if result:
                 goal_value = result[0]
