@@ -3255,6 +3255,7 @@ def main(page: ft.Page):
                     page_message_screen(f"Diária {param} cadastrada com sucesso!!")
                 else:
                     page_error_screen("Houve algum erro. Tente novamente mais tarde!")
+
             except sqlite3.Error as e:
                 snack_bar = ft.SnackBar(
                     content=ft.Container(
@@ -3286,7 +3287,7 @@ def main(page: ft.Page):
             # Ir para a página parcial
             page.go("/page_parcial")
 
-        def configure_buttons(param=None):
+        def configure_buttons(param):
             # Verifica o valor de 'param' e ajusta a visibilidade
             if param == "Bolt":
                 btn_bolt.visible = True
@@ -3307,9 +3308,9 @@ def main(page: ft.Page):
                 print("E-mail não informado.")
                 return
             
-            validate_fields()
-            if not btn_bolt.disabled:
-                save_daily_bolt_uber("Bolt", user_id)
+            validate_fields()  # só para mostrar erros nos campos
+            save_daily_bolt_uber("Bolt", user_id)
+
 
         def handle_uber_click(e):
             if not email_login.value:
@@ -3317,8 +3318,7 @@ def main(page: ft.Page):
                 return
             
             validate_fields()
-            if not btn_uber.disabled:
-                save_daily_bolt_uber("Uber", user_id)
+            save_daily_bolt_uber("Uber", user_id)
 
         btn_bolt = ft.ElevatedButton(
             text="Cadastrar Bolt",
