@@ -3241,14 +3241,33 @@ def main(page: ft.Page):
 
             # Conectar ao banco e inserir os dados
             try:
-                conn = sqlite3.connect(f"db_usuarios/db_user_{user_id}.db")
+                conn = mysql.connector.connect(
+                    host=MYSQLHOST,       # Ex: "localhost" ou endereço da sua VPS
+                    user=MYSQLUSER,    # Usuário do MySQL
+                    password=MYSQLPASSWORD,  # Senha do MySQL
+                    database="db_tvde_users_external"  # Nome do banco
+                )
                 cursor = conn.cursor()
-                cursor.execute(f"""
+
+                sql = f"""
                 INSERT INTO {table_name} 
-                (daily_value, daily_value_tips, daily_reimbursement, daily_date, working_hours, distance_traveled, trips_made, observation)
-                VALUES (?,?,?,?,?,?,?,?)
-                """, (daily_value, daily_value_tips, daily_reimbursement, daily_date, working_hours, distance_traveled, trips_made, observation))
-                
+                (user_id, daily_value, daily_value_tips, daily_date, working_hours, distance_traveled, trips_made, observation, daily_reimbursement)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """
+
+                valores = (
+                    daily_value,
+                    daily_value_tips,
+                    daily_reimbursement,
+                    daily_date,
+                    working_hours,
+                    distance_traveled,
+                    trips_made,
+                    observation,
+                    user_id  # importante: manter referência ao usuário
+                )
+
+                cursor.execute(sql, valores)
                 conn.commit()
 
                 if cursor.rowcount > 0:
@@ -3256,23 +3275,27 @@ def main(page: ft.Page):
                 else:
                     page_error_screen("Houve algum erro. Tente novamente mais tarde!")
 
-            except sqlite3.Error as e:
+            except mysql.connector.IntegrityError:
                 snack_bar = ft.SnackBar(
                     content=ft.Container(
                         content=ft.Text(f"Já existe uma diária nesta data {daily_date} \n Tente outra data!", weight=ft.FontWeight.BOLD),
-                        alignment=ft.alignment.center,  # Alinha o conteúdo (texto) dentro do Container
+                        alignment=ft.alignment.center,
                     ),
-                    bgcolor="red"  # Cor de fundo vermelha
+                    bgcolor="red"
                 )
                 page.overlay.append(snack_bar)
                 snack_bar.open = True
-                
                 page.update()
                 time.sleep(3)
-                
-                
+
+            except mysql.connector.Error as e:
+                page_error_screen(f"Erro no banco de dados: {str(e)}")
+
             finally:
-                conn.close()
+                if conn.is_connected():
+                    cursor.close()
+                    conn.close()
+
 
             # Limpar os campos após o cadastro
             daily_value_field.value = ""
@@ -3308,9 +3331,9 @@ def main(page: ft.Page):
                 print("E-mail não informado.")
                 return
             
-            validate_fields()  # só para mostrar erros nos campos
-            save_daily_bolt_uber("Bolt", user_id)
-
+            validate_fields()
+            if not btn_bolt.disabled:
+                save_daily_bolt_uber("Bolt", user_id)
 
         def handle_uber_click(e):
             if not email_login.value:
@@ -3318,7 +3341,8 @@ def main(page: ft.Page):
                 return
             
             validate_fields()
-            save_daily_bolt_uber("Uber", user_id)
+            if not btn_uber.disabled:
+                save_daily_bolt_uber("Uber", user_id)
 
         btn_bolt = ft.ElevatedButton(
             text="Cadastrar Bolt",
