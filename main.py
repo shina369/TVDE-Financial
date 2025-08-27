@@ -3286,7 +3286,7 @@ def main(page: ft.Page):
             # Ir para a página parcial
             page.go("/page_parcial")
 
-        def configure_buttons(param):
+        def configure_buttons(param=None):
             # Verifica o valor de 'param' e ajusta a visibilidade
             if param == "Bolt":
                 btn_bolt.visible = True
@@ -3335,7 +3335,7 @@ def main(page: ft.Page):
             disabled=False
         )
 
-        configure_buttons(param)
+        configure_buttons()
 
         
         page.overlay.append(date_picker)
