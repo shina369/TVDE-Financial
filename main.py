@@ -2201,6 +2201,9 @@ def main(page: ft.Page):
                 controls=[goal_start_field, goal_end_field]
             )
         )
+
+       
+
         day_off_field = ft.TextField(
             label="Dias de Folga",
             on_change=format_number_only99,
@@ -2243,6 +2246,13 @@ def main(page: ft.Page):
             helper_text="Imposto.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
+
+        goal_tax_and_flet = ft.Container(
+            ft.Row(
+                controls=[fleet_discount_field, tax_discount_field]
+            )
+        )
+
        
         def validate_button_state():
             # Verifica se todos os campos estão validados
@@ -2386,9 +2396,7 @@ def main(page: ft.Page):
                     ft.Container(height=0.9),
                     day_off_field,
                     ft.Container(height=0.9),
-                    fleet_discount_field,
-                    ft.Container(height=0.9),
-                    tax_discount_field,    
+                    goal_tax_and_flet, 
                     ft.Container(height=0.9),
                     button_salve,
                     bottom_menu
