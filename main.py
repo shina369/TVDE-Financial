@@ -4177,7 +4177,7 @@ def main(page: ft.Page):
                 else:
                     return 0, total_gain_car_position  # Retorna 0 para evitar erro
             else:
-                return "Erro ao recuperar os dados do banco de dados", 0
+                return "Errro ao recuperar os dados do banco de dados", 0
 
         # Assumindo que `total_gain` é obtido de outra função
 
