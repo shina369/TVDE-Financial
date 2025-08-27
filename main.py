@@ -4241,7 +4241,7 @@ def main(page: ft.Page):
                         controls=[
                             ft.Container(
                                 content=ft.Image(
-                                    src="/assets/button-bolt.png",
+                                    src="assets/button-bolt.png",
                                     width=154,
                                     height=51,
                                 ),
@@ -4249,7 +4249,7 @@ def main(page: ft.Page):
                             ),
                             ft.Container(
                                 content=ft.Image(
-                                    src="/assets/button-uber.png",
+                                    src="assets/button-uber.png",
                                     width=154,
                                     height=51,
                                 ),
