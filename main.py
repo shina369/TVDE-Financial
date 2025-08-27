@@ -2219,6 +2219,7 @@ def main(page: ft.Page):
         )
         
         fleet_discount_field = ft.TextField(
+            width=(page.width if page.width is not None else 435) * 0.47,
             label="Taxa da Frota",
             on_change=format_number_only99,
             label_style=ft.TextStyle(
@@ -2233,6 +2234,7 @@ def main(page: ft.Page):
             content_padding=ft.padding.symmetric(vertical=12, horizontal=9)
         )
         tax_discount_field = ft.TextField(
+            width=(page.width if page.width is not None else 435) * 0.47,
             label="Imposto",
             on_change=format_number_only99,
             label_style=ft.TextStyle(
@@ -2849,7 +2851,7 @@ def main(page: ft.Page):
 
         big_button_bolt = create_button(
             [
-                ft.Image(src="https://i.ibb.co/FKM5tjP/icon-bolt51x51.png"),
+                ft.Image(src="assets/icon-bolt51x51.png"),
                 ft.Text("Diária Bolt")
             ],
             "/page_daily?param=Bolt",
@@ -2858,7 +2860,7 @@ def main(page: ft.Page):
 
         big_button_uber = create_button(
             [
-                ft.Image(src="https://i.ibb.co/5xGNqkc/icon-uber51x51.png"),
+                ft.Image(src="assets/icon-uber51x51.png"),
                 ft.Text("Diária Uber")
             ],
             "/page_daily?param=Uber",
@@ -3205,6 +3207,12 @@ def main(page: ft.Page):
             border_radius=21,
         )
 
+        unic_trips_made_field_and_daily_date_field = ft.Container(
+            ft.Row(
+                controls=[trips_made_field, daily_date_field]
+            )
+        )
+
         def save_daily_bolt_uber(param, user_id):
             if not email_login.value:
                 print("E-mail não informado.")
@@ -3341,9 +3349,7 @@ def main(page: ft.Page):
                     ft.Container(height=0.9),
                     daily_value_field,
                     ft.Container(height=0.9),
-                    trips_made_field,
-                    ft.Container(height=0.9),
-                    daily_date_field,
+                    unic_trips_made_field_and_daily_date_field,
                     ft.Container(height=0.9),
                     tips_reimbursement_row,
                     ft.Container(height=0.9),
