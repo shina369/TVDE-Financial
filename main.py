@@ -3253,7 +3253,7 @@ def main(page: ft.Page):
                 sql = f"""
                     INSERT INTO {table_name} 
                     (user_id, daily_value, daily_value_tips, daily_date, working_hours, distance_traveled, trips_made, observation, daily_reimbursement)
-                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """
 
                 valores = (
@@ -3341,7 +3341,6 @@ def main(page: ft.Page):
             on_click=handle_bolt_click,
             disabled=False
         )
-
         btn_uber = ft.ElevatedButton(
             text="Cadastrar Uber",
             bgcolor="#000000", 
@@ -3350,7 +3349,9 @@ def main(page: ft.Page):
             disabled=False
         )
 
-        configure_buttons(param)
+        configure_buttons("Bolt")
+
+        configure_buttons("Uber")
 
         
         page.overlay.append(date_picker)
