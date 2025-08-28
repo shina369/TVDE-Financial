@@ -2130,7 +2130,7 @@ def main(page: ft.Page):
 
 
 
-        goal_field = ft.TextField(label="Valor total da meta", prefix_text="€ ",
+        goal_field = ft.TextField(label="Valor total do objetivo", prefix_text="€ ",
             border_radius=21, 
             text_size=18,
             on_change=format_number,
@@ -2138,7 +2138,7 @@ def main(page: ft.Page):
                 color="#AAAAAA",  # Cor do label
                 size=14,               # Tamanho opcional
             ),
-            helper_text="* Valor líquido pretendido ao fim da meta.",
+            helper_text="* Valor líquido pretendido ao fim da objetivo.",
             content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
         )
         
@@ -2155,7 +2155,7 @@ def main(page: ft.Page):
                 page.update()
         
         goal_start_field = ft.TextField(
-            label="Início da meta",
+            label="Início do objetivo",
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
                 size=14,          # Tamanho opcional
@@ -2165,7 +2165,7 @@ def main(page: ft.Page):
             border_radius=21,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
-            helper_text="* Data do Início da meta",
+            helper_text="* Início do objetivo",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             expand=True,
             suffix=ft.IconButton(
@@ -2178,7 +2178,7 @@ def main(page: ft.Page):
         )
 
         goal_end_field = ft.TextField(
-            label="Fim da meta",
+            label="Fim do objetivo",
             on_change=validate_date,
             label_style=ft.TextStyle(
                 color="#AAAAAA",  # Cor do label
@@ -2189,7 +2189,7 @@ def main(page: ft.Page):
             expand=True,
             text_size=18,
             keyboard_type=ft.KeyboardType.DATETIME,
-            helper_text="* Data do Fim da Meta",
+            helper_text="* Fim do objetivo",
             content_padding=ft.padding.symmetric(vertical=6, horizontal=9),
             suffix=ft.IconButton(
                 icon=ft.Icons.CALENDAR_MONTH,
@@ -3649,7 +3649,7 @@ def main(page: ft.Page):
                 ft.Text(f"Despesas no Período: € {goal_data['total_expenses']:.2f}"),
             ])
         else:
-            details_content = ft.Text("Nenhuma meta encontrada.")
+            details_content = ft.Text("Nenhuma objetivo encontrada.")
 
         # Ícone para o título
         popup_icon = ft.Icon(name=ft.Icons.INFO_OUTLINED, size=24, color="blue")
@@ -3685,7 +3685,7 @@ def main(page: ft.Page):
         else:
             details_popup_content = ft.Column(
                 [
-                    ft.Text("Nenhuma meta encontrada."),
+                    ft.Text("Nenhuma objetivo encontrada."),
                 ],
                 width=page.width * 0.8,
                 spacing=8,
@@ -3739,7 +3739,7 @@ def main(page: ft.Page):
                 new_width = page.width * 0.9 if page.width < 600 else page.width * 0.8
                 details_popup.content = ft.Column(
                     [
-                        ft.Text("Nenhuma meta encontrada."),
+                        ft.Text("Nenhuma objetivo encontrada."),
                     ],
                     width=new_width,
                     spacing=8,
