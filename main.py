@@ -76,6 +76,13 @@ class UpgradeRequest(BaseModel):
     purchaseToken: str
 
 # =========================
+# Modelo de requisição para /update_account
+# =========================
+class UpdateAccountRequest(BaseModel):
+    email: str
+    account_type: str
+
+# =========================
 # Endpoint /upgrade
 # =========================
 @app.post("/upgrade")
@@ -104,7 +111,7 @@ def upgrade(req: UpgradeRequest):
             host=MYSQLHOST,
             user=MYSQLUSER,
             password=MYSQLPASSWORD,
-            database=MYSQL_DATABASE,
+            database="db_tvde_users_external",
             port=MYSQLPORT
         )
         cursor = conn.cursor()
@@ -144,7 +151,7 @@ def get_status_usuario(email: str):
             host=MYSQLHOST,
             user=MYSQLUSER,
             password=MYSQLPASSWORD,
-            database=MYSQL_DATABASE,
+            database="db_tvde_users_external",
             port=MYSQLPORT
         )
         cursor = conn.cursor(dictionary=True)
@@ -166,6 +173,47 @@ def get_status_usuario(email: str):
             cursor.close()
         if conn:
             conn.close()
+
+    # =========================
+# Endpoint /update_account
+# =========================
+@app.post("/update_account")
+def update_account(req: UpdateAccountRequest):
+    conn = None
+    cursor = None
+    try:
+        conn = mysql.connector.connect(
+            host=MYSQLHOST,
+            user=MYSQLUSER,
+            password=MYSQLPASSWORD,
+            database="db_tvde_users_external",
+            port=MYSQLPORT
+        )
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT id FROM users WHERE email=%s", (req.email,))
+        if cursor.fetchone() is None:
+            logger.warning(f"Usuário não encontrado: {req.email}")
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+        cursor.execute(
+            "UPDATE users SET account_type=%s WHERE email=%s",
+            (req.account_type, req.email)
+        )
+        conn.commit()
+        logger.info(f"Usuário {req.email} atualizado para {req.account_type}")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro ao atualizar usuário: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao atualizar usuário")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return {"status": "success", "account_type": req.account_type, "message": f"Usuário atualizado para {req.account_type}"}
 
 def main(page: ft.Page):
     
