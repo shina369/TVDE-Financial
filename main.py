@@ -27,12 +27,6 @@ from typing import Optional, Dict
 
 load_dotenv()
 
-MYSQLHOST = os.getenv("MYSQLHOST")
-MYSQLUSER = os.getenv("MYSQLUSER")
-MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
-MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
-MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)  # Default to 3306 if not set
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import mysql.connector
