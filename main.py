@@ -4606,7 +4606,7 @@ def main(page: ft.Page):
         elif page.route == "/page_expense":
             page_expense()
         elif page.route == "/page_daily":
-            page_daily("Desconhecido")
+            page_daily("")
         elif page.route == "/page_menu":
             page_menu()
         elif page.route == "/page_premium":
