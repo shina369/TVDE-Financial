@@ -28,14 +28,22 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import mysql.connector
 import logging
+import sys
 
 load_dotenv()
 
-# ========================
-# Configurações de logging
-# ========================
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("upgrade_service")
+logger.setLevel(logging.INFO)
+
+# Remove handlers antigos, se existirem
+if logger.hasHandlers():
+    logger.handlers.clear()
+
+# Cria um handler para enviar logs para stdout
+handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # =========================
 # Variáveis de ambiente e Google Play
