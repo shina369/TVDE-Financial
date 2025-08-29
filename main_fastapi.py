@@ -83,14 +83,14 @@ def upgrade(req: UpgradeRequest):
             productId=PLAY_PRODUCT_ID,
             token=req.purchaseToken
         ).execute()
-        logger.info(f"Resultado do token: {result}")
+        print(f"Resultado do token: {result}")
     except Exception as e:
-        logger.error(f"Erro ao validar token: {e}")
+        print(f"Erro ao validar token: {e}")
         raise HTTPException(status_code=400, detail="Erro ao validar token na Google Play")
 
     # purchaseState == 0 → compra concluída
     if result.get("purchaseState") != 0:
-        logger.warning(f"Compra inválida ou não concluída para token {req.purchaseToken}")
+        print(f"Compra inválida ou não concluída para token {req.purchaseToken}")
         raise HTTPException(status_code=400, detail="Compra inválida ou não concluída")
 
     # ====== Atualizar usuário no MySQL ======
@@ -109,7 +109,7 @@ def upgrade(req: UpgradeRequest):
         user = cursor.fetchone()
 
         if not user:
-            logger.warning(f"Usuário não encontrado: {req.email}")
+            print(f"Usuário não encontrado: {req.email}")
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
         # Se já for Premium, não precisa atualizar
@@ -128,12 +128,12 @@ def upgrade(req: UpgradeRequest):
             ("Premium", req.email)
         )
         conn.commit()
-        logger.info(f"Usuário {req.email} atualizado para Premium")
+        print(f"Usuário {req.email} atualizado para Premium")
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Erro ao atualizar usuário: {e}")
+        print(f"Erro ao atualizar usuário: {e}")
         raise HTTPException(status_code=500, detail="Erro ao atualizar usuário")
     finally:
         if cursor:
@@ -167,7 +167,7 @@ def get_status_usuario(email: str):
             # If user is a tuple, get the first element
             return {"account_type": user[0]}
     except Exception as e:
-        logger.error(f"Erro ao buscar status do usuário: {e}")
+        print(f"Erro ao buscar status do usuário: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no servidor")
     finally:
         if cursor:

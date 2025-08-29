@@ -106,7 +106,8 @@ def main(page: ft.Page):
                     host=MYSQLHOST,
                     user=MYSQLUSER,
                     password=MYSQLPASSWORD,
-                    database="db_tvde_users_external"
+                    database="db_tvde_users_external",
+                    port=MYSQLPORT  # <- importante
                 )
 
                 if connection.is_connected():

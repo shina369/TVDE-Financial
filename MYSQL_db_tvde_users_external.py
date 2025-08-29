@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS users (
     name VARCHAR(255) NOT NULL,
     surname VARCHAR(255) NOT NULL,
     account_type VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     date_start VARCHAR(255) NOT NULL
 
