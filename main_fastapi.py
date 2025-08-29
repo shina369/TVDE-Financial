@@ -8,8 +8,11 @@ import logging
 import sys
 import os
 import json
+from dotenv import load_dotenv
 logger = logging.getLogger("upgrade_service")
 logger.setLevel(logging.INFO)
+
+load_dotenv()
 
 # Remove handlers antigos, se existirem
 if logger.hasHandlers():
