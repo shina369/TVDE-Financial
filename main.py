@@ -116,7 +116,7 @@ def upgrade(req: UpgradeRequest):
             host=MYSQLHOST,
             user=MYSQLUSER,
             password=MYSQLPASSWORD,
-            database=MYSQL_DATABASE,  # seu schema
+            database="db_tvde_users_external",  # seu schema
             port=MYSQLPORT
         )
         cursor = conn.cursor(dictionary=True)
