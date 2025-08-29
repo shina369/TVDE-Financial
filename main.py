@@ -11,8 +11,6 @@ import string
 import asyncio
 import anyio
 import sqlite3
-import json
-import os
 from MYSQL_db_tvde_users_external import connect
 from typing import Optional, Dict, Any, cast
 from SQLite_db_tvde_content_internal import get_user_id_from_mysql, create_user_tables
