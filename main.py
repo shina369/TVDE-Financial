@@ -108,7 +108,7 @@ def upgrade(req: UpgradeRequest):
             host=MYSQLHOST,
             user=MYSQLUSER,
             password=MYSQLPASSWORD,
-            database="db_tvde_users_external",  # seu schema
+            database=MYSQL_DATABASE,  # seu schema
             port=MYSQLPORT
         )
         cursor = conn.cursor(dictionary=True)
@@ -147,7 +147,8 @@ def upgrade(req: UpgradeRequest):
     finally:
         if cursor:
             cursor.close()
-
+        if conn:
+            conn.close()
 
     return {"status": "success", "account_type": "Premium", "message": "Usuário atualizado para Premium"}
 
