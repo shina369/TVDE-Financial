@@ -672,10 +672,10 @@ def main(page: ft.Page):
         def create_big_button(icon, text, on_click_action):
             return ft.Container(
                 expand=True,
-                height=90,
+                height=96,
                 bgcolor="#299C59",
                 border_radius=21,
-                margin=ft.Margin(top=3, bottom=3, left=12, right=9),
+                margin=ft.Margin(top=6, bottom=3, left=12, right=9),
                 on_click=on_click_action,
                 content=ft.Column(
                     controls=[
