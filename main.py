@@ -24,13 +24,12 @@ import json
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from typing import Optional, Dict
-
-load_dotenv()
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import mysql.connector
 import logging
+
+load_dotenv()
 
 # ========================
 # Configurações de logging
@@ -148,8 +147,7 @@ def upgrade(req: UpgradeRequest):
     finally:
         if cursor:
             cursor.close()
-        if conn:
-            conn.close()
+
 
     return {"status": "success", "account_type": "Premium", "message": "Usuário atualizado para Premium"}
 
@@ -673,7 +671,7 @@ def main(page: ft.Page):
         def create_big_button(icon, text, on_click_action):
             return ft.Container(
                 expand=True,
-                height=111,
+                height=90,
                 bgcolor="#299C59",
                 border_radius=21,
                 margin=ft.Margin(top=3, bottom=3, left=12, right=9),
