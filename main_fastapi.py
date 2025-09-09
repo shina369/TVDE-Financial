@@ -15,8 +15,6 @@ load_dotenv()
 logger = logging.getLogger("upgrade_service")
 logger.setLevel(logging.INFO)
 
-
-
 # Remove handlers antigos, se existirem
 if logger.hasHandlers():
     logger.handlers.clear()
