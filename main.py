@@ -1716,10 +1716,6 @@ def main(page: ft.Page):
         visible=False
         )
 
-          # WebView para mostrar o site
-        webview = ft.WebView(url="https://tvde-financial-production.up.railway.app/", expand=True
-        )
-
         def validate_email(e):
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value or ""):
                 email_login.error_text = None
@@ -1792,11 +1788,6 @@ def main(page: ft.Page):
 
             loading.visible = False
             page.update()
-
-
-                # Atualiza a WebView com o email do usuário
-            webview.url = f"https://tvde-financial-production.up.railway.app/?email={email_login.value}"
-            webview.update()
 
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
