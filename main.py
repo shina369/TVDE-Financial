@@ -1707,11 +1707,6 @@ def main(page: ft.Page):
         saved_email = page.client_storage.get("saved_email") or ""
         saved_password = page.client_storage.get("saved_password") or ""
 
-        webview = ft.WebView(
-            url="https://tvde-financial-production.up.railway.app/",
-            expand=True,
-        )
-
         loading = ft.Container(
         content=ft.Column([
             ft.ProgressRing(),
@@ -1729,7 +1724,7 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
-        async def valid_email_password_async(email_login, password_login, webview):
+        async def valid_email_password_async(email_login, password_login):
             loading.visible = True
             page.update()
 
@@ -1794,9 +1789,16 @@ def main(page: ft.Page):
 
             loading.visible = False
 
-            # Dentro da função valid_email_password_async, após login válido:
+            # --- Criar WebView com email na URL apenas após login válido ---
             email = email_login.value
-            webview.url = f"https://tvde-financial-production.up.railway.app/?email={email}"
+            global webview
+            webview = ft.WebView(
+                url=f"https://tvde-financial-production.up.railway.app/?email={email}",
+                expand=True,
+            )
+
+            # Adiciona a WebView à página
+            webview.update()
             page.update()
 
             # Navega conforme metas
@@ -1821,7 +1823,7 @@ def main(page: ft.Page):
             text=current_translations.get("login_button", "LOGIN"),
             bgcolor="#4CAF50",
             color="white",
-            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login, webview)
+            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login)
         )
 
         is_premium = check_user_premium(email_login.value or "")
