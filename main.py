@@ -1791,7 +1791,6 @@ def main(page: ft.Page):
 
             # --- Criar WebView com email na URL apenas após login válido ---
             email = email_login.value
-            global webview
             webview = ft.WebView(
                 url=f"https://tvde-financial-production.up.railway.app/?email={email}",
                 expand=True,
@@ -1799,7 +1798,6 @@ def main(page: ft.Page):
 
             # Adiciona a WebView à página
             webview.update()
-            page.update()
 
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
