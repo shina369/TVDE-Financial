@@ -1797,7 +1797,8 @@ def main(page: ft.Page):
             # Dentro da função valid_email_password_async, após login válido:
             email = email_login.value
             webview.url = f"https://tvde-financial-production.up.railway.app/?email={email}"
-            webview.update()
+            
+            page.update()
 
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
