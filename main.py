@@ -1701,12 +1701,6 @@ def main(page: ft.Page):
 
     def page_login(page: ft.Page):
 
-           # Cria a WebView antes do login
-        webview = ft.WebView(
-            url="https://tvde-financial-production.up.railway.app/",
-            expand=True,
-        )
-
         page.views.clear()
 
         saved_email = page.client_storage.get("saved_email") or ""
@@ -1721,6 +1715,12 @@ def main(page: ft.Page):
         bgcolor="rgba(0,0,0,0.6)",  # fundo preto semi-transparente
         visible=False
         )   
+
+             # Cria a WebView antes do login
+        webview = ft.WebView(
+            url="https://tvde-financial-production.up.railway.app/",
+            expand=True,
+        )
 
         def validate_email(e):
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value or ""):
@@ -1751,6 +1751,9 @@ def main(page: ft.Page):
                 return result
 
             result = await asyncio.to_thread(blocking_db_operations)
+
+            global email_para_flutter
+            email_para_flutter = email_login.value
 
             if result is None:
                 email_login.error_text = current_translations.get("email_not_found", "Email não encontrado")
@@ -1794,12 +1797,14 @@ def main(page: ft.Page):
 
             loading.visible = False
             page.update()
-
             
-                # Enviar email para o Flutter via JS
-            if webview:  # webview deve ser a sua instância da WebView
-                webview.evaluate_js(f'FlutterChannel.postMessage("{email_login.value}")')
+            def enviar_email_para_flutter():
+                if email_para_flutter is not None:
+                    asyncio.create_task(webview.evaluate_js(f'FlutterChannel.postMessage("{email_para_flutter}")'))
 
+                # Evento de página carregada
+                webview.on_page_loaded = lambda e: enviar_email_para_flutter()
+            
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
                 page.go("/page_parcial")
@@ -1864,9 +1869,7 @@ def main(page: ft.Page):
             )
         )
         page.update()
-
-
-
+        
     def page_new_goal():
         page.views.clear()
 
