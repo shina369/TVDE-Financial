@@ -1834,7 +1834,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Container(
                                     content=ft.Column(
-                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading],
+                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading, page],
                                     ),
                                 ),
                                 ft.Container(
@@ -4641,4 +4641,3 @@ def main(page: ft.Page):
     page.go("/")
 
 ft.app(target=main)
-#4644 LINHAS - 9/14
