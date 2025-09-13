@@ -1834,7 +1834,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Container(
                                     content=ft.Column(
-                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading, page],
+                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading],
                                     ),
                                 ),
                                 ft.Container(
