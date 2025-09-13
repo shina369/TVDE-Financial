@@ -1818,9 +1818,6 @@ def main(page: ft.Page):
             else:
                 page.go("/page_new_goal")
 
-            global email_para_flutter
-            email_para_flutter = email_login.value
-
         global email_login, remember_password_checkbox, is_premium
 
         remember_password_checkbox = ft.Checkbox(label=current_translations.get("remember_password", "Lembrar senha"), value=True)
