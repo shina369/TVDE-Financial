@@ -1724,83 +1724,94 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
-        async def valid_email_password_async(page, email_login, password_login):
-            try:
-                loading.visible = True
-                page.update()
+        async def valid_email_password_async(email_login, password_login):
+            loading.visible = True
+            page.update()
 
-                hash_password_login = sha256(password_login.value.encode()).hexdigest()
+            hash_password_login = sha256(password_login.value.encode()).hexdigest()
 
-                def blocking_db_operations():
-                    conn = mysql.connector.connect(
-                        host=MYSQLHOST,
-                        user=MYSQLUSER,
-                        password=MYSQLPASSWORD,
-                        database="db_tvde_users_external",
-                        port=MYSQLPORT
-                    )
-                    cursor = conn.cursor(buffered=True)
-                    cursor.execute("SELECT id, password FROM users WHERE email = %s", (email_login.value,))
-                    result = cursor.fetchone()
-                    cursor.close()
-                    conn.close()
-                    return result
-
-                result = await asyncio.to_thread(blocking_db_operations)
-
-                if result is None:
-                    email_login.error_text = current_translations.get("email_not_found", "Email não encontrado")
-                    email_login.update()
-                    return
-
-                user_id, stored_password = result
-
-                if hash_password_login != stored_password:
-                    password_login.error_text = current_translations.get("password_incorrect", "Senha incorreta")
-                    password_login.update()
-                    return
-
-                # Senha correta
-                def sqlite_operations():
-                    create_user_tables(user_id)
-                    db_path = f"db_usuarios/db_user_{user_id}.db"
-                    with sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES) as conn_sqlite:
-                        cursor_sqlite = conn_sqlite.cursor()
-                        cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
-                        goal_successful = cursor_sqlite.fetchone()
-                        goal_successful = goal_successful[0] if goal_successful else "default_value"
-                        cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
-                        meta_count = cursor_sqlite.fetchone()[0]
-                        return goal_successful, meta_count
-
-                goal_successful, meta_count = await asyncio.to_thread(sqlite_operations)
-
-                # Salvar credenciais
-                if remember_password_checkbox.value:
-                    page.client_storage.set("saved_email", email_login.value)
-                    page.client_storage.set("saved_password", password_login.value)
-                else:
-                    page.client_storage.remove("saved_email")
-                    page.client_storage.remove("saved_password")
-
-                # 🚀 Aqui você precisa decidir: vai abrir o WebView ou ir para a página de metas?
-                email = email_login.value
-                page.views.clear()
-                page.views.append(
-                    ft.View(
-                        "/webview",
-                        controls=[
-                            ft.WebView(
-                                url=f"https://tvde-financial-production.up.railway.app/?email={email}",
-                                expand=True,
-                            )
-                        ]
-                    )
+            def blocking_db_operations():
+                conn = mysql.connector.connect(
+                    host=MYSQLHOST,
+                    user=MYSQLUSER,
+                    password=MYSQLPASSWORD,
+                    database="db_tvde_users_external",
+                    port=MYSQLPORT
                 )
+                cursor = conn.cursor(buffered=True)
+                cursor.execute("SELECT id, password FROM users WHERE email = %s", (email_login.value,))
+                result = cursor.fetchone()
+                cursor.close()
+                conn.close()
+                return result
+
+            result = await asyncio.to_thread(blocking_db_operations)
+
+            if result is None:
+                email_login.error_text = current_translations.get("email_not_found", "Email não encontrado")
+                email_login.update()
+                loading.visible = False
+                page.update()
+                return
+
+            user_id, stored_password = result
+
+            if hash_password_login != stored_password:
+                password_login.error_text = current_translations.get("password_incorrect", "Senha incorreta")
+                password_login.update()
+                loading.visible = False
+                page.update()
+                return
+
+            # Senha correta
+            def sqlite_operations():
+                create_user_tables(user_id)  # sua função atual
+                db_path = f"db_usuarios/db_user_{user_id}.db"
+                with sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES) as conn_sqlite:
+                    cursor_sqlite = conn_sqlite.cursor()
+                    cursor_sqlite.execute("SELECT goal_successful FROM goal ORDER BY id DESC LIMIT 1")
+                    goal_successful = cursor_sqlite.fetchone()
+                    goal_successful = goal_successful[0] if goal_successful else "default_value"
+                    cursor_sqlite.execute("SELECT COUNT(*) FROM goal")
+                    meta_count = cursor_sqlite.fetchone()[0]
+                    return goal_successful, meta_count
+
+            goal_successful, meta_count = await asyncio.to_thread(sqlite_operations)
+
+            # Armazenar ou limpar credenciais
+            if remember_password_checkbox.value:
+                page.client_storage.set("saved_email", email_login.value)
+                page.client_storage.set("saved_password", password_login.value)
+            else:
+                page.client_storage.remove("saved_email")
+                page.client_storage.remove("saved_password")
+
+            loading.visible = False
+            page.update()
+
+            # --- Adiciona o email na URL do WebView ---
+            email = email_login.value
+            webview = ft.WebView(
+                url=f"https://tvde-financial-production.up.railway.app/?email={email}",
+                expand=True,
+            )
+
+            # 👉 Agora a navegação continua normalmente
+            if meta_count > 0 and goal_successful == "negativo":
+                page.views.clear()
+                page.views.append(ft.View("/page_parcial", controls=[webview]))
                 page.update()
 
-            finally:
-                loading.visible = False
+            elif meta_count > 0 and goal_successful == "positivo":
+                page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
+                await asyncio.sleep(3)
+                page.views.clear()
+                page.views.append(ft.View("/page_new_goal", controls=[webview]))
+                page.update()
+
+            else:
+                page.views.clear()
+                page.views.append(ft.View("/page_new_goal", controls=[webview]))
                 page.update()
 
 
@@ -1814,7 +1825,7 @@ def main(page: ft.Page):
             text=current_translations.get("login_button", "LOGIN"),
             bgcolor="#4CAF50",
             color="white",
-            on_click=lambda e: asyncio.create_task(valid_email_password_async(page, email_login, password_login))
+            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login)
         )
 
         is_premium = check_user_premium(email_login.value or "")
