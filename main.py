@@ -1797,7 +1797,6 @@ def main(page: ft.Page):
             # Dentro da função valid_email_password_async, após login válido:
             email = email_login.value
             webview.url = f"https://tvde-financial-production.up.railway.app/?email={email}"
-            
             page.update()
 
             # Navega conforme metas
@@ -1842,7 +1841,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Container(
                                     content=ft.Column(
-                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading, webview],
+                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading],
                                     ),
                                 ),
                                 ft.Container(
