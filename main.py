@@ -1701,7 +1701,11 @@ def main(page: ft.Page):
 
     def page_login(page: ft.Page):
 
-        webview = None  # inicializa globalmente
+           # Cria a WebView antes do login
+        webview = ft.WebView(
+            url="https://tvde-financial-production.up.railway.app/",
+            expand=True,
+        )
 
         page.views.clear()
 
