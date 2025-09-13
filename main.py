@@ -1698,12 +1698,11 @@ def main(page: ft.Page):
         # Atualiza a página para refletir as alterações
         page.update()
 
-
     def page_login(page: ft.Page):
 
         page.views.clear()
 
-
+        
         saved_email = page.client_storage.get("saved_email") or ""
         saved_password = page.client_storage.get("saved_password") or ""
 
@@ -1724,7 +1723,13 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
+        global webview_global
+
+        if 'webview_global' not in globals():
+            webview_global = None
+
         async def valid_email_password_async(email_login, password_login):
+            global webview_global
             loading.visible = True
             page.update()
 
@@ -1764,6 +1769,7 @@ def main(page: ft.Page):
                 return
 
             # Senha correta
+            # Criar tabelas do usuário e manipular SQLite em thread separado
             def sqlite_operations():
                 create_user_tables(user_id)  # sua função atual
                 db_path = f"db_usuarios/db_user_{user_id}.db"
@@ -1778,7 +1784,7 @@ def main(page: ft.Page):
 
             goal_successful, meta_count = await asyncio.to_thread(sqlite_operations)
 
-            # Armazenar ou limpar credenciais
+            # Salva credenciais
             if remember_password_checkbox.value:
                 page.client_storage.set("saved_email", email_login.value)
                 page.client_storage.set("saved_password", password_login.value)
@@ -1786,34 +1792,35 @@ def main(page: ft.Page):
                 page.client_storage.remove("saved_email")
                 page.client_storage.remove("saved_password")
 
+            # --- Atualiza/Cria WebView global com email na URL ---
+            email = email_login.value
+            if webview_global is None:
+                webview_global = ft.WebView(
+                    url=f"https://tvde-financial-production.up.railway.app/?email={email}",
+                    expand=True,
+                )
+                page.views.append(
+                    ft.View(
+                        "/webview",
+                        controls=[webview_global]
+                    )
+                )
+            else:
+                webview_global.url = f"https://tvde-financial-production.up.railway.app/?email={email}"
+                webview_global.update()
+
             loading.visible = False
             page.update()
 
-            # --- Adiciona o email na URL do WebView ---
-            email = email_login.value
-            webview = ft.WebView(
-                url=f"https://tvde-financial-production.up.railway.app/?email={email}",
-                expand=True,
-            )
-
-            # 👉 Agora a navegação continua normalmente
+            # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
-                page.views.clear()
-                page.views.append(ft.View("/page_parcial", controls=[webview]))
-                page.update()
-
+                page.go("/page_parcial")
             elif meta_count > 0 and goal_successful == "positivo":
-                page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
+                page_message_screen("Parabéns, você bateu a meta!!!")
                 await asyncio.sleep(3)
-                page.views.clear()
-                page.views.append(ft.View("/page_new_goal", controls=[webview]))
-                page.update()
-
+                page.go("/page_new_goal")
             else:
-                page.views.clear()
-                page.views.append(ft.View("/page_new_goal", controls=[webview]))
-                page.update()
-
+                page.go("/page_new_goal")
 
         global email_login, remember_password_checkbox, is_premium
 
