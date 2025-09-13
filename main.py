@@ -1714,12 +1714,6 @@ def main(page: ft.Page):
         expand=True,  # ocupa toda a tela
         bgcolor="rgba(0,0,0,0.6)",  # fundo preto semi-transparente
         visible=False
-        )   
-
-             # Cria a WebView antes do login
-        webview = ft.WebView(
-            url="https://tvde-financial-production.up.railway.app/",
-            expand=True,
         )
 
         def validate_email(e):
@@ -1729,7 +1723,7 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
-        async def valid_email_password_async(email_login, password_login, webview):
+        async def valid_email_password_async(email_login, password_login):
             loading.visible = True
             page.update()
 
@@ -1796,14 +1790,19 @@ def main(page: ft.Page):
                 page.client_storage.remove("saved_password")
 
             loading.visible = False
+
+            webview = ft.WebView(
+                url=f"https://tvde-financial-production.up.railway.app/?email={email_login.value}",
+                expand=True,
+            )
+            # Após login válido, definir a URL da WebView com o email
+            webview.url = f"https://tvde-financial-production.up.railway.app/?email={email_login.value}"
+            webview.update()
             page.update()
             
-            def enviar_email_para_flutter():
-                if email_para_flutter is not None:
-                    asyncio.create_task(webview.evaluate_js(f'FlutterChannel.postMessage("{email_para_flutter}")'))
 
-                # Evento de página carregada
-                webview.on_page_loaded = lambda e: enviar_email_para_flutter()
+            global email_para_flutter
+            email_para_flutter = email_login.value
             
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
@@ -1817,6 +1816,9 @@ def main(page: ft.Page):
             else:
                 page.go("/page_new_goal")
 
+            global email_para_flutter
+            email_para_flutter = email_login.value
+
         global email_login, remember_password_checkbox, is_premium
 
         remember_password_checkbox = ft.Checkbox(label=current_translations.get("remember_password", "Lembrar senha"), value=True)
@@ -1827,7 +1829,7 @@ def main(page: ft.Page):
             text=current_translations.get("login_button", "LOGIN"),
             bgcolor="#4CAF50",
             color="white",
-            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login, webview)
+            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login)
         )
 
         is_premium = check_user_premium(email_login.value or "")
