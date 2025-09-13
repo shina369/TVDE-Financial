@@ -1795,14 +1795,16 @@ def main(page: ft.Page):
                 page.client_storage.remove("saved_password")
 
             loading.visible = False
-            
-            # Após login válido, definir a URL da WebView com o email
+        
+            page.update()
+
+                # Após login válido, definir a URL da WebView com o email
             if webview is not None:
                 # Envia o email para o Flutter via canal JS
-                webview.url = f"https://tvde-financial-production.up.railway.app/?email={email_login.value}"
+                webview.url = f"https://tvde-financial-production.up.railway.app/?email={email}"
                 webview.update()
-            page.update()
-            
+
+
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
                 page.go("/page_parcial")
