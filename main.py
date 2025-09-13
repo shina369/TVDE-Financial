@@ -1817,22 +1817,6 @@ def main(page: ft.Page):
 
         is_premium = check_user_premium(email_login.value or "")
 
-
-        global email_login, remember_password_checkbox, is_premium
-
-        remember_password_checkbox = ft.Checkbox(label=current_translations.get("remember_password", "Lembrar senha"), value=True)
-        email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email, value=saved_email)
-        password_login = ft.TextField(label=current_translations.get("password_label", "Password"), password=True, can_reveal_password=True, border_radius=21, value=saved_password)
-
-        button_login = ft.ElevatedButton(
-            text=current_translations.get("login_button", "LOGIN"),
-            bgcolor="#4CAF50",
-            color="white",
-            on_click=lambda e: asyncio.create_task(valid_email_password_async(email_login, password_login))
-        )
-
-        is_premium = check_user_premium(email_login.value or "")
-
         page.views.append(
             ft.View(
                 "/",
