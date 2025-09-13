@@ -1798,8 +1798,6 @@ def main(page: ft.Page):
             email = email_login.value
             webview.url = f"https://tvde-financial-production.up.railway.app/?email={email}"
             webview.update()
-            
-            page.update()
 
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
@@ -1843,7 +1841,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Container(
                                     content=ft.Column(
-                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading],
+                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading, webview],
                                     ),
                                 ),
                                 ft.Container(
