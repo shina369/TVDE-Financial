@@ -1701,6 +1701,8 @@ def main(page: ft.Page):
 
     def page_login(page: ft.Page):
 
+        webview = None  # inicializa globalmente
+
         page.views.clear()
 
         saved_email = page.client_storage.get("saved_email") or ""
@@ -1714,7 +1716,7 @@ def main(page: ft.Page):
         expand=True,  # ocupa toda a tela
         bgcolor="rgba(0,0,0,0.6)",  # fundo preto semi-transparente
         visible=False
-        )
+        )   
 
         def validate_email(e):
             if re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email_login.value or ""):
@@ -1723,7 +1725,7 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
-        async def valid_email_password_async(email_login, password_login):
+        async def valid_email_password_async(email_login, password_login, webview):
             loading.visible = True
             page.update()
 
@@ -1786,6 +1788,10 @@ def main(page: ft.Page):
                 page.client_storage.remove("saved_email")
                 page.client_storage.remove("saved_password")
 
+                # Enviar email para o Flutter via JS
+            if webview:  # webview deve ser a sua instância da WebView
+                webview.evaluate_js(f'FlutterChannel.postMessage("{email_login.value}")')
+
             loading.visible = False
             page.update()
 
@@ -1811,7 +1817,7 @@ def main(page: ft.Page):
             text=current_translations.get("login_button", "LOGIN"),
             bgcolor="#4CAF50",
             color="white",
-            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login)
+            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login, webview)
         )
 
         is_premium = check_user_premium(email_login.value or "")
