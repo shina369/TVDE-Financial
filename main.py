@@ -1703,11 +1703,6 @@ def main(page: ft.Page):
 
         page.views.clear()
 
-        webview = ft.WebView(
-            url="https://tvde-financial-production.up.railway.app/",
-            expand=True,
-        )
-
         saved_email = page.client_storage.get("saved_email") or ""
         saved_password = page.client_storage.get("saved_password") or ""
 
@@ -1728,9 +1723,17 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
-        async def valid_email_password_async(email_login, password_login, webview):
+        async def valid_email_password_async(email_login, password_login):
             loading.visible = True
             page.update()
+
+            email = email_login.value
+    
+            webview = ft.WebView(
+                    url=f"https://tvde-financial-production.up.railway.app/?email={email}",
+                    expand=True,
+            )
+
 
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
 
@@ -1750,9 +1753,6 @@ def main(page: ft.Page):
                 return result
 
             result = await asyncio.to_thread(blocking_db_operations)
-
-            global email_para_flutter
-            email_para_flutter = email_login.value
 
             if result is None:
                 email_login.error_text = current_translations.get("email_not_found", "Email não encontrado")
@@ -1795,13 +1795,10 @@ def main(page: ft.Page):
                 page.client_storage.remove("saved_password")
 
             loading.visible = False
-
-            webview = ft.WebView(
-                url=f"https://tvde-financial-production.up.railway.app/?email={email_login.value}",
-                expand=True,
-            )
+            
             # Após login válido, definir a URL da WebView com o email
-            if webview:
+            if webview is not None:
+                # Envia o email para o Flutter via canal JS
                 webview.url = f"https://tvde-financial-production.up.railway.app/?email={email_login.value}"
                 webview.update()
             page.update()
@@ -1828,7 +1825,7 @@ def main(page: ft.Page):
             text=current_translations.get("login_button", "LOGIN"),
             bgcolor="#4CAF50",
             color="white",
-            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login, webview)
+            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login)
         )
 
         is_premium = check_user_premium(email_login.value or "")
