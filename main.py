@@ -1703,7 +1703,6 @@ def main(page: ft.Page):
 
         page.views.clear()
 
-
         saved_email = page.client_storage.get("saved_email") or ""
         saved_password = page.client_storage.get("saved_password") or ""
 
@@ -1764,6 +1763,7 @@ def main(page: ft.Page):
                 return
 
             # Senha correta
+            # Criar tabelas do usuário e manipular SQLite em thread separado
             def sqlite_operations():
                 create_user_tables(user_id)  # sua função atual
                 db_path = f"db_usuarios/db_user_{user_id}.db"
@@ -1778,7 +1778,7 @@ def main(page: ft.Page):
 
             goal_successful, meta_count = await asyncio.to_thread(sqlite_operations)
 
-            # Armazenar ou limpar credenciais
+            # Armazenar ou limpar credenciais com base no checkbox
             if remember_password_checkbox.value:
                 page.client_storage.set("saved_email", email_login.value)
                 page.client_storage.set("saved_password", password_login.value)
@@ -1789,31 +1789,17 @@ def main(page: ft.Page):
             loading.visible = False
             page.update()
 
-            # --- Adiciona o email na URL do WebView ---
-            email = email_login.value
-            webview = ft.WebView(
-                url=f"https://tvde-financial-production.up.railway.app/?email={email}",
-                expand=True,
-            )
-
-            # 👉 Agora a navegação continua normalmente
+            # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
-                page.views.clear()
-                page.views.append(ft.View("/page_parcial", controls=[webview]))
-                page.update()
-
+                page.go("/page_parcial")
             elif meta_count > 0 and goal_successful == "positivo":
                 page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
+
+                # Usar temporizador async para aguardar 3 segundos sem bloquear
                 await asyncio.sleep(3)
-                page.views.clear()
-                page.views.append(ft.View("/page_new_goal", controls=[webview]))
-                page.update()
-
+                page.go("/page_new_goal")
             else:
-                page.views.clear()
-                page.views.append(ft.View("/page_new_goal", controls=[webview]))
-                page.update()
-
+                page.go("/page_new_goal")
 
         global email_login, remember_password_checkbox, is_premium
 
@@ -1867,7 +1853,9 @@ def main(page: ft.Page):
             )
         )
         page.update()
-        
+
+
+
     def page_new_goal():
         page.views.clear()
 
