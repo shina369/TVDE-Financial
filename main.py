@@ -1788,12 +1788,13 @@ def main(page: ft.Page):
                 page.client_storage.remove("saved_email")
                 page.client_storage.remove("saved_password")
 
+            loading.visible = False
+            page.update()
+
+            
                 # Enviar email para o Flutter via JS
             if webview:  # webview deve ser a sua instância da WebView
                 webview.evaluate_js(f'FlutterChannel.postMessage("{email_login.value}")')
-
-            loading.visible = False
-            page.update()
 
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
