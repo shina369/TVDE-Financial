@@ -1814,7 +1814,7 @@ def main(page: ft.Page):
             text=current_translations.get("login_button", "LOGIN"),
             bgcolor="#4CAF50",
             color="white",
-            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login, page )
+            on_click=lambda e: asyncio.create_task(valid_email_password_async(page, email_login, password_login))
         )
 
         is_premium = check_user_premium(email_login.value or "")
