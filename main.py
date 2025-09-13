@@ -1703,8 +1703,14 @@ def main(page: ft.Page):
 
         page.views.clear()
 
+
         saved_email = page.client_storage.get("saved_email") or ""
         saved_password = page.client_storage.get("saved_password") or ""
+
+        webview = ft.WebView(
+            url="https://tvde-financial-production.up.railway.app/",
+            expand=True,
+        )
 
         loading = ft.Container(
         content=ft.Column([
@@ -1723,17 +1729,9 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
-        async def valid_email_password_async(email_login, password_login):
+        async def valid_email_password_async(email_login, password_login, webview):
             loading.visible = True
             page.update()
-
-            email = email_login.value
-    
-            webview = ft.WebView(
-                    url=f"https://tvde-financial-production.up.railway.app/?email={email}",
-                    expand=True,
-            )
-
 
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
 
@@ -1801,10 +1799,9 @@ def main(page: ft.Page):
                 # Após login válido, definir a URL da WebView com o email
             if webview is not None:
                 # Envia o email para o Flutter via canal JS
-                webview.url = f"https://tvde-financial-production.up.railway.app/?email={email}"
+                webview.url = f"https://tvde-financial-production.up.railway.app/?email={email_login.value}"
                 webview.update()
-
-
+                
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
                 page.go("/page_parcial")
@@ -1827,7 +1824,7 @@ def main(page: ft.Page):
             text=current_translations.get("login_button", "LOGIN"),
             bgcolor="#4CAF50",
             color="white",
-            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login)
+            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login, webview)
         )
 
         is_premium = check_user_premium(email_login.value or "")
