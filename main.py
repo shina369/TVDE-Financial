@@ -1794,9 +1794,9 @@ def main(page: ft.Page):
                 url=f"https://tvde-financial-production.up.railway.app/?email={email}",
                 expand=True,
             )
-
             # Adiciona a WebView à página
             webview.update()
+            page.update()
 
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
