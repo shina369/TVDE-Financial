@@ -34,6 +34,7 @@ MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)
 
+webview_global: ft.WebView | None = None
 
 def main(page: ft.Page):
     
@@ -1698,8 +1699,14 @@ def main(page: ft.Page):
         # Atualiza a página para refletir as alterações
         page.update()
 
+    # Variável global para a WebView
 
     def page_login(page: ft.Page):
+
+        global webview_global, email_login, remember_password_checkbox, is_premium
+
+        # Ensure webview_global is defined before use
+        global webview_global
 
         page.views.clear()
 
@@ -1707,13 +1714,13 @@ def main(page: ft.Page):
         saved_password = page.client_storage.get("saved_password") or ""
 
         loading = ft.Container(
-        content=ft.Column([
-            ft.ProgressRing(),
-        ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-        alignment=ft.alignment.center,
-        expand=True,  # ocupa toda a tela
-        bgcolor="rgba(0,0,0,0.6)",  # fundo preto semi-transparente
-        visible=False
+            content=ft.Column([ft.ProgressRing()],
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+            alignment=ft.alignment.center,
+            expand=True,
+            bgcolor="rgba(0,0,0,0.6)",
+            visible=False
         )
 
         def validate_email(e):
@@ -1723,12 +1730,25 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
 
+        email_login = ft.TextField(label=current_translations.get("email_label", "Email"),
+                                border_radius=21, on_change=validate_email, value=saved_email)
+        password_login = ft.TextField(label=current_translations.get("password_label", "Password"),
+                                    password=True, can_reveal_password=True, border_radius=21, value=saved_password)
+        remember_password_checkbox = ft.Checkbox(label=current_translations.get("remember_password", "Lembrar senha"), value=True)
+
+        # Cria WebView global se não existir
+        if webview_global is None:
+            webview_global = ft.WebView(url="about:blank", expand=True)
+
         async def valid_email_password_async(email_login, password_login):
+            global webview_global
+
             loading.visible = True
             page.update()
 
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
 
+            # Conexão MySQL em thread separada
             def blocking_db_operations():
                 conn = mysql.connector.connect(
                     host=MYSQLHOST,
@@ -1762,10 +1782,9 @@ def main(page: ft.Page):
                 page.update()
                 return
 
-            # Senha correta
-            # Criar tabelas do usuário e manipular SQLite em thread separado
+            # Senha correta: SQLite em thread separada
             def sqlite_operations():
-                create_user_tables(user_id)  # sua função atual
+                create_user_tables(user_id)
                 db_path = f"db_usuarios/db_user_{user_id}.db"
                 with sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES) as conn_sqlite:
                     cursor_sqlite = conn_sqlite.cursor()
@@ -1778,7 +1797,7 @@ def main(page: ft.Page):
 
             goal_successful, meta_count = await asyncio.to_thread(sqlite_operations)
 
-            # Armazenar ou limpar credenciais com base no checkbox
+            # Armazena credenciais se checkbox marcado
             if remember_password_checkbox.value:
                 page.client_storage.set("saved_email", email_login.value)
                 page.client_storage.set("saved_password", password_login.value)
@@ -1789,23 +1808,27 @@ def main(page: ft.Page):
             loading.visible = False
             page.update()
 
+            # --- Cria ou atualiza a WebView global com email na URL ---
+            if webview_global is None:
+                webview_global = ft.WebView(
+                    url=f"https://tvde-financial-production.up.railway.app/?email={email_login.value}",
+                    expand=True,
+                )
+                page.views.append(ft.View("/", controls=[webview_global]))
+            else:
+                webview_global.url = f"https://tvde-financial-production.up.railway.app/?email={email_login.value}"
+                webview_global.update()
+
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
                 page.go("/page_parcial")
             elif meta_count > 0 and goal_successful == "positivo":
                 page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
-
-                # Usar temporizador async para aguardar 3 segundos sem bloquear
                 await asyncio.sleep(3)
                 page.go("/page_new_goal")
             else:
                 page.go("/page_new_goal")
 
-        global email_login, remember_password_checkbox, is_premium
-
-        remember_password_checkbox = ft.Checkbox(label=current_translations.get("remember_password", "Lembrar senha"), value=True)
-        email_login = ft.TextField(label=current_translations.get("email_label", "Email"), border_radius=21, on_change=validate_email, value=saved_email)
-        password_login = ft.TextField(label=current_translations.get("password_label", "Password"), password=True, can_reveal_password=True, border_radius=21, value=saved_password)
 
         button_login = ft.ElevatedButton(
             text=current_translations.get("login_button", "LOGIN"),
@@ -1831,7 +1854,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Container(
                                     content=ft.Column(
-                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading],
+                                        controls=[email_login, password_login, remember_password_checkbox, button_login, loading, webview_global],
                                     ),
                                 ),
                                 ft.Container(
@@ -1853,6 +1876,7 @@ def main(page: ft.Page):
             )
         )
         page.update()
+
 
 
 
