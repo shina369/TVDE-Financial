@@ -34,12 +34,8 @@ MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)
 
-webview_global: ft.WebView | None = None
-
 
 def main(page: ft.Page):
-
-    global webview_global
     
     load_dotenv()
     connect()
@@ -1705,8 +1701,6 @@ def main(page: ft.Page):
 
     def page_login(page: ft.Page):
 
-        global webview_global
-
         page.views.clear()
 
         saved_email = page.client_storage.get("saved_email") or ""
@@ -1730,9 +1724,6 @@ def main(page: ft.Page):
             email_login.update()
 
         async def valid_email_password_async(email_login, password_login):
-            
-            global webview_global
-            
             loading.visible = True
             page.update()
 
@@ -1797,21 +1788,6 @@ def main(page: ft.Page):
 
             loading.visible = False
             page.update()
-
-              # --- Atualiza WebView com o email ---
-            if webview_global is None:
-                # cria a WebView só uma vez
-                webview_global = ft.WebView(
-                    url=f"https://tvde-financial-production.up.railway.app/?email={email_login.value}",
-                    expand=True,
-                )
-                page.views.append(ft.View("/webview", controls=[webview_global]))
-            else:
-                webview_global.url = f"https://tvde-financial-production.up.railway.app/?email={email_login.value}"
-                webview_global.update()
-
-            # Se quiser já navegar para a WebView após login:
-            page.go("/webview")
 
             # Navega conforme metas
             if meta_count > 0 and goal_successful == "negativo":
