@@ -1730,7 +1730,6 @@ def main(page: ft.Page):
             email_login.update()
 
         async def valid_email_password_async(email_login, password_login):
-            nonlocal loading
             
             global webview_global
             
