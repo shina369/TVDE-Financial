@@ -1762,9 +1762,9 @@ def main(page: ft.Page):
                 page.update()
                 return
 
-            # Senha correta
+            # Senha correta: criar tabelas do usuário e manipular SQLite em thread separado
             def sqlite_operations():
-                create_user_tables(user_id)  # sua função atual
+                create_user_tables(user_id)
                 db_path = f"db_usuarios/db_user_{user_id}.db"
                 with sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES) as conn_sqlite:
                     cursor_sqlite = conn_sqlite.cursor()
@@ -1788,9 +1788,20 @@ def main(page: ft.Page):
             loading.visible = False
             page.update()
 
-            # Ao invés de navegar internamente, vamos avisar o Flutter com o email logado
-            redirect_url = f"https://tvde-financial-production.up.railway.app/success?email={email_login.value}"
-            page.launch_url(redirect_url)
+            # --- Enviar email para Flutter via JavaScript ---
+            page.eval_js(f"FlutterChannel.postMessage('{email_login.value}');")
+
+            # Navegar conforme metas internas do app
+            if meta_count > 0 and goal_successful == "negativo":
+                page.go("/page_parcial")
+            elif meta_count > 0 and goal_successful == "positivo":
+                page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
+                await asyncio.sleep(3)
+                page.go("/page_new_goal")
+            else:
+                page.go("/page_new_goal")
+
+
 
 
         global email_login, remember_password_checkbox, is_premium
