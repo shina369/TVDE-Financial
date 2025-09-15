@@ -1763,7 +1763,6 @@ def main(page: ft.Page):
                 return
 
             # Senha correta
-            # Criar tabelas do usuário e manipular SQLite em thread separado
             def sqlite_operations():
                 create_user_tables(user_id)  # sua função atual
                 db_path = f"db_usuarios/db_user_{user_id}.db"
@@ -1789,17 +1788,10 @@ def main(page: ft.Page):
             loading.visible = False
             page.update()
 
-            # Navega conforme metas
-            if meta_count > 0 and goal_successful == "negativo":
-                page.go("/page_parcial")
-            elif meta_count > 0 and goal_successful == "positivo":
-                page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
+            # Ao invés de navegar internamente, vamos avisar o Flutter com o email logado
+            redirect_url = f"https://tvde-financial-production.up.railway.app/success?email={email_login.value}"
+            page.launch_url(redirect_url)
 
-                # Usar temporizador async para aguardar 3 segundos sem bloquear
-                await asyncio.sleep(3)
-                page.go("/page_new_goal")
-            else:
-                page.go("/page_new_goal")
 
         global email_login, remember_password_checkbox, is_premium
 
