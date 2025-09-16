@@ -88,7 +88,7 @@ def set_logged_email_simple(data: dict = Body(...)):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Erro em set_logged_email_simple: {e}")
+        logger.info(f"Erro em set_logged_email_simple: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no servidor")
     finally:
         if cursor:
@@ -135,14 +135,14 @@ def upgrade(req: UpgradeRequest):
             productId=PLAY_PRODUCT_ID,
             token=req.purchaseToken
         ).execute()
-        print(f"Resultado do token: {result}")
+        logger.info(f"Resultado do token: {result}")
     except Exception as e:
-        print(f"Erro ao validar token: {e}")
+        logger.info(f"Erro ao validar token: {e}")
         raise HTTPException(status_code=400, detail="Erro ao validar token na Google Play")
 
     # purchaseState == 0 → compra concluída
     if result.get("purchaseState") != 0:
-        print(f"Compra inválida ou não concluída para token {req.purchaseToken}")
+        logger.info(f"Compra inválida ou não concluída para token {req.purchaseToken}")
         raise HTTPException(status_code=400, detail="Compra inválida ou não concluída")
 
     # ====== Atualizar usuário no MySQL ======
@@ -161,7 +161,7 @@ def upgrade(req: UpgradeRequest):
         user = cursor.fetchone()
 
         if not user:
-            print(f"Usuário não encontrado: {req.email}")
+            logger.info(f"Usuário não encontrado: {req.email}")
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
         if isinstance(user, dict):
@@ -177,12 +177,12 @@ def upgrade(req: UpgradeRequest):
             ("Premium", req.email)
         )
         conn.commit()
-        print(f"Usuário {req.email} atualizado para Premium")
+        logger.info(f"Usuário {req.email} atualizado para Premium")
 
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Erro ao atualizar usuário: {e}")
+        logger.info(f"Erro ao atualizar usuário: {e}")
         raise HTTPException(status_code=500, detail="Erro ao atualizar usuário")
     finally:
         if cursor:
@@ -217,7 +217,7 @@ def get_status_usuario(email: str):
             # If user is a tuple, get the first element
             return {"account_type": user[0]}
     except Exception as e:
-        print(f"Erro ao buscar status do usuário: {e}")
+        logger.info(f"Erro ao buscar status do usuário: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no servidor")
     finally:
         if cursor:
