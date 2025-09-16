@@ -9,6 +9,7 @@ import sys
 import os
 import json
 from dotenv import load_dotenv
+from fastapi import Body
 
 load_dotenv()
 
@@ -48,6 +49,27 @@ play_service = build("androidpublisher", "v3", credentials=credentials, cache_di
 # FastAPI app
 # =========================
 app = FastAPI()
+
+from fastapi import Query
+
+# ----------------------------
+# Banco temporário em memória
+# ----------------------------
+logged_emails = {}  # session_id -> email
+
+@app.post("/set_logged_email_simple")
+def set_logged_email_simple(data: dict = Body(...)):
+    """
+    Recebe apenas o email do usuário logado.
+    """
+    email = data.get("email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Email não fornecido")
+
+    # Se quiser, aqui você pode atualizar o banco ou apenas armazenar em memória:
+    logged_emails[email] = True  # simples marcação de login
+    return {"status": "success", "email": email}
+
 
 # =========================
 # Modelo de requisição

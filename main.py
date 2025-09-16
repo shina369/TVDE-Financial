@@ -23,6 +23,12 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from typing import Optional, Dict
 from pydantic import BaseModel
+import httpx
+import uuid
+import asyncio
+import sqlite3
+from hashlib import sha256
+import flet as ft
 
 load_dotenv()
 
@@ -1722,14 +1728,36 @@ def main(page: ft.Page):
             else:
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
+        
+        async def send_logged_email(email: str):
+            """
+            Envia email do usuário logado para o backend temporário.
+            """
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "https://tvde-financial-production.up.railway.app/set_logged_email_simple",
+                    json={"email": email}  # envia no corpo JSON
+                )
+                if response.status_code == 200:
+                    print(f"Email enviado com sucesso: {email}")
+                else:
+                    print(f"Falha ao enviar email: {response.status_code} {response.text}")
 
-        async def valid_email_password_async(email_login, password_login):
-            loading.visible = True
+
+        async def valid_email_password_async(email_login, password_login, page: ft.Page, remember_password_checkbox):
+            loading = ft.Container(
+                content=ft.Column([ft.ProgressRing()], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
+                alignment=ft.alignment.center,
+                expand=True,
+                bgcolor="rgba(0,0,0,0.6)",
+                visible=True
+            )
             page.update()
 
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
 
             def blocking_db_operations():
+                import mysql.connector
                 conn = mysql.connector.connect(
                     host=MYSQLHOST,
                     user=MYSQLUSER,
@@ -1747,7 +1775,7 @@ def main(page: ft.Page):
             result = await asyncio.to_thread(blocking_db_operations)
 
             if result is None:
-                email_login.error_text = current_translations.get("email_not_found", "Email não encontrado")
+                email_login.error_text = "Email não encontrado"
                 email_login.update()
                 loading.visible = False
                 page.update()
@@ -1756,7 +1784,7 @@ def main(page: ft.Page):
             user_id, stored_password = result
 
             if hash_password_login != stored_password:
-                password_login.error_text = current_translations.get("password_incorrect", "Senha incorreta")
+                password_login.error_text = "Senha incorreta"
                 password_login.update()
                 loading.visible = False
                 page.update()
@@ -1785,24 +1813,21 @@ def main(page: ft.Page):
                 page.client_storage.remove("saved_email")
                 page.client_storage.remove("saved_password")
 
+            # --- Enviar email para backend temporário ---
+            await send_logged_email(email_login.value)
+            
             loading.visible = False
             page.update()
-
-            # --- Enviar email para Flutter via JavaScript ---
-            page.eval_js(f"FlutterChannel.postMessage('{email_login.value}');")
 
             # Navegar conforme metas internas do app
             if meta_count > 0 and goal_successful == "negativo":
                 page.go("/page_parcial")
             elif meta_count > 0 and goal_successful == "positivo":
-                page_message_screen(current_translations.get("goal_successful_message", "Parabéns, você bateu a meta!!!"))
+                page_message_screen("Parabéns, você bateu a meta!!!")
                 await asyncio.sleep(3)
                 page.go("/page_new_goal")
             else:
                 page.go("/page_new_goal")
-
-
-
 
         global email_login, remember_password_checkbox, is_premium
 
@@ -1814,7 +1839,7 @@ def main(page: ft.Page):
             text=current_translations.get("login_button", "LOGIN"),
             bgcolor="#4CAF50",
             color="white",
-            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login)
+            on_click=lambda e: anyio.run(valid_email_password_async, email_login, password_login, page, remember_password_checkbox)
         )
 
         is_premium = check_user_premium(email_login.value or "")
