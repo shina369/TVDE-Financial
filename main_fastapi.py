@@ -60,15 +60,42 @@ logged_emails = {}  # session_id -> email
 @app.post("/set_logged_email_simple")
 def set_logged_email_simple(data: dict = Body(...)):
     """
-    Recebe apenas o email do usuário logado.
+    Recebe apenas o email do usuário logado e valida no MySQL.
     """
     email = data.get("email")
     if not email:
         raise HTTPException(status_code=400, detail="Email não fornecido")
 
-    # Se quiser, aqui você pode atualizar o banco ou apenas armazenar em memória:
-    logged_emails[email] = True  # simples marcação de login
-    return {"status": "success", "email": email}
+    conn = None
+    cursor = None
+    try:
+        conn = mysql.connector.connect(
+            host=MYSQLHOST,
+            user=MYSQLUSER,
+            password=MYSQLPASSWORD,
+            database="db_tvde_users_external",
+            port=MYSQLPORT
+        )
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT id FROM users WHERE email = %s", (email,))
+        user = cursor.fetchone()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+        return {"status": "success", "email": email}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Erro em set_logged_email_simple: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno no servidor")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 
 
 # =========================
@@ -95,7 +122,12 @@ def upgrade(req: UpgradeRequest):
     Recebe email + purchaseToken do app Flutter,
     valida token na Google Play e, se OK,
     atualiza o account_type do usuário para 'Premium'.
+    Só aceita se o email já foi registrado em /set_logged_email_simple.
     """
+    # ====== Checar se email foi registrado no login ======
+    if req.email not in logged_emails:
+        raise HTTPException(status_code=401, detail="Email não registrado no login")
+
     # ====== Validação do token ======
     try:
         result = play_service.purchases().products().get(
@@ -114,6 +146,7 @@ def upgrade(req: UpgradeRequest):
         raise HTTPException(status_code=400, detail="Compra inválida ou não concluída")
 
     # ====== Atualizar usuário no MySQL ======
+    conn, cursor = None, None
     try:
         conn = mysql.connector.connect(
             host=MYSQLHOST,
@@ -124,7 +157,6 @@ def upgrade(req: UpgradeRequest):
         )
         cursor = conn.cursor(dictionary=True)
 
-        # Verificar se usuário existe
         cursor.execute("SELECT id, account_type FROM users WHERE email = %s", (req.email,))
         user = cursor.fetchone()
 
@@ -132,17 +164,14 @@ def upgrade(req: UpgradeRequest):
             print(f"Usuário não encontrado: {req.email}")
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-        # Se já for Premium, não precisa atualizar
         if isinstance(user, dict):
-            account_type_raw = user.get("account_type", "")
-            account_type_value = str(account_type_raw).lower() if account_type_raw is not None else ""
+            account_type_value = str(user.get("account_type", "")).lower()
         else:
-            # If user is a tuple, get the first element
-            account_type_value = str(user[0]).lower()
+            account_type_value = str(user[1]).lower()  # porque SELECT trouxe 2 colunas (id, account_type)
+
         if account_type_value == "premium":
             return {"status": "success", "account_type": "Premium", "message": "Usuário já é Premium"}
 
-        # Atualizar tipo de conta
         cursor.execute(
             "UPDATE users SET account_type = %s WHERE email = %s",
             ("Premium", req.email)
@@ -162,6 +191,7 @@ def upgrade(req: UpgradeRequest):
             conn.close()
 
     return {"status": "success", "account_type": "Premium", "message": "Usuário atualizado para Premium"}
+
 
 @app.get("/user_status")
 def get_status_usuario(email: str):
