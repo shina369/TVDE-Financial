@@ -1,5 +1,5 @@
 # Backend / FastAPI
-fastapi==0.101.1
+fastapi
 uvicorn[standard]==0.23.2
 pydantic
 python-dotenv==1.0.0
