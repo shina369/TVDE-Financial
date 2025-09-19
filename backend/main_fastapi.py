@@ -1,7 +1,7 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from typing import Optional, Dict
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body, Query
 from pydantic import BaseModel
 import mysql.connector
 import logging
@@ -9,25 +9,22 @@ import sys
 import os
 import json
 from dotenv import load_dotenv
-from fastapi import Body
 
 load_dotenv()
 
 logger = logging.getLogger("upgrade_service")
 logger.setLevel(logging.INFO)
 
-# Remove handlers antigos, se existirem
 if logger.hasHandlers():
     logger.handlers.clear()
 
-# Cria um handler para enviar logs para stdout
 handler = logging.StreamHandler(sys.stdout)
 formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 # =========================
-# Variáveis de ambiente e Google Play
+# Variáveis de ambiente
 # =========================
 MYSQLHOST = os.getenv("MYSQLHOST")
 MYSQLUSER = os.getenv("MYSQLUSER")
@@ -38,30 +35,43 @@ MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)
 PLAY_PACKAGE_NAME = os.getenv("PLAY_PACKAGE_NAME")
 PLAY_PRODUCT_ID = os.getenv("PLAY_PRODUCT_ID")
 
-service_account_info = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
-credentials = service_account.Credentials.from_service_account_info(
-    service_account_info,
-    scopes=["https://www.googleapis.com/auth/androidpublisher"]
-)
-play_service = build("androidpublisher", "v3", credentials=credentials, cache_discovery=False)
+# =========================
+# Função para inicializar Google Play API
+# =========================
+def get_play_service():
+    try:
+        service_account_info = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_JSON"])
+        credentials = service_account.Credentials.from_service_account_info(
+            service_account_info,
+            scopes=["https://www.googleapis.com/auth/androidpublisher"]
+        )
+        return build("androidpublisher", "v3", credentials=credentials, cache_discovery=False)
+    except Exception as e:
+        logger.error(f"Erro ao inicializar Google Play API: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao inicializar Google Play API")
+
 
 # =========================
 # FastAPI app
 # =========================
 app = FastAPI()
 
-from fastapi import Query
+# ----------------------------
+# Teste básico
+# ----------------------------
+@app.get("/")
+def root():
+    return {"status": "FastAPI rodando no Railway"}
+
 
 # ----------------------------
 # Banco temporário em memória
 # ----------------------------
 logged_emails = {}  # session_id -> email
 
+
 @app.post("/set_logged_email_simple")
 def set_logged_email_simple(data: dict = Body(...)):
-    """
-    Recebe apenas o email do usuário logado e valida no MySQL.
-    """
     email = data.get("email")
     if not email:
         raise HTTPException(status_code=400, detail="Email não fornecido")
@@ -97,7 +107,6 @@ def set_logged_email_simple(data: dict = Body(...)):
             conn.close()
 
 
-
 # =========================
 # Modelo de requisição
 # =========================
@@ -105,9 +114,7 @@ class UpgradeRequest(BaseModel):
     email: str
     purchaseToken: str
 
-# =========================
-# Modelo de requisição para /update_account
-# =========================
+
 class UpdateAccountRequest(BaseModel):
     email: str
     account_type: str
@@ -118,17 +125,12 @@ class UpdateAccountRequest(BaseModel):
 # =========================
 @app.post("/upgrade")
 def upgrade(req: UpgradeRequest):
-    """
-    Recebe email + purchaseToken do app Flutter,
-    valida token na Google Play e, se OK,
-    atualiza o account_type do usuário para 'Premium'.
-    Só aceita se o email já foi registrado em /set_logged_email_simple.
-    """
-    # ====== Checar se email foi registrado no login ======
     if req.email not in logged_emails:
         raise HTTPException(status_code=401, detail="Email não registrado no login")
 
-    # ====== Validação do token ======
+    # Inicializa o serviço da Google Play sob demanda
+    play_service = get_play_service()
+
     try:
         result = play_service.purchases().products().get(
             packageName=PLAY_PACKAGE_NAME,
@@ -140,12 +142,10 @@ def upgrade(req: UpgradeRequest):
         logger.info(f"Erro ao validar token: {e}")
         raise HTTPException(status_code=400, detail="Erro ao validar token na Google Play")
 
-    # purchaseState == 0 → compra concluída
     if result.get("purchaseState") != 0:
         logger.info(f"Compra inválida ou não concluída para token {req.purchaseToken}")
         raise HTTPException(status_code=400, detail="Compra inválida ou não concluída")
 
-    # ====== Atualizar usuário no MySQL ======
     conn, cursor = None, None
     try:
         conn = mysql.connector.connect(
@@ -153,7 +153,7 @@ def upgrade(req: UpgradeRequest):
             user=MYSQLUSER,
             password=MYSQLPASSWORD,
             database="db_tvde_users_external",
-            port=MYSQLPORT    
+            port=MYSQLPORT
         )
         cursor = conn.cursor(dictionary=True)
 
@@ -164,10 +164,7 @@ def upgrade(req: UpgradeRequest):
             logger.info(f"Usuário não encontrado: {req.email}")
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-        if isinstance(user, dict):
-            account_type_value = str(user.get("account_type", "")).lower()
-        else:
-            account_type_value = str(user[1]).lower()  # porque SELECT trouxe 2 colunas (id, account_type)
+        account_type_value = str(user.get("account_type", "")).lower() if isinstance(user, dict) else str(user[1]).lower()
 
         if account_type_value == "premium":
             return {"status": "success", "account_type": "Premium", "message": "Usuário já é Premium"}
@@ -210,12 +207,7 @@ def get_status_usuario(email: str):
         user = cursor.fetchone()
         if not user:
             return {"account_type": "Básico"}
-        # Ensure user is a dictionary before accessing key
-        if isinstance(user, dict):
-            return {"account_type": user["account_type"]}
-        else:
-            # If user is a tuple, get the first element
-            return {"account_type": user[0]}
+        return {"account_type": user["account_type"]} if isinstance(user, dict) else {"account_type": user[0]}
     except Exception as e:
         logger.info(f"Erro ao buscar status do usuário: {e}")
         raise HTTPException(status_code=500, detail="Erro interno no servidor")
