@@ -40,6 +40,7 @@ MYSQLPASSWORD = os.getenv("MYSQLPASSWORD")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
 MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)
 
+app = FastAPI()
 
 def main(page: ft.Page):
     
