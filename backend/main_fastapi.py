@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+app = FastAPI()
+
 logger = logging.getLogger("upgrade_service")
 logger.setLevel(logging.INFO)
 
@@ -53,8 +55,7 @@ def get_play_service():
 
 # =========================
 # FastAPI app
-# =========================
-app = FastAPI()
+# ========================
 
 # ----------------------------
 # Teste básico
