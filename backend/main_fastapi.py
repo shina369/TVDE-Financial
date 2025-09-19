@@ -64,7 +64,6 @@ def get_play_service():
 def root():
     return {"status": "FastAPI rodando no Railway"}
 
-
 # ----------------------------
 # Banco temporário em memória
 # ----------------------------
