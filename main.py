@@ -7,8 +7,10 @@ import time
 from hashlib import sha256
 import smtplib
 import random
+import threading
 import string
 import asyncio
+import uvicorn
 import anyio
 import sqlite3
 from MYSQL_db_tvde_users_external import connect
@@ -240,6 +242,10 @@ def get_status_usuario(email: str):
             cursor.close()
         if conn:
             conn.close()
+
+
+def start_api():
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
 def main(page: ft.Page):
@@ -4867,6 +4873,8 @@ def main(page: ft.Page):
 
     # Definindo a rota inicial
     page.go("/")
+
+threading.Thread(target=start_api, daemon=True).start()
 
 ft.app(target=main)
 #4643 SALVE - 9/14
