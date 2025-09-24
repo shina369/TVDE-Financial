@@ -49,9 +49,6 @@ MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)
 PLAY_PACKAGE_NAME = os.getenv("PLAY_PACKAGE_NAME")
 PLAY_PRODUCT_ID = os.getenv("PLAY_PRODUCT_ID")
 
-
-app = FastAPI()
-
 logger = logging.getLogger("upgrade_service")
 logger.setLevel(logging.INFO)
 
@@ -82,6 +79,7 @@ def get_play_service():
 # =========================
 # FastAPI app
 # ========================
+app = FastAPI()
 
 # ----------------------------
 # Teste básico
