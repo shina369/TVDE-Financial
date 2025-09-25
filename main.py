@@ -116,7 +116,9 @@ def set_logged_email_simple(data: dict = Body(...)):
 
         if not user:
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
-
+        
+        logged_emails[email] = True
+        
         return {"status": "success", "email": email}
 
     except HTTPException:
@@ -240,10 +242,6 @@ def get_status_usuario(email: str):
             cursor.close()
         if conn:
             conn.close()
-
-
-def start_api():
-    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 
 def main(page: ft.Page):
@@ -4871,8 +4869,6 @@ def main(page: ft.Page):
 
     # Definindo a rota inicial
     page.go("/")
-
-threading.Thread(target=start_api, daemon=True).start()
 
 ft.app(target=main)
 #4643 SALVE - 9/14
