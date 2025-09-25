@@ -7,7 +7,6 @@ import time
 from hashlib import sha256
 import smtplib
 import random
-import threading
 import string
 import asyncio
 import uvicorn
