@@ -116,9 +116,11 @@ def set_logged_email_simple(data: dict = Body(...)):
         if not user:
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
         
-        logged_emails[email] = True
-        
-        return {"status": "success", "email": email}
+        # gera session_id único
+        session_id = str(uuid.uuid4())
+        logged_emails[session_id] = email
+
+        return {"status": "success", "session_id": session_id}
 
     except HTTPException:
         raise
@@ -131,29 +133,23 @@ def set_logged_email_simple(data: dict = Body(...)):
         if conn:
             conn.close()
 
-
-# =========================
-# Modelo de requisição
-# =========================
-class UpgradeRequest(BaseModel):
-    email: str
-    purchaseToken: str
-
-
 class UpdateAccountRequest(BaseModel):
     email: str
     account_type: str
 
+class UpgradeRequest(BaseModel):
+    session_id: str
+    purchaseToken: str
 
-# =========================
-# Endpoint /upgrade
-# =========================
+
 @app.post("/upgrade")
 def upgrade(req: UpgradeRequest):
-    if req.email not in logged_emails:
-        raise HTTPException(status_code=401, detail="Email não registrado no login")
+    if req.session_id not in logged_emails:
+        raise HTTPException(status_code=401, detail="Sessão inválida. Faça login novamente.")
 
-    # Inicializa o serviço da Google Play sob demanda
+    email = logged_emails[req.session_id]
+
+    # Inicializa o serviço da Google Play
     play_service = get_play_service()
 
     try:
@@ -182,11 +178,11 @@ def upgrade(req: UpgradeRequest):
         )
         cursor = conn.cursor(dictionary=True)
 
-        cursor.execute("SELECT id, account_type FROM users WHERE email = %s", (req.email,))
+        cursor.execute("SELECT id, account_type FROM users WHERE email = %s", (email,))
         user = cursor.fetchone()
 
         if not user:
-            logger.info(f"Usuário não encontrado: {req.email}")
+            logger.info(f"Usuário não encontrado: {email}")
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
         account_type_value = str(user.get("account_type", "")).lower() if isinstance(user, dict) else str(user[1]).lower()
@@ -196,10 +192,10 @@ def upgrade(req: UpgradeRequest):
 
         cursor.execute(
             "UPDATE users SET account_type = %s WHERE email = %s",
-            ("Premium", req.email)
+            ("Premium", email)
         )
         conn.commit()
-        logger.info(f"Usuário {req.email} atualizado para Premium")
+        logger.info(f"Usuário {email} atualizado para Premium")
 
     except HTTPException:
         raise
