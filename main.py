@@ -33,7 +33,6 @@ import asyncio
 import sqlite3
 from hashlib import sha256
 import flet as ft
-import threading
 
 load_dotenv()
 
@@ -4846,22 +4845,7 @@ def main(page: ft.Page):
     # Definindo a rota inicial
     page.go("/")
 
-# =========================
-# Função para rodar Flet em thread separada
-# =========================
-def start_flet():
-    # Aqui rodamos o Flet sem travar o FastAPI
-    ft.app(target=main, view=None, port=8550)  # usa porta interna
-
-# ======================
-# Start Server
-# ======================
 if __name__ == "__main__":
-    # roda o Flet em paralelo
-    threading.Thread(target=start_flet, daemon=True).start()
-
-    # roda o FastAPI (esse é exposto no Railway)
-    port = int(os.getenv("PORT", 8000))
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 
 #4643 SALVE - 9/14
