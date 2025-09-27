@@ -4850,14 +4850,18 @@ def main(page: ft.Page):
 # Função para rodar Flet em thread separada
 # =========================
 def start_flet():
-    ft.app(target=main, view=None) # view pode ser WEB_BROWSER ou NONE
+    # Aqui rodamos o Flet sem travar o FastAPI
+    ft.app(target=main, view=None, port=8550)  # usa porta interna
 
-# =========================
-# Iniciar Flet em thread
-# =========================
-threading.Thread(target=start_flet, daemon=True).start()
-
+# ======================
+# Start Server
+# ======================
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    # roda o Flet em paralelo
+    threading.Thread(target=main, daemon=True).start()
+
+    # roda o FastAPI (esse é exposto no Railway)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
 
 #4643 SALVE - 9/14
