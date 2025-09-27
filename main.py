@@ -4850,7 +4850,7 @@ def main(page: ft.Page):
 # Função para rodar Flet em thread separada
 # =========================
 def start_flet():
-    ft.app(target=main, view=ft.AppView.WEB_BROWSER)  # view pode ser WEB_BROWSER ou NONE
+    ft.app(target=main, view=None) # view pode ser WEB_BROWSER ou NONE
 
 # =========================
 # Iniciar Flet em thread
