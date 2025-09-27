@@ -4858,9 +4858,10 @@ def start_flet():
 # ======================
 if __name__ == "__main__":
     # roda o Flet em paralelo
-    threading.Thread(target=main, daemon=True).start()
+    threading.Thread(target=start_flet, daemon=True).start()
 
     # roda o FastAPI (esse é exposto no Railway)
     port = int(os.getenv("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
 
 #4643 SALVE - 9/14
