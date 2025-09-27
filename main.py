@@ -4845,7 +4845,6 @@ def main(page: ft.Page):
     # Definindo a rota inicial
     page.go("/")
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+ft.app(target=main)
 
 #4643 SALVE - 9/14
