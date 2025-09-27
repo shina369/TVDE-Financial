@@ -33,6 +33,7 @@ import asyncio
 import sqlite3
 from hashlib import sha256
 import flet as ft
+import threading
 
 load_dotenv()
 
@@ -4844,6 +4845,17 @@ def main(page: ft.Page):
 
     # Definindo a rota inicial
     page.go("/")
+
+# =========================
+# Função para rodar Flet em thread separada
+# =========================
+def start_flet():
+    ft.app(target=main, view=ft.AppView.WEB_BROWSER)  # view pode ser WEB_BROWSER ou NONE
+
+# =========================
+# Iniciar Flet em thread
+# =========================
+threading.Thread(target=start_flet, daemon=True).start()
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
