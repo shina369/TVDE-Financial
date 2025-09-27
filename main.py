@@ -59,6 +59,10 @@ formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+app = FastAPI(title="TVDE Financial API", version="1.0")
+
+logged_emails = {}  # session_id -> email
+
 # =========================
 # Função para inicializar Google Play API
 # =========================
@@ -74,24 +78,15 @@ def get_play_service():
         logger.error(f"Erro ao inicializar Google Play API: {e}")
         raise HTTPException(status_code=500, detail="Erro ao inicializar Google Play API")
 
-
-# =========================
-# FastAPI app
-# ========================
-app = FastAPI()
-
+class UpgradeRequest(BaseModel):
+    session_id: str
+    purchaseToken: str
 # ----------------------------
 # Teste básico
 # ----------------------------
 @app.get("/")
 def root():
     return {"status": "FastAPI rodando no Railway"}
-
-# ----------------------------
-# Banco temporário em memória
-# ----------------------------
-logged_emails = {}  # session_id -> email
-
 
 @app.post("/set_logged_email_simple")
 def set_logged_email_simple(data: dict = Body(...)):
@@ -106,7 +101,7 @@ def set_logged_email_simple(data: dict = Body(...)):
             host=MYSQLHOST,
             user=MYSQLUSER,
             password=MYSQLPASSWORD,
-            database="db_tvde_users_external",
+            database=MYSQL_DATABASE,
             port=MYSQLPORT
         )
         cursor = conn.cursor(dictionary=True)
@@ -137,11 +132,6 @@ class UpdateAccountRequest(BaseModel):
     email: str
     account_type: str
 
-class UpgradeRequest(BaseModel):
-    session_id: str
-    purchaseToken: str
-
-
 @app.post("/upgrade")
 def upgrade(req: UpgradeRequest):
     if req.session_id not in logged_emails:
@@ -149,7 +139,6 @@ def upgrade(req: UpgradeRequest):
 
     email = logged_emails[req.session_id]
 
-    # Inicializa o serviço da Google Play
     play_service = get_play_service()
 
     try:
@@ -164,7 +153,6 @@ def upgrade(req: UpgradeRequest):
         raise HTTPException(status_code=400, detail="Erro ao validar token na Google Play")
 
     if result.get("purchaseState") != 0:
-        logger.info(f"Compra inválida ou não concluída para token {req.purchaseToken}")
         raise HTTPException(status_code=400, detail="Compra inválida ou não concluída")
 
     conn, cursor = None, None
@@ -173,21 +161,17 @@ def upgrade(req: UpgradeRequest):
             host=MYSQLHOST,
             user=MYSQLUSER,
             password=MYSQLPASSWORD,
-            database="db_tvde_users_external",
+            database=MYSQL_DATABASE,
             port=MYSQLPORT
         )
         cursor = conn.cursor(dictionary=True)
-
-        cursor.execute("SELECT id, account_type FROM users WHERE email = %s", (email,))
+        cursor.execute("SELECT account_type FROM users WHERE email = %s", (email,))
         user = cursor.fetchone()
 
         if not user:
-            logger.info(f"Usuário não encontrado: {email}")
             raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-        account_type_value = str(user.get("account_type", "")).lower() if isinstance(user, dict) else str(user[1]).lower()
-
-        if account_type_value == "premium":
+        if str(user.get("account_type", "")).lower() == "premium":
             return {"status": "success", "account_type": "Premium", "message": "Usuário já é Premium"}
 
         cursor.execute(
@@ -196,9 +180,8 @@ def upgrade(req: UpgradeRequest):
         )
         conn.commit()
         logger.info(f"Usuário {email} atualizado para Premium")
+        return {"status": "success", "account_type": "Premium", "message": "Usuário atualizado para Premium"}
 
-    except HTTPException:
-        raise
     except Exception as e:
         logger.info(f"Erro ao atualizar usuário: {e}")
         raise HTTPException(status_code=500, detail="Erro ao atualizar usuário")
@@ -207,8 +190,6 @@ def upgrade(req: UpgradeRequest):
             cursor.close()
         if conn:
             conn.close()
-
-    return {"status": "success", "account_type": "Premium", "message": "Usuário atualizado para Premium"}
 
 
 @app.get("/user_status")
@@ -1955,7 +1936,6 @@ def main(page: ft.Page):
             hash_password_login = sha256(password_login.value.encode()).hexdigest()
 
             def blocking_db_operations():
-                import mysql.connector
                 conn = mysql.connector.connect(
                     host=MYSQLHOST,
                     user=MYSQLUSER,
