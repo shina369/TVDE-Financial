@@ -4845,5 +4845,4 @@ def main(page: ft.Page):
     # Definindo a rota inicial
     page.go("/")
 
-ft.app(target=main)
 #4643 SALVE - 9/14
