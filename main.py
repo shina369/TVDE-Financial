@@ -1743,7 +1743,7 @@ def main(page: ft.Page):
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     "https://fastapi-tvde-fastapi.up.railway.app/set_logged_email_simple",
-                    json={"email": email}  # envia no corpo JSON
+                    json={"email": email}  # envia no corpo JSON ,
                 )
                 if response.status_code == 200:
                     print(f"Email enviado com sucesso: {email}")
