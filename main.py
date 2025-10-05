@@ -1743,12 +1743,12 @@ def main(page: ft.Page):
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     "https://fastapi-tvde-fastapi.up.railway.app/set_logged_email_simple",
-                    json={"email": email}  # envia no corpo JSON ,
+                    json={"email": email}  # envia no corpo JSON
                 )
                 if response.status_code == 200:
-                    print(f"Email enviado com sucesso: {email}")
+                    logging.info(f"Email enviado com sucesso: {email}")
                 else:
-                    print(f"Falha ao enviar email: {response.status_code} {response.text}")
+                    logging.info(f"Falha ao enviar email: {response.status_code} {response.text}")
 
 
         async def valid_email_password_async(email_login, password_login, page: ft.Page, remember_password_checkbox):
