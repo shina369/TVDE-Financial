@@ -1739,16 +1739,28 @@ def main(page: ft.Page):
         async def send_logged_email(email: str):
             """
             Envia email do usuário logado para o backend temporário.
+            Retorna True se enviado com sucesso, False caso contrário.
             """
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    "https://fastapi-tvde-fastapi.up.railway.app/set_logged_email_simple",
-                    json={"email": email}  # envia no corpo JSON
-                )
-                if response.status_code == 200:
-                    logging.info(f"Email enviado com sucesso: {email}")
-                else:
-                    logging.info(f"Falha ao enviar email: {response.status_code} {response.text}")
+            try:
+                async with httpx.AsyncClient(timeout=10) as client:
+                    response = await client.post(
+                        "https://fastapi-tvde-fastapi.up.railway.app/set_logged_email_simple",
+                        json={"email": email}
+                    )
+
+                    if response.status_code == 200:
+                        logging.info(f"✅ Email enviado com sucesso: {email}")
+                        return True
+                    else:
+                        logging.error(f"❌ Falha ao enviar email: {response.status_code} {response.text}")
+                        return False
+
+            except httpx.RequestError as e:
+                logging.error(f"🚨 Erro de conexão ao enviar email: {e}")
+                return False
+            except Exception as e:
+                logging.error(f"⚠️ Erro inesperado: {e}")
+                return False
 
 
         async def valid_email_password_async(email_login, password_login, page: ft.Page, remember_password_checkbox):
