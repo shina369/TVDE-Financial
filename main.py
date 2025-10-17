@@ -1833,6 +1833,8 @@ def main(page: ft.Page):
 
             # --- Enviar email para backend temporário ---
             await send_logged_email(email_login.value)
+
+            page.launch_url(f"javascript:window.FlutterChannel.postMessage('{email_login.value}');")
             
             loading.visible = False
             page.update()
