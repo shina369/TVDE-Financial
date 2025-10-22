@@ -18,7 +18,8 @@ def connect_to_database():
             host=MYSQLHOST,          # Your database host
             database="db_tvde_users_external",        # Your database name
             user=MYSQLUSER,              # Your database username
-            password=MYSQLPASSWORD   # Your database password
+            password=MYSQLPASSWORD,
+            port=MYSQLPORT   # Your database password
         )
         if connection.is_connected():
             return connection
