@@ -107,43 +107,31 @@ def main(page: ft.Page):
     )
 
     def check_user_premium(email: str) -> bool:
-            
-            """
-            Verifica no MySQL se o usuário tem conta 'premium'.
-            Retorna True se for premium, False caso contrário.
-            """
-            connection = None
-            cursor = None
-            try:
-                # Conexão com o banco
-                connection = mysql.connector.connect(
-                    host=MYSQLHOST,
-                    user=MYSQLUSER,
-                    password=MYSQLPASSWORD,
-                    database="db_tvde_users_external",
-                    port=MYSQLPORT  # <- importante
-                )
+        """
+        Verifica no MySQL se o usuário tem conta 'premium'.
+        Retorna True se for premium, False caso contrário.
+        """
 
-                if connection.is_connected():
-                    cursor = connection.cursor(dictionary=True)
-                    cursor.execute("SELECT account_type FROM users WHERE email = %s", (email,))
-                    user_row = cursor.fetchone()  # pode ser Dict[str, Any] ou None
-                    user: Optional[Dict[str, str]] = user_row if user_row is None else dict(user_row)  # type: ignore
-
-                    if user and str(user["account_type"]).lower() == "premium":  # acessa por chave
-                        return True
-                    return False
-            except Exception as e:
-                print(f"Erro ao verificar usuário: {e}")
+        connection = connectionMySQL.connect_to_database()
+        
+        if not connection:
+                print("❌ Falha na conexão com o banco de dados.")
                 return False
 
-            finally:
-                # Fecha o cursor e a conexão
-                if cursor:
-                    cursor.close()
-                if connection and connection.is_connected():
-                    connection.close()
-            return False  # Garante retorno booleano em todos os caminhos
+        try:
+            query = "SELECT account_type FROM users WHERE email = %s"
+            user_row = connectionMySQL.execute_query(connection, query, (email,), fetch_one=True)
+
+            if user_row and str(user_row.get("account_type", "")).lower() == "premium":
+                return True
+            return False
+
+        except Exception as e:
+            print(f"⚠️ Erro ao verificar usuário: {e}")
+            return False
+
+        finally:
+            connectionMySQL.close_connection(connection)
 
     
     def on_change(e):
