@@ -34,7 +34,6 @@ import sqlite3
 from hashlib import sha256
 import connectionMySQL
 
-
 load_dotenv()
 
 # =========================
@@ -427,99 +426,141 @@ def main(page: ft.Page):
         user_id = get_user_id_from_mysql(email_login.value)
         page.views.clear()
 
-        with sqlite3.connect(f"db_usuarios/db_user_{user_id}.db", detect_types=sqlite3.PARSE_DECLTYPES) as conn:
-            cursor = conn.cursor()  # Inicializando o cursor
+        connection = connectionMySQL.connect_to_database()
+        if not connection:
+            print("❌ Falha na conexão com o MySQL.")
+            return
+
+        try:
+            cursor = connection.cursor()
+
             # Recuperar as datas 'goal_start' e 'goal_end' da tabela 'goal'
-            cursor.execute("SELECT goal_start, goal_end FROM goal ORDER BY id DESC LIMIT 1")
+            cursor.execute("""
+                SELECT goal_start, goal_end
+                FROM goal
+                WHERE user_id = %s
+                ORDER BY id DESC
+                LIMIT 1
+            """, (user_id,))
             goal_result = cursor.fetchone()
 
             if goal_result:
-                goal_start = datetime.strptime(goal_result[0], '%d/%m/%Y')  # Convertendo string para datetime
-                goal_end = datetime.strptime(goal_result[1], '%d/%m/%Y')
+                goal_start = goal_result[0]
+                goal_end = goal_result[1]
             else:
                 goal_start, goal_end = None, None
 
+            # ==========================
+            # Funções auxiliares MySQL
+            # ==========================
+
             def fetch_expenses(start_date, end_date):
                 """Consulta as despesas entre start_date e end_date."""
-                cursor.execute(""" 
-                    SELECT SUM(expense_value) 
-                    FROM expense 
-                    WHERE date(substr(expense_date, 7, 4) || '-' || substr(expense_date, 4, 2) || '-' || substr(expense_date, 1, 2)) 
-                    BETWEEN date(?) AND date(?)
-                """, (start_date, end_date))
+                cursor.execute("""
+                    SELECT SUM(expense_value)
+                    FROM expense
+                    WHERE user_id = %s
+                    AND STR_TO_DATE(expense_date, '%%d/%%m/%%Y')
+                    BETWEEN STR_TO_DATE(%s, '%%d/%%m/%%Y')
+                    AND STR_TO_DATE(%s, '%%d/%%m/%%Y')
+                """, (user_id, start_date, end_date))
                 result = cursor.fetchone()
-                return result[0] if result else 0.0
-            
+                return result[0] if result and result[0] is not None else 0.0
+
             def fetch_goal_from_db():
-                # Executar a consulta para obter o valor do objetivo, fleet_discount e tax_discount
-                cursor.execute("SELECT goal, fleet_discount, tax_discount FROM goal ORDER BY id DESC LIMIT 1")  # Ajuste conforme necessário
+                cursor.execute("""
+                    SELECT goal, fleet_discount, tax_discount
+                    FROM goal
+                    WHERE user_id = %s
+                    ORDER BY id DESC
+                    LIMIT 1
+                """, (user_id,))
                 result = cursor.fetchone()
 
                 if result:
-                    # Garantir que goal_value, fleet_discount e tax_discount sejam do tipo float
                     try:
-                        goal_value = float(result[0])  # Convertendo para float
-                        # Formatar o valor final para exibição
+                        goal_value = float(result[0])
                         return f"{goal_value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
                     except ValueError:
                         return "Erro ao converter os valores"
                 else:
                     return "€ 0.00"
-                
+
             def fetch_goal_gross():
-                cursor.execute("SELECT goal_gross FROM goal ORDER BY id DESC LIMIT 1")
+                cursor.execute("""
+                    SELECT goal_gross
+                    FROM goal
+                    WHERE user_id = %s
+                    ORDER BY id DESC
+                    LIMIT 1
+                """, (user_id,))
                 goal_gross_result = cursor.fetchone()
-                
-                if goal_gross_result and goal_gross_result[0] is not None:
-                    return float(goal_gross_result[0])
-                return 0.0
-            
+                return float(goal_gross_result[0]) if goal_gross_result and goal_gross_result[0] is not None else 0.0
+
             def fetch_goal_sum_tip(goal_start, goal_end):
                 cursor.execute("""
-                  SELECT 
-                    (SELECT COALESCE(SUM(daily_value_tips), 0) 
-                    FROM uber 
-                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
-                    BETWEEN date(?) AND date(?)) +
-                    (SELECT COALESCE(SUM(daily_value_tips), 0) 
-                    FROM bolt 
-                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
-                    BETWEEN date(?) AND date(?))
-                """, (goal_start, goal_end, goal_start, goal_end))
-                
-                total_tips = cursor.fetchone()[0]  # Pega o resultado da soma
+                    SELECT 
+                        COALESCE((
+                            SELECT SUM(daily_value_tips)
+                            FROM uber
+                            WHERE user_id = %s
+                            AND STR_TO_DATE(daily_date, '%%d/%%m/%%Y')
+                            BETWEEN STR_TO_DATE(%s, '%%d/%%m/%%Y') AND STR_TO_DATE(%s, '%%d/%%m/%%Y')
+                        ), 0)
+                        +
+                        COALESCE((
+                            SELECT SUM(daily_value_tips)
+                            FROM bolt
+                            WHERE user_id = %s
+                            AND STR_TO_DATE(daily_date, '%%d/%%m/%%Y')
+                            BETWEEN STR_TO_DATE(%s, '%%d/%%m/%%Y') AND STR_TO_DATE(%s, '%%d/%%m/%%Y')
+                        ), 0)
+                """, (user_id, goal_start, goal_end, user_id, goal_start, goal_end))
+                total_tips = cursor.fetchone()[0]
                 return float(total_tips) if total_tips is not None else 0.0
 
             def fetch_last_fleet_discount():
-                # Consulta SQL para pegar o último valor da coluna "fleet_discount"
-                query = "SELECT fleet_discount FROM goal ORDER BY id DESC LIMIT 1"  # Altere 'sua_tabela' para o nome da tabela correta
-                
-                cursor.execute(query)
+                cursor.execute("""
+                    SELECT fleet_discount
+                    FROM goal
+                    WHERE user_id = %s
+                    ORDER BY id DESC
+                    LIMIT 1
+                """, (user_id,))
                 result = cursor.fetchone()
-                
-                # Se encontrou algum valor, retorna ele
-                if result:
-                    return result[0]  # O valor de "fleet_discount" estará na primeira posição
-                else:
-                    return None  # Se não encontrar nenhum valor, retorna None
-                # Função para criar um botão grande
+                return result[0] if result else None
 
             def fetch_total_reimbursement(goal_start, goal_end):
                 cursor.execute("""
                     SELECT 
-                    (SELECT COALESCE(SUM(daily_reimbursement), 0) 
-                    FROM uber 
-                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
-                    BETWEEN date(?) AND date(?)) +
-                    (SELECT COALESCE(SUM(daily_reimbursement), 0) 
-                    FROM bolt 
-                    WHERE date(substr(daily_date, 7, 4) || '-' || substr(daily_date, 4, 2) || '-' || substr(daily_date, 1, 2)) 
-                    BETWEEN date(?) AND date(?))
+                        COALESCE((
+                            SELECT SUM(daily_reimbursement)
+                            FROM uber
+                            WHERE user_id = %s
+                            AND STR_TO_DATE(daily_date, '%%d/%%m/%%Y')
+                            BETWEEN STR_TO_DATE(%s, '%%d/%%m/%%Y') AND STR_TO_DATE(%s, '%%d/%%m/%%Y')
+                        ), 0)
+                        +
+                        COALESCE((
+                            SELECT SUM(daily_reimbursement)
+                            FROM bolt
+                            WHERE user_id = %s
+                            AND STR_TO_DATE(daily_date, '%%d/%%m/%%Y')
+                            BETWEEN STR_TO_DATE(%s, '%%d/%%m/%%Y') AND STR_TO_DATE(%s, '%%d/%%m/%%Y')
+                        ), 0)
+                """, (user_id, goal_start, goal_end, user_id, goal_start, goal_end))
 
-                """, (goal_start, goal_end, goal_start, goal_end))
-
-                total_reimbursement = cursor.fetchone()[0]  # Pega o resultado da soma
+                total_reimbursement = cursor.fetchone()[0]
                 return float(total_reimbursement) if total_reimbursement is not None else 0.0
+
+            # (aqui segue o resto da tua lógica de UI e cálculos com os dados retornados)
+
+        except Exception as e:
+            print(f"Erro ao consultar dados do MySQL: {e}")
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
 
         
         def create_big_button(icon, text, on_click_action):
@@ -2993,7 +3034,7 @@ def main(page: ft.Page):
         expand=True,
         on_change=format_number_accounting,
         content_padding=ft.padding.symmetric(vertical=12, horizontal=12)
-    )
+        )
 
         tips_reimbursement_row = ft.Container(
             ft.Row(
