@@ -418,7 +418,7 @@ def main(page: ft.Page):
 
         page.update()
 
-    def page_reports(user_id):
+    def page_reports():
         if not email_login.value:
             print("E-mail não informado.")
             return
@@ -4693,7 +4693,7 @@ def main(page: ft.Page):
         elif page.route == "/page_my_account":
             page_my_account(page, current_translations)
         elif page.route == "/page_reports":
-            page_reports(user_id=None)
+            page_reports()
         elif page.route == "/page_reports_expense":
             page_reports_expense()
         elif page.route == "/page_reports_fleet":
