@@ -419,7 +419,7 @@ def main(page: ft.Page):
         page.update()
 
     def page_reports(email_login):
-        if not email_login.value:
+        if not email_login:
             print("E-mail não informado.")
             return
 
