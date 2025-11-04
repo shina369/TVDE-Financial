@@ -48,6 +48,8 @@ MYSQLPORT = int(os.getenv("MYSQLPORT") or 3306)
 PLAY_PACKAGE_NAME = os.getenv("PLAY_PACKAGE_NAME")
 PLAY_PRODUCT_ID = os.getenv("PLAY_PRODUCT_ID")
 
+session_id = None  # declaração global
+
 def main(page: ft.Page):
     
     load_dotenv()
