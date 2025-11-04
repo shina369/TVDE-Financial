@@ -52,6 +52,7 @@ def main(page: ft.Page):
     
     load_dotenv()
     connect()
+    session_id = str(uuid.uuid4())
 
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
@@ -1766,17 +1767,23 @@ def main(page: ft.Page):
                 email_login.error_text = current_translations.get("email_invalid", "O email digitado não é válido.")
             email_login.update()
         
-        async def send_logged_email(email: str):
+        async def send_logged_email(email: str, session_id: str):
             """
-            Envia email do usuário logado para o backend temporário.
+            Envia o e-mail do usuário logado para o backend (com suporte a múltiplas sessões).
             Retorna True se enviado com sucesso, False caso contrário.
             """
             try:
-                async with httpx.AsyncClient(timeout=10) as client:
+                async with httpx.AsyncClient() as client:
                     response = await client.post(
                         "https://fastapi-tvde-fastapi.up.railway.app/set_logged_email_simple",
-                        json={"email": email}
+                        json={
+                            "email": email.strip().lower(),
+                            "session_id": session_id
+                        },
+                        timeout=10.0
                     )
+
+                    print(f"✅ POST enviado ao backend: {email} ({response.status_code})")
 
                     if response.status_code == 200:
                         logging.info(f"✅ Email enviado com sucesso: {email}")
@@ -1791,6 +1798,7 @@ def main(page: ft.Page):
             except Exception as e:
                 logging.error(f"⚠️ Erro inesperado: {e}")
                 return False
+
 
 
         async def valid_email_password_async(email_login, password_login, page: ft.Page, remember_password_checkbox):
@@ -1862,7 +1870,8 @@ def main(page: ft.Page):
                 page.client_storage.remove("saved_password")
 
             # --- Enviar email para backend temporário ---
-            await send_logged_email(email_login.value)
+            await send_logged_email(email_login.value, session_id)
+
 
             page.launch_url(f"javascript:window.FlutterChannel.postMessage('{email_login.value}');")
             
