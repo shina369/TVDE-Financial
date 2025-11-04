@@ -54,6 +54,7 @@ def main(page: ft.Page):
     
     load_dotenv()
     connect()
+    global session_id
     session_id = str(uuid.uuid4())
 
     page.theme_mode = ft.ThemeMode.LIGHT
