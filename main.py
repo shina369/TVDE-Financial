@@ -1945,6 +1945,7 @@ def main(page: ft.Page):
 
 
 
+
     def page_new_goal():
         page.views.clear()
 
