@@ -24,3 +24,6 @@ build/
 
 # Credentials / secrets
 user_credentials.json
+
+# Keystore
+*.keystore
