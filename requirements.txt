@@ -1,20 +1,18 @@
 # Backend / FastAPI
 fastapi
-uvicorn[standard]==0.23.2
+uvicorn
 pydantic
-python-dotenv==1.0.0
-mysql-connector-python==8.1.0
+python-dotenv
+mysql-connector-python
 
 # Google APIs
-google-api-python-client==2.95.0
-google-auth==2.23.0
+google-api-python-client
+google-auth
 google-auth-httplib2
 google-auth-oauthlib
 
-# Flet (frontend Python)
-flet[all]==0.28.3
-flet-core
-flet-runtime
+# Flet
+flet
 
 # Utilitários
 requests
@@ -30,11 +28,3 @@ plotly
 seaborn
 qrcode
 rich
-
-# Outros
-anyio
-h11
-starlette
-watchdog==4.0.2
-watchfiles==0.24.0
-websockets==13.1
