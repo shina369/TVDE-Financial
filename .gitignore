@@ -1,4 +1,26 @@
+# Virtual environment
 venv/
+
+# Python cache
 __pycache__/
 *.pyc
+
+# Environment files
 .env
+*.env
+
+# Databases
+*.db
+db_usuarios/
+
+# IDE/editor settings
+.idea/
+*.iml
+
+# Build artifacts
+build/
+*.apk
+*.aab
+
+# Credentials / secrets
+user_credentials.json
