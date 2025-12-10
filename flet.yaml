@@ -1,5 +1,5 @@
 android:
-  keystore: C:/Users/aceri/Documents/Trabalhos/TVDE/TVDE-Financial/tvde-new.keystore
+  keystore: tvde-new.keystore
   store_password: tvdelokiju123
   key_alias: tvde-financial
   key_password: tvdelokiju123
