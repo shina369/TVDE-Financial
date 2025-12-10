@@ -1,5 +1,5 @@
 android:
-  keystore: C:/Users/aceri/Documents/Trabalhos/TVDE/TVDE-Financial/tvde.keystore
+  keystore: C:/Users/aceri/Documents/Trabalhos/TVDE/TVDE-Financial/tvde-new.keystore
   store_password: tvdelokiju123
   key_alias: tvde-financial
   key_password: tvdelokiju123
@@ -7,4 +7,4 @@ android:
 app:
   name: TVDE Financial
   version: 1.0.0
-  build_number: 79
+  build_number: 80
