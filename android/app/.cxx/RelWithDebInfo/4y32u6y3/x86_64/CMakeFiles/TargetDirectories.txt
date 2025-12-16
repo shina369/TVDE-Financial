@@ -1,0 +1,2 @@
+C:/Users/aceri/Documents/Trabalhos/TVDE/TVDE-Financial/build/flutter/android/app/.cxx/RelWithDebInfo/4y32u6y3/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/aceri/Documents/Trabalhos/TVDE/TVDE-Financial/build/flutter/android/app/.cxx/RelWithDebInfo/4y32u6y3/x86_64/CMakeFiles/rebuild_cache.dir
